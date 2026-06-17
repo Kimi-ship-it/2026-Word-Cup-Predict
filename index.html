@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -233,20 +234,25 @@
   .lb-soon { background:rgba(59,140,255,0.14); color:var(--home); }
   @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.45;} }
 
-  /* License gate */
-  .lock-wrap { position:relative; }
-  .lock-overlay { position:absolute; inset:0; z-index:5; display:flex; flex-direction:column; align-items:center;
-    justify-content:center; gap:14px; text-align:center; padding:24px;
-    background:rgba(15,15,26,0.78); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); border-radius:12px; }
-  .lock-overlay.hidden { display:none; }
-  .lock-icon { font-size:30px; }
-  .lock-title { font-size:15px; font-weight:800; color:#fff; }
-  .lock-desc { font-size:12px; color:var(--text-dim); max-width:360px; line-height:1.6; }
-  .lock-input-row { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; }
-  .lock-input-row input { width:220px; text-align:center; letter-spacing:1px; }
-  .lock-err { font-size:12px; color:var(--away); min-height:16px; }
-  .locked-body { filter:blur(5px); pointer-events:none; user-select:none; }
-  .lock-status { display:inline-flex; align-items:center; gap:6px; font-size:11px; color:var(--value); font-weight:700; }
+  /* Date picker (fixtures) */
+  .fixture-row .fx-date { flex:0 0 190px; min-width:150px; }
+
+  /* Upset index module */
+  .upset-wrap { display:flex; gap:20px; flex-wrap:wrap; align-items:stretch; }
+  .upset-gauge { flex:0 0 210px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
+    background:var(--surface-alt); border:1px solid var(--border); border-radius:12px; padding:22px 16px; }
+  .upset-score { font-size:56px; font-weight:900; line-height:1; letter-spacing:-2px; }
+  .upset-score-sub { font-size:11px; color:var(--text-dim); text-transform:uppercase; letter-spacing:1px; }
+  .upset-tag { font-size:13px; font-weight:800; padding:5px 14px; border-radius:6px; margin-top:8px;
+    border:1px solid currentColor; }
+  .upset-detail { flex:1; min-width:240px; display:flex; flex-direction:column; justify-content:center; }
+  .upset-line { display:flex; justify-content:space-between; align-items:center; padding:10px 4px;
+    border-bottom:1px solid var(--border); font-size:13px; }
+  .upset-line:last-child { border-bottom:none; }
+  .upset-line .ul-k { color:var(--text-dim); }
+  .upset-line .ul-v { font-weight:800; color:#fff; }
+  .upset-note { font-size:11px; color:var(--text-dim); margin-top:12px; line-height:1.6; }
+  @media (max-width:640px){ .upset-gauge { flex:1 1 100%; } }
 
   @media (max-width: 640px) {
     .matchup { flex-direction: column; align-items: stretch; }
@@ -275,8 +281,12 @@
     </div>
 
     <div class="fixture-row">
+      <div class="fx-date">
+        <label style="display:block; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:var(--text-dim); margin-bottom:8px;">日期 / Date</label>
+        <select id="dateSelect"><option value="">全部日期 / All Dates</option></select>
+      </div>
       <div class="fx-pick">
-        <label style="display:block; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:var(--text-dim); margin-bottom:8px;">真实赛程 / Real Fixtures (自动填充对阵)</label>
+        <label style="display:block; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:var(--text-dim); margin-bottom:8px;">真实赛程 / Real Fixtures (北京时间 · 自动填充对阵)</label>
         <select id="fixtureSelect"><option value="">-- 选择一场真实比赛 --</option></select>
       </div>
       <button class="btn-mini" id="refreshBtn">刷新比分</button>
@@ -392,36 +402,39 @@
       <div class="topscores" id="topScores"></div>
     </div>
 
-    <!-- Value betting (license gated) -->
+    <!-- Upset index -->
     <div class="card">
-      <div class="card-title">
-        赔率价值分析 / Value &amp; Kelly Calculator
-        <span class="lock-status" id="lockStatus" style="margin-left:auto; display:none;">已激活 PRO</span>
-      </div>
-      <div class="lock-wrap">
-        <div class="lock-overlay" id="lockOverlay">
-          <div class="lock-icon">&#128274;</div>
-          <div class="lock-title">PRO 高级功能 — 需要授权码解锁</div>
-          <div class="lock-desc">赔率价值分析、期望收益(EV)与凯利投注比例为付费功能。请输入授权码解锁,激活后本机长期有效。</div>
-          <div class="lock-input-row">
-            <input type="text" id="licenseInput" placeholder="输入授权码 / License Code">
-            <button class="btn btn-primary" id="unlockBtn" style="padding:12px 24px;">解锁</button>
-          </div>
-          <div class="lock-err" id="lockErr"></div>
+      <div class="card-title">爆冷系数 / Upset Index</div>
+      <div class="upset-wrap">
+        <div class="upset-gauge">
+          <div class="upset-score" id="upsetScore">-</div>
+          <div class="upset-score-sub">爆冷指数 0-100</div>
+          <div class="upset-tag" id="upsetTag">-</div>
         </div>
-        <div class="locked-body" id="lockedBody">
-          <div class="value-intro">
-            输入博彩公司的<strong style="color:var(--text)">十进制赔率(欧赔)</strong>,系统会与模型的"公平赔率"对比,
-            计算价值边际(Edge)、期望收益(EV)和建议的凯利投注比例。<span style="color:var(--value)">绿色高亮</span>= 模型认为有正期望价值的投注。
-          </div>
-          <div class="odds-input-grid">
-            <div class="oi"><label>主胜赔率 Home</label><input type="number" id="inHome" step="0.01" placeholder="如 2.10"></div>
-            <div class="oi"><label>平局赔率 Draw</label><input type="number" id="inDraw" step="0.01" placeholder="如 3.30"></div>
-            <div class="oi"><label>客胜赔率 Away</label><input type="number" id="inAway" step="0.01" placeholder="如 3.50"></div>
-          </div>
-          <table class="value-table" id="valueTable"></table>
+        <div class="upset-detail">
+          <div class="upset-line"><span class="ul-k">热门 Favorite</span><span class="ul-v" id="upFav">-</span></div>
+          <div class="upset-line"><span class="ul-k">冷门 Underdog</span><span class="ul-v" id="upDog">-</span></div>
+          <div class="upset-line"><span class="ul-k">爆冷胜率（冷门直接取胜）</span><span class="ul-v" id="upDogWin">-</span></div>
+          <div class="upset-line"><span class="ul-k">爆冷不败率（冷门胜或平）</span><span class="ul-v" id="upDogUnbeaten">-</span></div>
+          <div class="upset-line"><span class="ul-k">实力差距（胜率差）</span><span class="ul-v" id="upGap">-</span></div>
         </div>
       </div>
+      <div class="upset-note">指数越高代表越可能出现冷门：综合「冷门球队取胜概率」与「平局概率」加权计算（爆冷指数 = 冷门胜率 + ½ × 平局率）。当双方实力接近时不构成真正意义上的"爆冷"。</div>
+    </div>
+
+    <!-- Value betting -->
+    <div class="card">
+      <div class="card-title">赔率价值分析 / Value &amp; Kelly Calculator</div>
+      <div class="value-intro">
+        输入博彩公司的<strong style="color:var(--text)">十进制赔率(欧赔)</strong>,系统会与模型的"公平赔率"对比,
+        计算价值边际(Edge)、期望收益(EV)和建议的凯利投注比例。<span style="color:var(--value)">绿色高亮</span>= 模型认为有正期望价值的投注。
+      </div>
+      <div class="odds-input-grid">
+        <div class="oi"><label>主胜赔率 Home</label><input type="number" id="inHome" step="0.01" placeholder="如 2.10"></div>
+        <div class="oi"><label>平局赔率 Draw</label><input type="number" id="inDraw" step="0.01" placeholder="如 3.30"></div>
+        <div class="oi"><label>客胜赔率 Away</label><input type="number" id="inAway" step="0.01" placeholder="如 3.50"></div>
+      </div>
+      <table class="value-table" id="valueTable"></table>
     </div>
 
     <!-- Score heatmap -->
@@ -743,6 +756,9 @@
     // Heatmap (0..6)
     renderHeatmap(m);
 
+    // Upset index
+    renderUpset(mk, homeTeam, awayTeam);
+
     // Strength
     renderStrength(homeTeam, awayTeam, lh, la);
 
@@ -809,6 +825,38 @@
       html += "</tr>";
     }
     $("distTable").innerHTML = html;
+  }
+
+  function renderUpset(mk, home, away) {
+    const drawP = mk.draw;
+    let favName, dogName, favW, dogW;
+    if (mk.homeWin >= mk.awayWin) {
+      favName = home.name.split(" ")[0]; dogName = away.name.split(" ")[0];
+      favW = mk.homeWin; dogW = mk.awayWin;
+    } else {
+      favName = away.name.split(" ")[0]; dogName = home.name.split(" ")[0];
+      favW = mk.awayWin; dogW = mk.homeWin;
+    }
+    const gap = favW - dogW;
+    const dogUnbeaten = dogW + drawP;
+    const index = Math.round((dogW + 0.5 * drawP) * 100);
+
+    let tag, color;
+    if (gap < 0.15) { tag = "势均力敌 / Even"; color = "var(--draw)"; }
+    else if (dogW >= 0.30) { tag = "高 / 极易爆冷"; color = "var(--away)"; }
+    else if (dogW >= 0.18) { tag = "中 / 有冷门可能"; color = "var(--draw)"; }
+    else if (dogW >= 0.10) { tag = "偏低 / 冷门较难"; color = "var(--accent)"; }
+    else { tag = "极低 / 大热稳胆"; color = "var(--value)"; }
+
+    $("upsetScore").textContent = index;
+    $("upsetScore").style.color = color;
+    $("upsetTag").textContent = tag;
+    $("upsetTag").style.color = color;
+    $("upFav").textContent = `${favName} ${(favW*100).toFixed(1)}%`;
+    $("upDog").textContent = `${dogName} ${(dogW*100).toFixed(1)}%`;
+    $("upDogWin").textContent = (dogW*100).toFixed(1) + "%";
+    $("upDogUnbeaten").textContent = (dogUnbeaten*100).toFixed(1) + "%";
+    $("upGap").textContent = (gap*100).toFixed(1) + "%";
   }
 
   function renderStrength(home, away, lh, la) {
@@ -942,10 +990,25 @@
     return { cls:"lb-soon", txt:"未开赛", live:false, done:false };
   }
 
+  const pad2 = n => String(n).padStart(2, "0");
+
+  // Source API kickoff times are in North-American time (UTC-6, e.g. Mexico City).
+  // Calibrated against the opener: source "06/11 13:00" => Beijing "06/12 03:00" (+14h).
+  // Returns a Date whose UTC fields equal the Beijing (UTC+8) wall-clock time.
+  const BEIJING_OFFSET_HOURS = 14;
+  function toBeijing(s) {
+    if (!s) return new Date(0);
+    const [d, t] = s.split(" ");
+    const [mm, dd, yyyy] = (d || "").split("/").map(Number);
+    const [hh, mi] = (t || "00:00").split(":").map(Number);
+    const ms = Date.UTC(yyyy || 2026, (mm || 1) - 1, dd || 1, hh || 0, mi || 0) + BEIJING_OFFSET_HOURS * 3600 * 1000;
+    return new Date(ms);
+  }
+
   function fixtureLabel(fx) {
-    const d = fx.date.split(" ")[0].split("/"); // MM/DD/YYYY
-    const dt = d[0] + "/" + d[1];
-    const tm = fx.date.split(" ")[1] || "";
+    const b = toBeijing(fx.date);
+    const dt = `${pad2(b.getUTCMonth() + 1)}/${pad2(b.getUTCDate())}`;
+    const tm = `${pad2(b.getUTCHours())}:${pad2(b.getUTCMinutes())}`;
     let scoreTag = "";
     const st = statusOf(fx);
     if (st.done) scoreTag = `  ${fx.hs}-${fx.as} 完`;
@@ -953,13 +1016,58 @@
     return `${dt} ${tm}  ${teamName(fx.home)} vs ${teamName(fx.away)} [${fx.group}]${scoreTag}`;
   }
 
+  // Sortable timestamp (Beijing-based, monotonic with real kickoff order)
+  function parseKickoff(s) { return toBeijing(s).getTime(); }
+
+  function validFx(fx) {
+    return fx.home !== "0" && fx.away !== "0" && fx.home && fx.away;
+  }
+
+  // Keep the fixture list in a stable chronological order (kickoff time, then id)
+  function sortFixtures() {
+    fixtures.sort((a, b) => parseKickoff(a.date) - parseKickoff(b.date) || (+a.id - +b.id));
+  }
+
+  // Beijing-time date key "MM/DD/YYYY" (so grouping/filtering matches displayed times)
+  function dateKey(fx) {
+    const b = toBeijing(fx.date);
+    return `${pad2(b.getUTCMonth() + 1)}/${pad2(b.getUTCDate())}/${b.getUTCFullYear()}`;
+  }
+
+  function dateLabel(k) {
+    const [mm, dd, yyyy] = k.split("/").map(Number);
+    const wd = ["周日","周一","周二","周三","周四","周五","周六"][new Date(Date.UTC(yyyy, mm - 1, dd)).getUTCDay()];
+    return `${pad2(mm)}/${pad2(dd)} ${wd}`;
+  }
+
+  function buildDateSelect() {
+    const prev = $("dateSelect").value;
+    const seen = new Set();
+    const dates = [];
+    fixtures.filter(validFx).forEach(fx => {
+      const k = dateKey(fx);
+      if (k && !seen.has(k)) { seen.add(k); dates.push(k); } // fixtures already sorted -> chronological
+    });
+    const opts = ['<option value="">全部日期 / All Dates</option>']
+      .concat(dates.map(k => `<option value="${k}">${dateLabel(k)}</option>`));
+    $("dateSelect").innerHTML = opts.join("");
+    if (prev && seen.has(prev)) $("dateSelect").value = prev; // preserve selection
+  }
+
   function buildFixtureSelect() {
-    const prev = $("fixtureSelect").value; // preserve current selection across refreshes
-    const valid = fixtures.filter(fx => fx.home !== "0" && fx.away !== "0" && fx.home && fx.away);
+    const prev = $("fixtureSelect").value;     // preserve current selection across refreshes
+    const dateF = $("dateSelect").value;        // active date filter (empty = all)
+    let valid = fixtures.filter(validFx);
+    if (dateF) valid = valid.filter(fx => dateKey(fx) === dateF);
     const opts = ['<option value="">-- 选择一场真实比赛 --</option>']
       .concat(valid.map(fx => `<option value="${fx.id}">${fixtureLabel(fx)}</option>`));
     $("fixtureSelect").innerHTML = opts.join("");
-    if (prev) $("fixtureSelect").value = prev; // restore selection
+    if (prev && valid.some(fx => fx.id === prev)) $("fixtureSelect").value = prev; // restore if still visible
+  }
+
+  function onDateChange() {
+    buildFixtureSelect();
+    if (!$("fixtureSelect").value) { showLiveBanner(null); resetPrediction(); } // selection cleared by filter
   }
 
   function showLiveBanner(fx) {
@@ -999,6 +1107,8 @@
       if (!resp.ok) throw new Error("HTTP " + resp.status);
       const data = await resp.json();
       fixtures = (data.games || []).map(normalizeApiGame);
+      sortFixtures();
+      buildDateSelect();
       buildFixtureSelect();
       const liveCount = fixtures.filter(f => statusOf(f).live).length;
       setDataStatus("online", `实时数据已连接 · 共 ${fixtures.length} 场${liveCount?` · ${liveCount} 场进行中`:""} · ${new Date().toLocaleTimeString("zh-CN",{hour12:false})} 更新`);
@@ -1007,71 +1117,11 @@
       if (sel) showLiveBanner(fixtures.find(f => f.id === sel));
     } catch (err) {
       fixtures = FALLBACK.map(normalizeFallback);
+      sortFixtures();
+      buildDateSelect();
       buildFixtureSelect();
       setDataStatus("offline", "实时接口暂不可用,已载入内置赛程(无实时比分)。可点「刷新比分」重试。");
     }
-  }
-
-  /* ============================================================
-     LICENSE GATE — SHA-256 (pure JS, works on file://)
-     ============================================================ */
-  function sha256(ascii){
-    function r(v,a){return (v>>>a)|(v<<(32-a));}
-    var mp=Math.pow; var mw=mp(2,32); var res=''; var words=[]; var abl=ascii.length*8;
-    var hash=sha256.h=sha256.h||[]; var k=sha256.k=sha256.k||[]; var pc=k.length; var ic={};
-    for(var cand=2;pc<64;cand++){
-      if(!ic[cand]){ for(var i=0;i<313;i+=cand){ic[i]=cand;} hash[pc]=(mp(cand,.5)*mw)|0; k[pc++]=(mp(cand,1/3)*mw)|0; }
-    }
-    ascii+='\x80';
-    while(ascii.length%64-56)ascii+='\x00';
-    for(i=0;i<ascii.length;i++){ var j=ascii.charCodeAt(i); if(j>>8)return; words[i>>2]|=j<<((3-i)%4)*8; }
-    words[words.length]=((abl/mw)|0); words[words.length]=(abl);
-    for(j=0;j<words.length;){
-      var w=words.slice(j,j+=16); var oh=hash; hash=hash.slice(0,8);
-      for(i=0;i<64;i++){
-        var w15=w[i-15],w2=w[i-2]; var a=hash[0],e=hash[4];
-        var t1=hash[7]+(r(e,6)^r(e,11)^r(e,25))+((e&hash[5])^((~e)&hash[6]))+k[i]+(w[i]=i<16?w[i]:(w[i-16]+(r(w15,7)^r(w15,18)^(w15>>>3))+w[i-7]+(r(w2,17)^r(w2,19)^(w2>>>10)))|0);
-        var t2=(r(a,2)^r(a,13)^r(a,22))+((a&hash[1])^(a&hash[2])^(hash[1]&hash[2]));
-        hash=[(t1+t2)|0].concat(hash); hash[4]=(hash[4]+t1)|0;
-      }
-      for(i=0;i<8;i++){ hash[i]=(hash[i]+oh[i])|0; }
-    }
-    for(i=0;i<8;i++){ for(j=3;j+1;j--){ var b=(hash[i]>>(j*8))&255; res+=((b<16)?0:'')+b.toString(16); } }
-    return res;
-  }
-
-  const VALID_HASHES = [
-    "851cf8e43743e3f44438597b42da94c3280c9595fa179875377fc70794c19d60",
-    "bfb450955cccabfdd8ebbb6aabb635b5f04ba36f75c29dab6a7eab70ecf33069",
-    "f06fcccd240e1729a2326af766dbac6615bae06e0883f100bad0f4e27d8c3281"
-  ];
-  const LS_KEY = "wc2026_pro_unlocked";
-
-  function unlockUI() {
-    $("lockOverlay").classList.add("hidden");
-    $("lockedBody").classList.remove("locked-body");
-    $("lockStatus").style.display = "inline-flex";
-    computeValue();
-  }
-
-  function tryUnlock() {
-    const code = ($("licenseInput").value || "").trim();
-    if (!code) { $("lockErr").textContent = "请输入授权码"; return; }
-    if (VALID_HASHES.includes(sha256(code))) {
-      try { localStorage.setItem(LS_KEY, "1"); } catch(e) {}
-      $("lockErr").textContent = "";
-      unlockUI();
-    } else {
-      $("lockErr").textContent = "授权码无效,请检查后重试。";
-    }
-  }
-
-  function initLicense() {
-    let unlocked = false;
-    try { unlocked = localStorage.getItem(LS_KEY) === "1"; } catch(e) {}
-    if (unlocked) unlockUI();
-    $("unlockBtn").addEventListener("click", tryUnlock);
-    $("licenseInput").addEventListener("keydown", e => { if (e.key === "Enter") tryUnlock(); });
   }
 
   /* ---------- Event wiring ---------- */
@@ -1091,13 +1141,13 @@
   });
   $("homeTeam").addEventListener("change", resetPrediction);
   $("awayTeam").addEventListener("change", resetPrediction);
+  $("dateSelect").addEventListener("change", onDateChange);
   $("fixtureSelect").addEventListener("change", onFixtureChange);
   $("refreshBtn").addEventListener("click", loadFixtures);
   ["inHome","inDraw","inAway"].forEach(id => $(id).addEventListener("input", computeValue));
 
   /* ---------- Boot ---------- */
   buildOptions();
-  initLicense();
   resetPrediction(); // show 0:0 by default; reveal real prediction only on「开始分析」
   loadFixtures();
   setInterval(loadFixtures, 60000); // refresh live scores every 60s
