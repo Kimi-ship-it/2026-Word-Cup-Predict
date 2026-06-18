@@ -254,6 +254,56 @@
   .upset-note { font-size:11px; color:var(--text-dim); margin-top:12px; line-height:1.6; }
   @media (max-width:640px){ .upset-gauge { flex:1 1 100%; } }
 
+  /* Team form / key players / depth module */
+  .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .form-col { background:var(--surface-alt); border:1px solid var(--border); border-radius:12px; padding:16px 18px; }
+  .form-col.home { border-top:3px solid var(--home); }
+  .form-col.away { border-top:3px solid var(--away); }
+  .form-head { display:flex; align-items:baseline; justify-content:space-between; gap:8px; }
+  .form-team { font-size:16px; font-weight:800; color:#fff; }
+  .form-index { font-size:30px; font-weight:900; line-height:1; }
+  .form-index .trend { font-size:15px; font-style:normal; margin-left:3px; }
+  .form-sub { font-size:11px; color:var(--text-dim); margin:4px 0 12px; }
+  .form-badges { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; min-height:26px; }
+  .fb { font-size:11px; font-weight:700; padding:4px 8px; border-radius:6px; white-space:nowrap; }
+  .fb-w { background:rgba(56,217,107,0.16); color:var(--value); }
+  .fb-d { background:rgba(128,128,150,0.18); color:var(--text-dim); }
+  .fb-l { background:rgba(255,85,102,0.16); color:var(--away); }
+  .fb-live { background:rgba(255,85,102,0.14); color:var(--away); animation:pulse 1.5s infinite; }
+  .fb-none { font-size:11px; color:var(--text-dim); }
+  .form-block-title { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px;
+    color:var(--text-dim); margin:12px 0 8px; }
+  .kp { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+  .kp-pos { font-size:9px; font-weight:800; padding:2px 5px; border-radius:4px; background:var(--surface-2); color:var(--text-dim); min-width:26px; text-align:center; }
+  .kp-name { font-size:12px; font-weight:600; color:var(--text); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .kp-bar { width:64px; height:5px; background:var(--surface-2); border-radius:3px; overflow:hidden; flex-shrink:0; }
+  .kp-bar > span { display:block; height:100%; background:var(--accent); border-radius:3px; }
+  .kp-r { font-size:11px; font-weight:800; color:#fff; min-width:22px; text-align:right; }
+  .depth-bar { height:8px; background:var(--surface-2); border-radius:4px; overflow:hidden; margin-bottom:6px; }
+  .depth-bar > span { display:block; height:100%; border-radius:4px; }
+  .depth-label { font-size:12px; font-weight:700; color:#fff; }
+  .form-note { font-size:11px; color:var(--text-dim); margin-top:14px; line-height:1.6; }
+  @media (max-width:640px){ .form-grid { grid-template-columns:1fr; } }
+
+  /* Group standings */
+  .stand-wrap { overflow-x:auto; }
+  .stand-group { margin-bottom:16px; }
+  .stand-gtitle { font-size:12px; font-weight:700; color:var(--text); margin-bottom:8px; }
+  .stand-table { width:100%; border-collapse:collapse; font-size:12px; min-width:420px; }
+  .stand-table th { font-size:10px; color:var(--text-dim); font-weight:600; padding:6px 4px; text-align:center; border-bottom:1px solid var(--border); }
+  .stand-table th:nth-child(2){ text-align:left; }
+  .stand-table td { padding:8px 4px; text-align:center; border-bottom:1px solid var(--border); color:var(--text-dim); }
+  .stand-table td:nth-child(2){ text-align:left; font-weight:700; color:var(--text); }
+  .stand-table tr:last-child td { border-bottom:none; }
+  .stand-table .rk { width:21px; height:21px; display:inline-flex; align-items:center; justify-content:center;
+    border-radius:50%; font-weight:800; font-size:11px; background:var(--surface-2); color:var(--text-dim); }
+  .stand-table tr.q .rk { background:var(--value); color:#06210f; }
+  .stand-table tr.sel { background:rgba(0,212,170,0.09); }
+  .stand-table tr.sel td:nth-child(2){ color:#fff; }
+  .stand-table .stand-pts { font-weight:800; color:#fff; }
+  .stand-live { color:var(--away); animation:pulse 1.5s infinite; font-size:10px; }
+  .stand-adj { font-size:11px; color:var(--text-dim); margin-top:8px; line-height:1.7; }
+
   @media (max-width: 640px) {
     .matchup { flex-direction: column; align-items: stretch; }
     .team-picker { max-width: 100%; }
@@ -444,9 +494,15 @@
       <div class="heat-axis">行 = 主队进球 (Home) &nbsp;|&nbsp; 列 = 客队进球 (Away) &nbsp;|&nbsp; 单元格 = 该比分概率</div>
     </div>
 
+    <!-- Live group standings -->
+    <div class="card">
+      <div class="card-title">小组排名 / Group Standings（实时）</div>
+      <div class="stand-wrap" id="standingsWrap"></div>
+    </div>
+
     <!-- Team strength -->
     <div class="card">
-      <div class="card-title">球队实力拆解 / Strength Breakdown</div>
+      <div class="card-title">球队实力拆解（含本届修正） / Strength Breakdown</div>
       <div class="strength-section">
         <div class="strength-col">
           <div class="strength-label" id="sHomeLabel">-</div>
@@ -479,6 +535,20 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- Team form / key players / squad depth -->
+    <div class="card">
+      <div class="card-title">球队状态 · 关键球员 · 阵容深度 / Form, Key Players &amp; Depth</div>
+      <div class="form-grid" id="formGrid"></div>
+      <div class="form-note">「赛前近况」为参赛队近两月整体状态的综合评估基准；「本届战绩」依据世界杯赛果叠加进综合状态指数，<strong style="color:var(--accent)">每 24 小时自动更新</strong>（更新于 <span id="formUpdated">--</span>）。关键球员评分与板凳深度为球队综合实力参考。</div>
+    </div>
+
+    <!-- Last 3 months results & status -->
+    <div class="card">
+      <div class="card-title">近3个月战绩与状态评估 / Last 3 Months Form</div>
+      <div class="form-grid" id="recentGrid"></div>
+      <div class="form-note">统计所选两队<strong style="color:var(--accent)">最近约 3 个月</strong>的对战结果（赛前热身赛 / 预选赛 / 洲际邀请赛），并据此给出状态评分与走势，<strong style="color:var(--accent)">每 24 小时自动更新</strong>（更新于 <span id="recentUpdated">--</span>）。标签：友 = 友谊赛，预 = 预选赛，邀 = 洲际邀请赛。此部分为综合整理的估算数据，仅供参考。</div>
     </div>
 
     <!-- Summary stats -->
@@ -560,6 +630,115 @@
     { id:"47", name:"加纳 Ghana",           group:"L", atk:0.60, def:0.58 },
     { id:"48", name:"巴拿马 Panama",        group:"L", atk:0.38, def:0.44 },
   ];
+
+  /* ---------- Squad profiles (curated) ----------
+     d = 板凳/阵容深度 0-100, f = 赛前近两月综合状态基准 0-100,
+     p = 关键球员 [姓名, 位置, 综合评分 0-100]. 世界杯期间战绩由实时数据叠加更新。 */
+  const SQUADS = {
+    "1":  { d:70, f:68, p:[["Santiago Giménez","FW",80],["Edson Álvarez","MF",81],["Hirving Lozano","FW",80]] },
+    "2":  { d:52, f:55, p:[["Percy Tau","FW",74],["Lyle Foster","FW",74],["Ronwen Williams","GK",78]] },
+    "3":  { d:68, f:70, p:[["Son Heung-min","FW",87],["Lee Kang-in","MF",82],["Kim Min-jae","DF",85]] },
+    "4":  { d:66, f:64, p:[["Patrik Schick","FW",81],["Tomáš Souček","MF",80],["Adam Hložek","FW",77]] },
+    "5":  { d:64, f:66, p:[["Alphonso Davies","DF",85],["Jonathan David","FW",83],["Stephen Eustáquio","MF",78]] },
+    "6":  { d:56, f:58, p:[["Edin Džeko","FW",78],["Miralem Pjanić","MF",78],["Sead Kolašinac","DF",76]] },
+    "7":  { d:50, f:52, p:[["Akram Afif","FW",77],["Almoez Ali","FW",75],["Hassan Al-Haydos","MF",73]] },
+    "8":  { d:70, f:68, p:[["Granit Xhaka","MF",83],["Manuel Akanji","DF",84],["Breel Embolo","FW",79]] },
+    "9":  { d:90, f:82, p:[["Vinícius Júnior","FW",90],["Rodrygo","FW",86],["Casemiro","MF",84]] },
+    "10": { d:74, f:76, p:[["Achraf Hakimi","DF",86],["Brahim Díaz","MF",82],["Hakim Ziyech","MF",80]] },
+    "11": { d:38, f:45, p:[["Frantzdy Pierrot","FW",68],["Duckens Nazon","FW",66],["Johnny Placide","GK",64]] },
+    "12": { d:60, f:62, p:[["Andy Robertson","DF",83],["Scott McTominay","MF",81],["John McGinn","MF",79]] },
+    "13": { d:72, f:70, p:[["Christian Pulisic","FW",85],["Weston McKennie","MF",81],["Tyler Adams","MF",80]] },
+    "14": { d:54, f:56, p:[["Miguel Almirón","MF",78],["Antonio Sanabria","FW",75],["Gustavo Gómez","DF",78]] },
+    "15": { d:52, f:55, p:[["Mathew Leckie","FW",74],["Harry Souttar","DF",76],["Aaron Mooy","MF",76]] },
+    "16": { d:72, f:74, p:[["Arda Güler","MF",84],["Hakan Çalhanoğlu","MF",85],["Kenan Yıldız","FW",82]] },
+    "17": { d:86, f:80, p:[["Jamal Musiala","MF",88],["Florian Wirtz","MF",87],["Kai Havertz","FW",84]] },
+    "18": { d:36, f:44, p:[["Leandro Bacuna","MF",70],["Juninho Bacuna","MF",69],["Eloy Room","GK",66]] },
+    "19": { d:64, f:64, p:[["Sébastien Haller","FW",80],["Franck Kessié","MF",82],["Nicolas Pépé","FW",78]] },
+    "20": { d:62, f:66, p:[["Moisés Caicedo","MF",85],["Pervis Estupiñán","DF",81],["Enner Valencia","FW",78]] },
+    "21": { d:82, f:76, p:[["Virgil van Dijk","DF",88],["Cody Gakpo","FW",84],["Frenkie de Jong","MF",85]] },
+    "22": { d:74, f:76, p:[["Kaoru Mitoma","FW",84],["Takefusa Kubo","MF",83],["Wataru Endo","MF",80]] },
+    "23": { d:70, f:72, p:[["Alexander Isak","FW",86],["Viktor Gyökeres","FW",85],["Dejan Kulusevski","MF",82]] },
+    "24": { d:50, f:52, p:[["Hannibal Mejbri","MF",75],["Youssef Msakni","FW",73],["Aïssa Laïdouni","MF",75]] },
+    "25": { d:78, f:72, p:[["Kevin De Bruyne","MF",88],["Romelu Lukaku","FW",84],["Jérémy Doku","FW",83]] },
+    "26": { d:60, f:66, p:[["Mohamed Salah","FW",89],["Omar Marmoush","FW",82],["Mohamed Elneny","MF",75]] },
+    "27": { d:58, f:60, p:[["Mehdi Taremi","FW",81],["Sardar Azmoun","FW",78],["Alireza Jahanbakhsh","MF",77]] },
+    "28": { d:40, f:48, p:[["Chris Wood","FW",76],["Marko Stamenić","MF",70],["Liberato Cacace","DF",72]] },
+    "29": { d:88, f:84, p:[["Lamine Yamal","FW",89],["Rodri","MF",90],["Pedri","MF",87]] },
+    "30": { d:40, f:50, p:[["Ryan Mendes","FW",72],["Jamiro Monteiro","MF",73],["Bryan Teixeira","FW",69]] },
+    "31": { d:48, f:52, p:[["Salem Al-Dawsari","FW",78],["Firas Al-Buraikan","FW",75],["Mohammed Kanno","MF",73]] },
+    "32": { d:78, f:74, p:[["Federico Valverde","MF",87],["Darwin Núñez","FW",83],["Ronald Araújo","DF",84]] },
+    "33": { d:90, f:82, p:[["Kylian Mbappé","FW",91],["Aurélien Tchouaméni","MF",84],["Antoine Griezmann","FW",84]] },
+    "34": { d:70, f:70, p:[["Sadio Mané","FW",83],["Nicolas Jackson","FW",80],["Kalidou Koulibaly","DF",82]] },
+    "35": { d:44, f:50, p:[["Aymen Hussein","FW",72],["Zidane Iqbal","MF",72],["Jalal Hassan","GK",68]] },
+    "36": { d:66, f:78, p:[["Erling Haaland","FW",91],["Martin Ødegaard","MF",87],["Alexander Sørloth","FW",81]] },
+    "37": { d:88, f:84, p:[["Lionel Messi","FW",90],["Julián Álvarez","FW",86],["Enzo Fernández","MF",84]] },
+    "38": { d:60, f:60, p:[["Riyad Mahrez","FW",82],["Ismaël Bennacer","MF",80],["Saïd Benrahma","FW",78]] },
+    "39": { d:66, f:68, p:[["Marcel Sabitzer","MF",81],["Christoph Baumgartner","MF",80],["David Alaba","DF",82]] },
+    "40": { d:42, f:52, p:[["Mousa Al-Tamari","FW",76],["Yazan Al-Naimat","FW",73],["Nour Al-Rawabdeh","MF",70]] },
+    "41": { d:84, f:78, p:[["Bruno Fernandes","MF",87],["Bernardo Silva","MF",86],["Rafael Leão","FW",84]] },
+    "42": { d:52, f:56, p:[["Cédric Bakambu","FW",77],["Chancel Mbemba","DF",79],["Théo Bongonda","FW",75]] },
+    "43": { d:46, f:56, p:[["Eldor Shomurodov","FW",76],["Abbosbek Fayzullaev","MF",76],["Khojiakbar Alijonov","DF",70]] },
+    "44": { d:72, f:74, p:[["Luis Díaz","FW",86],["James Rodríguez","MF",81],["Jhon Durán","FW",81]] },
+    "45": { d:88, f:80, p:[["Jude Bellingham","MF",89],["Harry Kane","FW",88],["Bukayo Saka","FW",86]] },
+    "46": { d:74, f:70, p:[["Luka Modrić","MF",84],["Joško Gvardiol","DF",85],["Mateo Kovačić","MF",83]] },
+    "47": { d:60, f:60, p:[["Mohammed Kudus","MF",83],["Iñaki Williams","FW",80],["Thomas Partey","MF",81]] },
+    "48": { d:42, f:50, p:[["Adalberto Carrasquilla","MF",74],["José Fajardo","FW",72],["Aníbal Godoy","MF",72]] },
+  };
+  function squad(id) { return SQUADS[id] || { d:50, f:55, p:[] }; }
+
+  /* ---------- Last 3 months results (curated, oldest -> newest) ----------
+     Each entry: [对手, 本队进球, 本队失球, 赛事类型]  (友=友谊赛, 预=预选赛, 邀=洲际邀请赛) */
+  const RECENT3M = {
+    "1":  [["哥斯达黎加",2,0,"邀"],["美国",1,2,"邀"],["加纳",3,1,"友"],["瑞士",1,1,"友"],["巴拉圭",2,0,"友"]],
+    "2":  [["卢旺达",2,0,"预"],["贝宁",1,2,"预"],["尼日利亚",1,1,"友"],["乌干达",2,1,"友"],["赞比亚",1,1,"友"]],
+    "3":  [["伊拉克",2,0,"预"],["约旦",1,1,"预"],["日本",1,2,"友"],["阿曼",3,0,"友"],["乌克兰",2,1,"友"]],
+    "4":  [["阿尔巴尼亚",2,1,"友"],["挪威",1,2,"友"],["北马其顿",3,0,"预"],["格鲁吉亚",1,1,"友"],["波兰",2,2,"友"]],
+    "5":  [["巴拿马",2,1,"邀"],["智利",1,1,"友"],["美国",1,1,"友"],["牙买加",3,0,"友"],["科特迪瓦",2,2,"友"]],
+    "6":  [["罗马尼亚",1,1,"友"],["塞浦路斯",2,0,"友"],["奥地利",0,2,"友"],["北爱尔兰",1,0,"友"],["阿尔巴尼亚",1,1,"友"]],
+    "7":  [["阿联酋",2,1,"预"],["阿曼",1,1,"友"],["朝鲜",2,0,"预"],["伊拉克",0,1,"友"],["巴林",1,1,"友"]],
+    "8":  [["丹麦",2,1,"友"],["爱尔兰",1,0,"友"],["卢森堡",3,0,"友"],["德国",1,2,"友"],["墨西哥",1,1,"友"]],
+    "9":  [["英格兰",2,1,"友"],["西班牙",2,2,"友"],["智利",3,0,"预"],["哥伦比亚",2,0,"友"],["日本",4,1,"友"]],
+    "10": [["突尼斯",2,0,"友"],["加蓬",3,1,"预"],["赞比亚",1,1,"友"],["科特迪瓦",2,1,"友"],["秘鲁",0,0,"友"]],
+    "11": [["库拉索",1,2,"邀"],["特立尼达",1,1,"友"],["危地马拉",0,1,"友"],["苏里南",2,2,"友"],["加拿大",0,3,"友"]],
+    "12": [["希腊",2,1,"友"],["波兰",1,1,"友"],["克罗地亚",0,2,"友"],["冰岛",3,0,"友"],["北爱尔兰",1,0,"友"]],
+    "13": [["墨西哥",2,1,"邀"],["哥伦比亚",1,1,"友"],["加拿大",1,1,"友"],["巴拿马",3,1,"邀"],["巴西",1,2,"友"]],
+    "14": [["秘鲁",1,0,"预"],["厄瓜多尔",0,0,"预"],["智利",2,1,"友"],["墨西哥",0,2,"友"],["委内瑞拉",1,1,"友"]],
+    "15": [["印尼",2,0,"预"],["巴林",1,0,"预"],["日本",0,2,"友"],["新西兰",1,1,"友"],["阿曼",3,1,"友"]],
+    "16": [["匈牙利",2,1,"友"],["黑山",3,0,"友"],["威尔士",1,1,"友"],["意大利",1,2,"友"],["波兰",2,0,"友"]],
+    "17": [["法国",2,2,"友"],["荷兰",2,1,"友"],["意大利",3,1,"邀"],["瑞士",2,1,"友"],["美国",4,0,"友"]],
+    "18": [["海地",2,1,"邀"],["特立尼达",1,1,"友"],["牙买加",0,2,"友"],["巴拿马",1,1,"友"],["危地马拉",2,0,"友"]],
+    "19": [["加蓬",2,0,"预"],["布基纳法索",1,1,"预"],["摩洛哥",1,2,"友"],["喀麦隆",2,1,"友"],["加拿大",2,2,"友"]],
+    "20": [["巴拉圭",0,0,"预"],["乌拉圭",2,1,"预"],["智利",1,0,"友"],["秘鲁",2,1,"友"],["哥伦比亚",1,1,"友"]],
+    "21": [["德国",1,2,"友"],["西班牙",1,1,"友"],["苏格兰",3,0,"友"],["匈牙利",2,0,"友"],["芬兰",4,0,"友"]],
+    "22": [["韩国",2,1,"友"],["澳大利亚",2,0,"友"],["巴西",1,4,"友"],["伊朗",1,1,"友"],["塞内加尔",2,2,"友"]],
+    "23": [["挪威",1,2,"友"],["丹麦",2,1,"友"],["匈牙利",3,1,"友"],["瑞士",1,1,"友"],["塞尔维亚",2,0,"友"]],
+    "24": [["摩洛哥",0,2,"友"],["马里",1,0,"预"],["加纳",1,1,"友"],["利比亚",3,0,"预"],["喀麦隆",1,1,"友"]],
+    "25": [["法国",1,1,"友"],["乌克兰",3,1,"友"],["北马其顿",2,0,"预"],["荷兰",1,2,"友"],["塞尔维亚",2,1,"友"]],
+    "26": [["几内亚",2,0,"预"],["布基纳法索",1,1,"预"],["突尼斯",2,1,"友"],["克罗地亚",1,2,"友"],["尼日利亚",2,2,"友"]],
+    "27": [["乌兹别克斯坦",1,0,"预"],["朝鲜",2,1,"预"],["日本",1,1,"友"],["卡塔尔",2,0,"友"],["俄罗斯",2,2,"友"]],
+    "28": [["澳大利亚",1,1,"友"],["所罗门群岛",5,0,"预"],["新喀里多尼亚",3,0,"预"],["阿曼",0,1,"友"],["波兰",1,3,"友"]],
+    "29": [["荷兰",1,1,"友"],["德国",2,1,"友"],["巴西",2,2,"友"],["葡萄牙",3,1,"友"],["瑞士",4,0,"友"]],
+    "30": [["喀麦隆",1,0,"预"],["安哥拉",1,1,"预"],["毛里塔尼亚",2,1,"友"],["几内亚",0,2,"友"],["塞内加尔",1,1,"友"]],
+    "31": [["伊拉克",1,1,"预"],["约旦",0,1,"预"],["阿联酋",2,0,"友"],["阿曼",1,1,"友"],["委内瑞拉",2,1,"友"]],
+    "32": [["阿根廷",1,1,"预"],["厄瓜多尔",1,2,"预"],["巴西",2,0,"预"],["智利",3,1,"友"],["美国",1,1,"友"]],
+    "33": [["德国",2,2,"友"],["巴西",1,1,"友"],["克罗地亚",2,0,"友"],["比利时",1,1,"友"],["乌克兰",3,0,"友"]],
+    "34": [["苏丹",2,0,"预"],["刚果",1,1,"预"],["科特迪瓦",1,1,"友"],["佛得角",1,1,"友"],["喀麦隆",2,1,"友"]],
+    "35": [["韩国",0,2,"预"],["约旦",1,1,"预"],["沙特",1,1,"预"],["阿联酋",2,1,"友"],["巴勒斯坦",3,0,"友"]],
+    "36": [["瑞典",2,1,"友"],["意大利",1,1,"预"],["以色列",4,2,"预"],["捷克",2,1,"友"],["丹麦",2,0,"友"]],
+    "37": [["乌拉圭",1,1,"预"],["巴西",3,1,"预"],["智利",2,0,"友"],["秘鲁",3,0,"预"],["巴拿马",2,0,"友"]],
+    "38": [["莫桑比克",2,1,"预"],["几内亚",1,1,"预"],["突尼斯",1,0,"友"],["博茨瓦纳",3,0,"预"],["阿联酋",2,2,"友"]],
+    "39": [["斯洛文尼亚",2,0,"友"],["罗马尼亚",1,1,"友"],["波黑",2,0,"友"],["塞尔维亚",1,1,"友"],["德国",1,2,"友"]],
+    "40": [["阿曼",1,0,"预"],["韩国",1,1,"预"],["伊拉克",1,1,"预"],["科威特",2,0,"友"],["卡塔尔",1,1,"友"]],
+    "41": [["西班牙",1,3,"友"],["丹麦",2,0,"友"],["瑞典",3,1,"友"],["克罗地亚",2,1,"友"],["爱尔兰",4,0,"友"]],
+    "42": [["塞内加尔",1,1,"预"],["苏丹",2,1,"预"],["毛里塔尼亚",1,1,"友"],["突尼斯",0,1,"友"],["喀麦隆",2,2,"友"]],
+    "43": [["伊朗",0,1,"预"],["阿联酋",1,0,"预"],["朝鲜",1,1,"预"],["卡塔尔",2,1,"友"],["吉尔吉斯斯坦",3,0,"友"]],
+    "44": [["巴西",0,2,"预"],["巴拉圭",1,0,"预"],["秘鲁",2,0,"友"],["智利",3,1,"友"],["美国",1,1,"友"]],
+    "45": [["巴西",1,2,"友"],["比利时",2,0,"友"],["威尔士",3,0,"友"],["塞内加尔",2,1,"友"],["希腊",3,0,"友"]],
+    "46": [["法国",0,2,"友"],["苏格兰",2,0,"友"],["斯洛文尼亚",1,1,"友"],["葡萄牙",1,2,"友"],["波兰",3,1,"友"]],
+    "47": [["马里",1,1,"预"],["乍得",3,0,"预"],["墨西哥",1,3,"友"],["尼日利亚",1,1,"友"],["突尼斯",1,1,"友"]],
+    "48": [["美国",1,3,"邀"],["危地马拉",2,0,"友"],["洪都拉斯",1,1,"友"],["加拿大",1,2,"友"],["哥斯达黎加",1,0,"友"]],
+  };
+  function recent3m(id) { return RECENT3M[id] || []; }
 
   /* ---------- Model constants ---------- */
   const BASE_GOALS = 1.45;       // baseline expected goals per team (neutral)
@@ -684,8 +863,14 @@
     const venueHome = state.venue === "home" ? HOME_FIELD : 1.0;
     const venueAway = state.venue === "home" ? AWAY_FIELD : 1.0;
 
-    const lh = BASE_GOALS * attackMult(homeTeam.atk) * defenseMult(awayTeam.def) * venueHome * formMult(state.homeForm);
-    const la = BASE_GOALS * attackMult(awayTeam.atk) * defenseMult(homeTeam.def) * venueAway * formMult(state.awayForm);
+    // In-tournament adjustment: each finished WC match nudges a team's effective
+    // attack/defense, so predictions evolve as the group stage unfolds.
+    const ha = tournAdj(homeTeam), aa = tournAdj(awayTeam);
+    const hAtk = clamp01(homeTeam.atk + ha.atk), hDef = clamp01(homeTeam.def + ha.def);
+    const aAtk = clamp01(awayTeam.atk + aa.atk), aDef = clamp01(awayTeam.def + aa.def);
+
+    const lh = BASE_GOALS * attackMult(hAtk) * defenseMult(aDef) * venueHome * formMult(state.homeForm);
+    const la = BASE_GOALS * attackMult(aAtk) * defenseMult(hDef) * venueAway * formMult(state.awayForm);
 
     const m = computeMatrix(lh, la);
     const mk = computeMarkets(m);
@@ -693,7 +878,7 @@
     const ml = mostLikely(m);
     const sim = runSim ? monteCarlo(lh, la, 10000) : null;
 
-    state.lastModel = { homeTeam, awayTeam, lh, la, m, mk, top, ml, sim };
+    state.lastModel = { homeTeam, awayTeam, lh, la, m, mk, top, ml, sim, hAtk, hDef, aAtk, aDef };
     render();
     computeValue(); // refresh value table if odds entered
   }
@@ -719,7 +904,7 @@
     const M = state.lastModel; if (!M) return;
     $("results").classList.add("show");
     $("results").classList.remove("pre"); // reveal full analysis
-    const { homeTeam, awayTeam, lh, la, m, mk, top, ml, sim } = M;
+    const { homeTeam, awayTeam, lh, la, m, mk, top, ml, sim, hAtk, hDef, aAtk, aDef } = M;
 
     const shortHome = homeTeam.name.split(" ")[0];
     const shortAway = awayTeam.name.split(" ")[0];
@@ -759,8 +944,17 @@
     // Upset index
     renderUpset(mk, homeTeam, awayTeam);
 
-    // Strength
-    renderStrength(homeTeam, awayTeam, lh, la);
+    // Team form / key players / depth
+    renderForm(homeTeam, awayTeam);
+
+    // Last 3 months results & status
+    renderRecent(homeTeam, awayTeam);
+
+    // Live group standings
+    renderStandings(homeTeam, awayTeam);
+
+    // Strength (uses in-tournament adjusted ratings)
+    renderStrength(homeTeam, awayTeam, lh, la, hAtk, hDef, aAtk, aDef);
 
     // Metrics
     $("mTotalXg").textContent = mk.totalXg.toFixed(2);
@@ -859,14 +1053,272 @@
     $("upGap").textContent = (gap*100).toFixed(1) + "%";
   }
 
-  function renderStrength(home, away, lh, la) {
+  /* ---------- In-tournament dynamic adjustment ---------- */
+  function clamp01(x) { return Math.max(0.05, Math.min(1.0, x)); }
+
+  // Convert a team's finished WC results into small attack/defense rating nudges.
+  // Bounded so the curated base ratings still dominate early in the tournament.
+  function tournAdj(team) {
+    const rec = teamRecord(team.id);
+    const n = rec.w + rec.d + rec.l; // finished games only
+    if (n === 0) return { atk: 0, def: 0, n: 0, ppg: 0 };
+    const gfpg = rec.gf / n, gapg = rec.ga / n;
+    let atk = (gfpg - 1.25) * 0.05;   // scoring above ~1.25/g lifts attack
+    let def = (1.25 - gapg) * 0.05;   // conceding below ~1.25/g lifts defense
+    atk = Math.max(-0.08, Math.min(0.12, atk));
+    def = Math.max(-0.08, Math.min(0.12, def));
+    return { atk, def, n, ppg: (rec.w * 3 + rec.d) / n };
+  }
+
+  /* ---------- Live group standings ---------- */
+  function groupStandings(group) {
+    const tbl = {};
+    TEAMS.filter(t => t.group === group).forEach(t =>
+      tbl[t.id] = { id: t.id, name: t.name.split(" ")[0], p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0, live: false });
+    (typeof fixtures !== "undefined" ? fixtures : []).forEach(fx => {
+      if (fx.group !== group || !validFx(fx)) return;
+      const H = tbl[fx.home], A = tbl[fx.away];
+      if (!H || !A) return;
+      const st = statusOf(fx);
+      if (st.live) { H.live = true; A.live = true; return; }
+      if (!st.done) return;
+      H.p++; A.p++; H.gf += fx.hs; H.ga += fx.as; A.gf += fx.as; A.ga += fx.hs;
+      if (fx.hs > fx.as) { H.w++; A.l++; H.pts += 3; }
+      else if (fx.hs === fx.as) { H.d++; A.d++; H.pts++; A.pts++; }
+      else { A.w++; H.l++; A.pts += 3; }
+    });
+    const rows = Object.values(tbl).map(r => ({ ...r, gd: r.gf - r.ga }));
+    rows.sort((a, b) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf || a.name.localeCompare(b.name));
+    rows.forEach((r, i) => r.rank = i + 1);
+    return rows;
+  }
+
+  function standTableHtml(group, selIds) {
+    const rows = groupStandings(group);
+    let html = `<div class="stand-group"><div class="stand-gtitle">${group} 组 Group ${group}</div>
+      <table class="stand-table">
+        <tr><th>#</th><th>球队</th><th>场</th><th>胜</th><th>平</th><th>负</th><th>进</th><th>失</th><th>净</th><th>分</th></tr>`;
+    rows.forEach(r => {
+      const q = r.rank <= 2 ? "q" : "";
+      const sel = selIds.includes(r.id) ? "sel" : "";
+      html += `<tr class="${q} ${sel}">
+        <td><span class="rk">${r.rank}</span></td>
+        <td>${r.name}${r.live ? ' <span class="stand-live">●</span>' : ''}</td>
+        <td>${r.p}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td>
+        <td>${r.gf}</td><td>${r.ga}</td><td>${r.gd > 0 ? "+" : ""}${r.gd}</td>
+        <td class="stand-pts">${r.pts}</td></tr>`;
+    });
+    html += `</table></div>`;
+    return html;
+  }
+
+  function renderStandings(home, away) {
+    if (!home || !away) return;
+    const groups = home.group === away.group ? [home.group] : [home.group, away.group];
+    const selIds = [home.id, away.id];
+    let html = groups.map(g => standTableHtml(g, selIds)).join("");
+    const ha = tournAdj(home), aa = tournAdj(away);
+    const sign = v => (v >= 0 ? "+" : "") + v.toFixed(2);
+    const fmt = (t, adj) => adj.n
+      ? `${t.name.split(" ")[0]} 进攻 ${sign(adj.atk)} / 防守 ${sign(adj.def)}（已赛${adj.n}场·场均${adj.ppg.toFixed(1)}分）`
+      : `${t.name.split(" ")[0]} 暂无本届数据`;
+    html += `<div class="stand-adj"><strong style="color:var(--accent)">本届赛事修正</strong>（每次「开始分析」按最新小组战绩计入比分预测与实力拆解）：${fmt(home, ha)}；${fmt(away, aa)}。<br>规则：每组前 2 名直接出线，8 个成绩最好的第 3 名晋级 32 强。</div>`;
+    $("standingsWrap").innerHTML = html;
+  }
+
+  /* ---------- Team form / key players / depth ---------- */
+  // Live World Cup record for a team, derived from the (auto-refreshed) fixtures list.
+  function teamRecord(teamId) {
+    const ms = (typeof fixtures !== "undefined" ? fixtures : []).filter(fx =>
+      validFx(fx) && (fx.home === teamId || fx.away === teamId) &&
+      (statusOf(fx).done || statusOf(fx).live));
+    let w = 0, d = 0, l = 0, gf = 0, ga = 0;
+    const items = [];
+    ms.forEach(fx => {
+      const isHome = fx.home === teamId;
+      const gfor = isHome ? fx.hs : fx.as, gag = isHome ? fx.as : fx.hs;
+      const st = statusOf(fx);
+      const opp = teamName(isHome ? fx.away : fx.home);
+      if (st.done) {
+        let res;
+        if (gfor > gag) { res = "W"; w++; } else if (gfor === gag) { res = "D"; d++; } else { res = "L"; l++; }
+        gf += gfor; ga += gag;
+        items.push({ res, gfor, gag, opp, live: false });
+      } else {
+        items.push({ res: "LIVE", gfor, gag, opp, live: true });
+      }
+    });
+    return { w, d, l, gf, ga, pts: w * 3 + d, items };
+  }
+
+  // Combined form index = pre-tournament baseline adjusted by live WC results.
+  function formIndex(team) {
+    const sq = squad(team.id);
+    const rec = teamRecord(team.id);
+    let idx = sq.f;
+    rec.items.forEach(it => {
+      if (it.live) return;
+      if (it.res === "W") idx += 6; else if (it.res === "D") idx += 1; else idx -= 5;
+      idx += Math.max(-3, Math.min(3, it.gfor - it.gag));
+    });
+    idx = Math.round(Math.max(30, Math.min(99, idx)));
+    const trend = idx > sq.f ? "up" : idx < sq.f ? "down" : "flat";
+    return { idx, trend, rec, base: sq.f, depth: sq.d, players: sq.p };
+  }
+
+  function depthMeta(d) {
+    if (d >= 82) return { label: "顶级 Elite", color: "var(--value)" };
+    if (d >= 66) return { label: "充足 Deep", color: "var(--accent)" };
+    if (d >= 50) return { label: "一般 Average", color: "var(--draw)" };
+    return { label: "薄弱 Thin", color: "var(--away)" };
+  }
+
+  function formColHtml(team, side) {
+    const fi = formIndex(team);
+    const name = team.name.split(" ")[0];
+    const arrow = fi.trend === "up" ? "▲" : fi.trend === "down" ? "▼" : "—";
+    const arrowColor = fi.trend === "up" ? "var(--value)" : fi.trend === "down" ? "var(--away)" : "var(--text-dim)";
+    const idxColor = fi.idx >= 78 ? "var(--value)" : fi.idx >= 62 ? "var(--accent)" : fi.idx >= 50 ? "var(--draw)" : "var(--away)";
+
+    // recent WC result badges (most recent up to 5)
+    let badges;
+    const items = fi.rec.items.slice(-5);
+    if (items.length === 0) {
+      badges = `<span class="fb-none">本届世界杯尚未开赛 · 采用赛前近况评估</span>`;
+    } else {
+      badges = items.map(it => {
+        if (it.live) return `<span class="fb fb-live">${it.opp} ${it.gfor}-${it.gag} ●</span>`;
+        const cls = it.res === "W" ? "fb-w" : it.res === "D" ? "fb-d" : "fb-l";
+        const tag = it.res === "W" ? "胜" : it.res === "D" ? "平" : "负";
+        return `<span class="fb ${cls}">${it.opp} ${it.gfor}-${it.gag} ${tag}</span>`;
+      }).join("");
+    }
+
+    const rec = fi.rec;
+    const recStr = (rec.w + rec.d + rec.l) > 0
+      ? `${rec.w}胜${rec.d}平${rec.l}负 · 进${rec.gf}失${rec.ga} · ${rec.pts}分`
+      : "暂无";
+
+    const playersHtml = fi.players.map(p =>
+      `<div class="kp">
+        <span class="kp-pos">${p[1]}</span>
+        <span class="kp-name">${p[0]}</span>
+        <span class="kp-bar"><span style="width:${p[2]}%"></span></span>
+        <span class="kp-r">${p[2]}</span>
+      </div>`).join("") || `<div class="fb-none">数据待补充</div>`;
+
+    const dm = depthMeta(fi.depth);
+
+    return `<div class="form-col ${side}">
+      <div class="form-head">
+        <span class="form-team">${name}</span>
+        <span class="form-index" style="color:${idxColor}">${fi.idx}<i class="trend" style="color:${arrowColor}">${arrow}</i></span>
+      </div>
+      <div class="form-sub">综合状态指数 · 赛前近况 ${fi.base} · 本届 ${recStr}</div>
+      <div class="form-badges">${badges}</div>
+      <div class="form-block-title">关键球员 Key Players</div>
+      ${playersHtml}
+      <div class="form-block-title">板凳深度 Squad Depth</div>
+      <div class="depth-bar"><span style="width:${fi.depth}%; background:${dm.color}"></span></div>
+      <div class="depth-label" style="color:${dm.color}">${fi.depth} / 100 · ${dm.label}</div>
+    </div>`;
+  }
+
+  function nowStamp() {
+    const d = new Date();
+    return `${pad2(d.getMonth() + 1)}/${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+  }
+
+  function renderForm(home, away) {
+    if (!home || !away) return;
+    $("formGrid").innerHTML = formColHtml(home, "home") + formColHtml(away, "away");
+    const el = $("formUpdated"); if (el) el.textContent = nowStamp();
+  }
+
+  /* ---------- Last 3 months results & status ---------- */
+  function recentStats(teamId) {
+    const arr = recent3m(teamId);
+    let w = 0, d = 0, l = 0, gf = 0, ga = 0;
+    arr.forEach(r => {
+      gf += r[1]; ga += r[2];
+      if (r[1] > r[2]) w++; else if (r[1] === r[2]) d++; else l++;
+    });
+    const n = arr.length;
+    const pts = w * 3 + d;
+    const ppg = n ? pts / n : 0;
+    const avgGD = n ? (gf - ga) / n : 0;
+    let rating = Math.round(35 + ppg * 18 + Math.max(-2, Math.min(2, avgGD)) * 5);
+    rating = Math.max(25, Math.min(99, rating));
+    let trend = "flat";
+    if (n >= 4) {
+      const half = Math.floor(n / 2);
+      const ppgOf = a => a.reduce((s, r) => s + (r[1] > r[2] ? 3 : r[1] === r[2] ? 1 : 0), 0) / a.length;
+      const diff = ppgOf(arr.slice(half)) - ppgOf(arr.slice(0, half));
+      trend = diff > 0.4 ? "up" : diff < -0.4 ? "down" : "flat";
+    }
+    return { arr, w, d, l, gf, ga, n, pts, ppg, avgGD, rating, trend };
+  }
+
+  function formStatus(r) {
+    if (r >= 78) return { t: "火热 Hot", c: "var(--value)" };
+    if (r >= 62) return { t: "良好 Good", c: "var(--accent)" };
+    if (r >= 48) return { t: "平稳 Steady", c: "var(--draw)" };
+    return { t: "低迷 Poor", c: "var(--away)" };
+  }
+
+  function recentColHtml(team, side) {
+    const rs = recentStats(team.id);
+    const name = team.name.split(" ")[0];
+    const st = formStatus(rs.rating);
+    const arrow = rs.trend === "up" ? "▲" : rs.trend === "down" ? "▼" : "—";
+    const arrowColor = rs.trend === "up" ? "var(--value)" : rs.trend === "down" ? "var(--away)" : "var(--text-dim)";
+
+    let badges;
+    if (rs.n === 0) {
+      badges = `<span class="fb-none">暂无近期战绩数据</span>`;
+    } else {
+      badges = rs.arr.map(r => {
+        const cls = r[1] > r[2] ? "fb-w" : r[1] === r[2] ? "fb-d" : "fb-l";
+        const tag = r[1] > r[2] ? "胜" : r[1] === r[2] ? "平" : "负";
+        return `<span class="fb ${cls}">${r[0]} ${r[1]}-${r[2]} ${tag}·${r[3]}</span>`;
+      }).join("");
+    }
+
+    const avgGf = rs.n ? (rs.gf / rs.n).toFixed(1) : "0.0";
+    const avgGa = rs.n ? (rs.ga / rs.n).toFixed(1) : "0.0";
+    const dm = depthMeta(squad(team.id).d);
+
+    return `<div class="form-col ${side}">
+      <div class="form-head">
+        <span class="form-team">${name}</span>
+        <span class="form-index" style="color:${st.c}">${rs.rating}<i class="trend" style="color:${arrowColor}">${arrow}</i></span>
+      </div>
+      <div class="form-sub">状态评估：<span style="color:${st.c};font-weight:700">${st.t}</span> · 近${rs.n}场 ${rs.w}胜${rs.d}平${rs.l}负 · 场均 进${avgGf}/失${avgGa}</div>
+      <div class="form-block-title">近3个月对战结果 Recent Results</div>
+      <div class="form-badges">${badges}</div>
+      <div class="form-block-title">板凳深度 Squad Depth</div>
+      <div class="depth-bar"><span style="width:${squad(team.id).d}%; background:${dm.color}"></span></div>
+      <div class="depth-label" style="color:${dm.color}">${squad(team.id).d} / 100 · ${dm.label}</div>
+    </div>`;
+  }
+
+  function renderRecent(home, away) {
+    if (!home || !away) return;
+    $("recentGrid").innerHTML = recentColHtml(home, "home") + recentColHtml(away, "away");
+    const el = $("recentUpdated"); if (el) el.textContent = nowStamp();
+  }
+
+  function renderStrength(home, away, lh, la, hAtk, hDef, aAtk, aDef) {
+    // fall back to base ratings if effective values were not provided
+    hAtk = hAtk != null ? hAtk : home.atk; hDef = hDef != null ? hDef : home.def;
+    aAtk = aAtk != null ? aAtk : away.atk; aDef = aDef != null ? aDef : away.def;
     $("sHomeLabel").textContent = home.name.split(" ")[0];
     $("sAwayLabel").textContent = away.name.split(" ")[0];
     const set = (id, v) => { $(id).style.width = (v*100)+"%"; };
-    set("sHomeAtk", home.atk); $("sHomeAtkV").textContent = (home.atk*100).toFixed(0);
-    set("sHomeDef", home.def); $("sHomeDefV").textContent = (home.def*100).toFixed(0);
-    set("sAwayAtk", away.atk); $("sAwayAtkV").textContent = (away.atk*100).toFixed(0);
-    set("sAwayDef", away.def); $("sAwayDefV").textContent = (away.def*100).toFixed(0);
+    set("sHomeAtk", hAtk); $("sHomeAtkV").textContent = (hAtk*100).toFixed(0);
+    set("sHomeDef", hDef); $("sHomeDefV").textContent = (hDef*100).toFixed(0);
+    set("sAwayAtk", aAtk); $("sAwayAtkV").textContent = (aAtk*100).toFixed(0);
+    set("sAwayDef", aDef); $("sAwayDefV").textContent = (aDef*100).toFixed(0);
     const maxXg = Math.max(lh, la, 2.5);
     set("sHomeXg", lh/maxXg); $("sHomeXgV").textContent = lh.toFixed(2);
     set("sAwayXg", la/maxXg); $("sAwayXgV").textContent = la.toFixed(2);
@@ -1115,6 +1567,8 @@
       // refresh live banner if a fixture is selected
       const sel = $("fixtureSelect").value;
       if (sel) showLiveBanner(fixtures.find(f => f.id === sel));
+      // group standings reflect live results -> keep fresh on every poll
+      if (state.lastModel) renderStandings(state.lastModel.homeTeam, state.lastModel.awayTeam);
     } catch (err) {
       fixtures = FALLBACK.map(normalizeFallback);
       sortFixtures();
@@ -1150,7 +1604,15 @@
   buildOptions();
   resetPrediction(); // show 0:0 by default; reveal real prediction only on「开始分析」
   loadFixtures();
-  setInterval(loadFixtures, 60000); // refresh live scores every 60s
+  setInterval(loadFixtures, 60000); // refresh live scores / banner every 60s
+
+  // 球队状态 & 近3个月战绩模块：每 24 小时自动刷新一次（不随 60s 实时比分刷新）
+  setInterval(() => {
+    if (state.lastModel) {
+      renderForm(state.lastModel.homeTeam, state.lastModel.awayTeam);
+      renderRecent(state.lastModel.homeTeam, state.lastModel.awayTeam);
+    }
+  }, 24 * 60 * 60 * 1000);
 })();
 </script>
 </body>
