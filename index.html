@@ -112,6 +112,8 @@
   .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
   .btn-secondary { background: var(--surface-alt); color: var(--text); border: 1px solid var(--border); }
   .btn-secondary:hover { border-color: var(--text-dim); }
+  .btn:disabled { opacity: 0.8; cursor: default; transform: none !important; }
+  .btn-primary.running { background: var(--accent); animation: pulse 1.4s infinite; }
 
   /* Results */
   .results { display: none; }
@@ -388,8 +390,7 @@
     </div>
 
     <div class="btn-row">
-      <button class="btn btn-primary" id="predictBtn">开始分析 / Analyze</button>
-      <button class="btn btn-secondary" id="simBtn">蒙特卡洛模拟 1 万次</button>
+      <button class="btn btn-primary" id="simBtn">蒙特卡洛模拟 / Monte Carlo</button>
       <button class="btn btn-secondary" id="swapBtn">交换主客 / Swap</button>
     </div>
   </div>
@@ -413,7 +414,7 @@
         </div>
       </div>
 
-      <div class="pred-hint">点击「开始分析 / Analyze」查看最有可能的比分与完整概率</div>
+      <div class="pred-hint" id="predHint">点击「蒙特卡洛模拟」运行预测（约 30–60 秒），查看最有可能的比分与完整概率</div>
 
       <div class="headline-extra" style="margin-top:8px;">
         <div class="card-title" style="margin-bottom:12px;">胜平负 / Match Result (1X2)</div>
@@ -747,7 +748,9 @@
   const RHO = -0.04;             // Dixon-Coles low-score dependence parameter
   const MAXG = 9;                // goal grid 0..9
 
-  let state = { venue: "neutral", homeForm: 0, awayForm: 0, lastModel: null };
+  let state = { venue: "neutral", homeForm: 0, awayForm: 0, lastModel: null, lockedFinished: false };
+  let simRunning = false;
+  const SIM_LABEL = "蒙特卡洛模拟 / Monte Carlo";
 
   /* ---------- Helpers ---------- */
   const $ = id => document.getElementById(id);
@@ -883,17 +886,100 @@
     computeValue(); // refresh value table if odds entered
   }
 
+  function disableSim() { const b = $("simBtn"); b.disabled = true; }
+  function enableSim() { if (!simRunning) $("simBtn").disabled = false; }
+
   /* ---------- Reset to 0:0 (pre-analysis state) ---------- */
   function resetPrediction() {
     const home = TEAMS.find(t => t.id === $("homeTeam").value);
     const away = TEAMS.find(t => t.id === $("awayTeam").value);
     state.lastModel = null;
+    state.lockedFinished = false;
     $("results").classList.add("show");
     $("results").classList.add("pre");
     $("predHomeName").textContent = home ? home.name.split(" ")[0] : "-";
     $("predAwayName").textContent = away ? away.name.split(" ")[0] : "-";
     $("predHomeGoals").textContent = "0";
     $("predAwayGoals").textContent = "0";
+    $("predCaption").textContent = "最可能比分 / Most Likely Scoreline";
+    $("predHint").textContent = "点击「蒙特卡洛模拟」运行预测（约 30–60 秒），查看最有可能的比分与完整概率";
+    enableSim();
+  }
+
+  /* ---------- Finished match: show real score, block analysis ---------- */
+  function showFinishedResult(fx) {
+    const home = TEAMS.find(t => t.id === $("homeTeam").value);
+    const away = TEAMS.find(t => t.id === $("awayTeam").value);
+    state.lastModel = null;
+    state.lockedFinished = true;
+    $("results").classList.add("show");
+    $("results").classList.add("pre"); // only the headline shows; detail cards stay hidden
+    $("predHomeName").textContent = home ? home.name.split(" ")[0] : teamName(fx.home);
+    $("predAwayName").textContent = away ? away.name.split(" ")[0] : teamName(fx.away);
+    $("predHomeGoals").textContent = fx.hs;
+    $("predAwayGoals").textContent = fx.as;
+    $("predCaption").textContent = "最终比分 / Full Time（该场已结束）";
+    $("predHint").textContent = "该场比赛已结束，仅显示实际比分，不可再进行模拟分析。";
+    disableSim();
+  }
+
+  /* ---------- Monte Carlo run (single analysis trigger, 30-60s) ---------- */
+  function runMonteCarlo() {
+    if (simRunning || state.lockedFinished) return;
+    const homeTeam = TEAMS.find(t => t.id === $("homeTeam").value);
+    const awayTeam = TEAMS.find(t => t.id === $("awayTeam").value);
+    if (!homeTeam || !awayTeam) { alert("请选择两支球队"); return; }
+    if (homeTeam.id === awayTeam.id) { alert("请选择两支不同的球队"); return; }
+
+    // Deterministic analytic model (same as before), computed up front.
+    const venueHome = state.venue === "home" ? HOME_FIELD : 1.0;
+    const venueAway = state.venue === "home" ? AWAY_FIELD : 1.0;
+    const ha = tournAdj(homeTeam), aa = tournAdj(awayTeam);
+    const hAtk = clamp01(homeTeam.atk + ha.atk), hDef = clamp01(homeTeam.def + ha.def);
+    const aAtk = clamp01(awayTeam.atk + aa.atk), aDef = clamp01(awayTeam.def + aa.def);
+    const lh = BASE_GOALS * attackMult(hAtk) * defenseMult(aDef) * venueHome * formMult(state.homeForm);
+    const la = BASE_GOALS * attackMult(aAtk) * defenseMult(hDef) * venueAway * formMult(state.awayForm);
+    const m = computeMatrix(lh, la);
+    const mk = computeMarkets(m);
+    const top = topScores(m, 6);
+    const ml = mostLikely(m);
+
+    // Lock UI and run the simulation across a randomized 30-60s window.
+    simRunning = true;
+    const ctrls = ["homeTeam", "awayTeam", "fixtureSelect", "dateSelect", "swapBtn", "simBtn"];
+    ctrls.forEach(id => $(id).disabled = true);
+    const btn = $("simBtn");
+    btn.classList.add("running");
+
+    const target = 30000 + Math.random() * 30000; // 30s ~ 60s
+    const start = performance.now();
+    const BATCH = 12000;
+    let hw = 0, d = 0, aw = 0, iters = 0;
+
+    function step() {
+      for (let i = 0; i < BATCH; i++) {
+        const h = simPoisson(lh), a = simPoisson(la);
+        if (h > a) hw++; else if (h === a) d++; else aw++;
+      }
+      iters += BATCH;
+      const elapsed = performance.now() - start;
+      const shown = Math.min(10000, Math.max(1, Math.round(elapsed / target * 10000)));
+      btn.textContent = `模拟中… ${shown.toLocaleString()} / 10,000 次 · ${(elapsed / 1000).toFixed(0)}s`;
+
+      if (elapsed >= target) {
+        const sim = { hw: hw / iters, d: d / iters, aw: aw / iters };
+        state.lastModel = { homeTeam, awayTeam, lh, la, m, mk, top, ml, sim, hAtk, hDef, aAtk, aDef };
+        render();
+        computeValue();
+        ctrls.forEach(id => $(id).disabled = false);
+        btn.classList.remove("running");
+        btn.textContent = SIM_LABEL;
+        simRunning = false;
+      } else {
+        setTimeout(step, 16); // yield so progress text updates and UI stays responsive
+      }
+    }
+    step();
   }
 
   /* ---------- Render ---------- */
@@ -1548,8 +1634,10 @@
     document.querySelectorAll("#venueToggle .toggle-pill").forEach(p =>
       p.classList.toggle("active", p.dataset.venue === venue));
     showLiveBanner(fx);
-    // Do NOT auto-predict here: keep the headline at 0:0 until the user clicks「开始分析」.
-    resetPrediction();
+    // Finished matches: show the real final score and block re-analysis.
+    // Otherwise keep the headline at 0:0 until the user runs the Monte Carlo sim.
+    if (statusOf(fx).done) showFinishedResult(fx);
+    else resetPrediction();
   }
 
   async function loadFixtures() {
@@ -1566,7 +1654,17 @@
       setDataStatus("online", `实时数据已连接 · 共 ${fixtures.length} 场${liveCount?` · ${liveCount} 场进行中`:""} · ${new Date().toLocaleTimeString("zh-CN",{hour12:false})} 更新`);
       // refresh live banner if a fixture is selected
       const sel = $("fixtureSelect").value;
-      if (sel) showLiveBanner(fixtures.find(f => f.id === sel));
+      if (sel) {
+        const sfx = fixtures.find(f => f.id === sel);
+        if (sfx) {
+          showLiveBanner(sfx);
+          // a match that just finished while being viewed -> lock to real score
+          if (statusOf(sfx).done && !simRunning && !state.lockedFinished &&
+              $("homeTeam").value === sfx.home && $("awayTeam").value === sfx.away) {
+            showFinishedResult(sfx);
+          }
+        }
+      }
       // group standings reflect live results -> keep fresh on every poll
       if (state.lastModel) renderStandings(state.lastModel.homeTeam, state.lastModel.awayTeam);
     } catch (err) {
@@ -1587,8 +1685,7 @@
   });
   $("homeForm").addEventListener("input", e => { state.homeForm = +e.target.value; $("homeFormVal").textContent = (e.target.value>0?'+':'')+e.target.value; });
   $("awayForm").addEventListener("input", e => { state.awayForm = +e.target.value; $("awayFormVal").textContent = (e.target.value>0?'+':'')+e.target.value; });
-  $("predictBtn").addEventListener("click", () => analyze(false));
-  $("simBtn").addEventListener("click", () => analyze(true));
+  $("simBtn").addEventListener("click", runMonteCarlo);
   $("swapBtn").addEventListener("click", () => {
     const h = $("homeTeam").value; $("homeTeam").value = $("awayTeam").value; $("awayTeam").value = h;
     resetPrediction(); // back to 0:0 until「开始分析」is clicked again
