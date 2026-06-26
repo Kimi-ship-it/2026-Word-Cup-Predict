@@ -92,7 +92,7 @@
   }
 
   /* Options row */
-  .options-row { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 20px; align-items: center; }
+  .options-row { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 22px; align-items: center; justify-content: center; }
   .opt-group { display: flex; flex-direction: column; gap: 6px; }
   .opt-group .opt-label { font-size: 11px; color: var(--text-dim); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
   .toggle-pills { display: flex; gap: 4px; background: var(--surface-alt); border-radius: 8px; padding: 3px; }
@@ -155,6 +155,22 @@
   .market-line .odd { font-size: 11px; color: var(--text-dim); min-width: 42px; text-align: right; }
   .market-line .bar { flex: 1; height: 5px; background: var(--surface-2); border-radius: 3px; margin: 0 10px; overflow: hidden; }
   .market-line .bar > span { display: block; height: 100%; background: var(--accent); border-radius: 3px; }
+
+  /* Asian handicap & goals board (screenshot-style, odds replaced by our probability) */
+  .ah-board { display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-start; }
+  .ah-sec { flex: 1 1 420px; min-width: 0; background: var(--surface-alt); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 16px 18px; overflow-x: auto; }
+  .ah-sec-title { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
+  .ah-table { border-collapse: separate; border-spacing: 6px; }
+  .ah-team, .ah-rowlabel { font-size: 13px; font-weight: 800; color: var(--text); white-space: nowrap;
+    text-align: left; padding-right: 8px; vertical-align: middle; }
+  .ah-cell { background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 9px 8px; text-align: center; min-width: 60px; }
+  .ah-line { font-size: 12px; color: var(--text-dim); font-weight: 600; margin-bottom: 5px; white-space: nowrap; }
+  .ah-prob { font-size: 16px; font-weight: 800; color: var(--accent); }
+  .ah-cell.best { border-color: rgba(56,217,107,0.5); background: var(--value-bg); }
+  .ah-cell.best .ah-prob { color: var(--value); }
+  .ah-note { font-size: 11px; color: var(--text-dim); margin-top: 14px; line-height: 1.7; }
 
   /* Top scores */
   .topscores { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
@@ -306,6 +322,46 @@
   .stand-live { color:var(--away); animation:pulse 1.5s infinite; font-size:10px; }
   .stand-adj { font-size:11px; color:var(--text-dim); margin-top:8px; line-height:1.7; }
 
+  /* Knockout bracket / qualification */
+  .ko-block-title { font-size:12px; font-weight:700; color:var(--text); margin:2px 0 12px; display:flex; align-items:center; gap:8px; }
+  .ko-block-title .ko-stamp { font-size:10px; font-weight:600; color:var(--text-dim); text-transform:none; letter-spacing:0; }
+  .ko-groups { display:grid; grid-template-columns:repeat(auto-fill, minmax(176px,1fr)); gap:10px; margin-bottom:6px; }
+  .ko-grp { background:var(--surface-alt); border:1px solid var(--border); border-radius:10px; padding:10px 12px; }
+  .ko-grp-h { font-size:11px; font-weight:800; color:var(--text-dim); margin-bottom:8px; letter-spacing:.5px; }
+  .ko-row { display:flex; align-items:center; gap:6px; font-size:12px; padding:3px 0; }
+  .ko-rk { width:16px; height:16px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;
+    font-size:9px; font-weight:800; background:var(--surface-2); color:var(--text-dim); flex-shrink:0; }
+  .ko-row.adv .ko-rk { background:var(--value); color:#06210f; }
+  .ko-row.adv3 .ko-rk { background:var(--accent); color:var(--bg); }
+  .ko-nm { flex:1; color:var(--text); font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .ko-row.out .ko-nm { color:var(--text-dim); }
+  .ko-tag { font-size:9px; font-weight:700; padding:1px 6px; border-radius:4px; white-space:nowrap; }
+  .ko-tag.t-adv { background:rgba(56,217,107,0.16); color:var(--value); }
+  .ko-tag.t-adv3 { background:rgba(0,212,170,0.14); color:var(--accent); }
+  .ko-tag.t-out { background:rgba(255,85,102,0.12); color:var(--away); }
+  .ko-third { font-size:11px; color:var(--text-dim); margin:8px 0 18px; line-height:1.8; }
+  .ko-third b { color:var(--accent); }
+  .ko-third .q { color:var(--value); font-weight:700; }
+
+  .ko-note { font-size:11px; color:var(--text-dim); margin-top:16px; line-height:1.7; }
+
+  /* Mirrored official bracket */
+  .kb-wrap { overflow-x:auto; padding:4px 2px 10px; }
+  .kb-bracket { display:flex; gap:10px; min-width:max-content; align-items:stretch; }
+  .kb-col { display:flex; flex-direction:column; min-width:128px; }
+  .kb-col-h { font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.5px;
+    color:var(--text-dim); text-align:center; margin-bottom:10px; flex:0 0 auto; }
+  .kb-col-body { flex:1 1 auto; display:flex; flex-direction:column; justify-content:space-around; gap:10px; }
+  .kb-match { background:var(--surface-alt); border:1px solid var(--border); border-radius:8px; padding:8px 10px; }
+  .kb-slot { font-size:12px; font-weight:700; color:var(--text); white-space:nowrap; }
+  .kb-slot.third { color:var(--accent); font-weight:600; }
+  .kb-slot.filled { color:var(--value); font-weight:800; }
+  .kb-src { font-size:9px; color:var(--text-dim); font-weight:600; margin-left:5px; }
+  .kb-vs { font-size:9px; color:var(--text-dim); font-weight:700; margin:3px 0; letter-spacing:.5px; }
+  .kb-num { font-size:9px; color:var(--text-dim); margin-top:6px; text-align:right; font-weight:600; }
+  .kb-final { background:rgba(255,215,0,0.06); border-color:rgba(255,215,0,0.4); }
+  .kb-final .kb-slot { color:var(--gold); }
+
   @media (max-width: 640px) {
     .matchup { flex-direction: column; align-items: stretch; }
     .team-picker { max-width: 100%; }
@@ -366,32 +422,18 @@
     </div>
 
     <div class="options-row">
-      <div class="opt-group">
+      <div class="opt-group" style="align-items:center; width:100%;">
         <span class="opt-label">场地 / Venue</span>
         <div class="toggle-pills" id="venueToggle">
           <button class="toggle-pill active" data-venue="neutral">中立场</button>
           <button class="toggle-pill" data-venue="home">主队主场</button>
-        </div>
-      </div>
-      <div class="opt-group" style="flex:1; min-width:220px;">
-        <span class="opt-label">主队近期状态 / Home Form</span>
-        <div class="slider-wrap">
-          <input type="range" id="homeForm" min="-20" max="20" value="0">
-          <span class="slider-val" id="homeFormVal">0</span>
-        </div>
-      </div>
-      <div class="opt-group" style="flex:1; min-width:220px;">
-        <span class="opt-label">客队近期状态 / Away Form</span>
-        <div class="slider-wrap">
-          <input type="range" id="awayForm" min="-20" max="20" value="0">
-          <span class="slider-val" id="awayFormVal">0</span>
+          <button class="toggle-pill" data-venue="away">客队主场</button>
         </div>
       </div>
     </div>
 
     <div class="btn-row">
       <button class="btn btn-primary" id="simBtn">蒙特卡洛模拟 / Monte Carlo</button>
-      <button class="btn btn-secondary" id="swapBtn">交换主客 / Swap</button>
     </div>
   </div>
 
@@ -441,16 +483,30 @@
       </div>
     </div>
 
+    <!-- Top scores -->
+    <div class="card">
+      <div class="card-title">最可能比分榜 Top 6 / Correct Score</div>
+      <div class="topscores" id="topScores"></div>
+    </div>
+
+    <!-- Score heatmap -->
+    <div class="card">
+      <div class="card-title">比分概率热力图 / Score Distribution Heatmap</div>
+      <table class="dist-table" id="distTable"></table>
+      <div class="heat-axis">行 = 主队进球 (Home) &nbsp;|&nbsp; 列 = 客队进球 (Away) &nbsp;|&nbsp; 单元格 = 该比分概率</div>
+    </div>
+
     <!-- Markets -->
     <div class="card">
       <div class="card-title">全盘口概率 / All Markets (含公平赔率)</div>
       <div class="markets-grid" id="marketsGrid"></div>
     </div>
 
-    <!-- Top scores -->
+    <!-- Asian handicap & goals board (our probability instead of odds) -->
     <div class="card">
-      <div class="card-title">最可能比分榜 Top 6 / Correct Score</div>
-      <div class="topscores" id="topScores"></div>
+      <div class="card-title">让球 · 进球盘口（赔率位置 = 我们的概率）/ Handicap &amp; Goals Board</div>
+      <div class="ah-board" id="ahBoard"></div>
+      <div class="ah-note">仿盘口排版：每个让球 / 大小球档位下方显示<strong style="color:var(--accent)">本模型计算的命中概率</strong>（取代博彩赔率）。让球含 1/4 球（如 -1.5/2 = -1.75）按上下两档各半计算，走盘按 0.5 计；同一档主客概率、同一档大小概率相加约为 100%。<span style="color:var(--value)">绿色高亮</span> = 该行概率最高的档位。盘口档位围绕模型预期让球与预期总进球自动生成。</div>
     </div>
 
     <!-- Upset index -->
@@ -488,17 +544,15 @@
       <table class="value-table" id="valueTable"></table>
     </div>
 
-    <!-- Score heatmap -->
+    <!-- Knockout bracket (official structure, hourly) -->
     <div class="card">
-      <div class="card-title">比分概率热力图 / Score Distribution Heatmap</div>
-      <table class="dist-table" id="distTable"></table>
-      <div class="heat-axis">行 = 主队进球 (Home) &nbsp;|&nbsp; 列 = 客队进球 (Away) &nbsp;|&nbsp; 单元格 = 该比分概率</div>
-    </div>
-
-    <!-- Live group standings -->
-    <div class="card">
-      <div class="card-title">小组排名 / Group Standings（实时）</div>
-      <div class="stand-wrap" id="standingsWrap"></div>
+      <div class="card-title">淘汰赛晋级图 / Knockout Bracket</div>
+      <div class="ko-block-title">出线形势 / Qualification<span class="ko-stamp" id="koStamp"></span></div>
+      <div class="ko-groups" id="koGroups"></div>
+      <div class="ko-third" id="koThird"></div>
+      <div class="ko-block-title">淘汰赛对阵 / Knockout Bracket（官方赛制 · 32 强 → 决赛）</div>
+      <div class="kb-wrap"><div class="kb-bracket" id="koBracket"></div></div>
+      <div class="ko-note">出线规则：每组前 2 名直接晋级，外加成绩最好的 8 个第 3 名，共 32 队进入淘汰赛。<strong style="color:var(--value)">出线形势</strong>依据实时小组排名计算（<strong style="color:var(--value)">绿</strong>=直接出线，<strong style="color:var(--accent)">青</strong>=最佳第三出线，<strong style="color:var(--away)">红</strong>=暂遭淘汰）。下方<strong style="color:var(--accent)">淘汰赛对阵</strong>为 FIFA 官方固定赛制（M73–M104），仅展示每场对阵双方，不做胜负推测。<strong style="color:var(--value)">已锁定名次的球队（小组全部赛完）会直接填入对应位置</strong>（绿色，后附原名额标签）；第三名待全部小组赛完后按官方可选组别填入；未定位置仍显示名额（小组名次 / 第三名组别组合 / 胜者编号）。本模块<strong style="color:var(--accent)">每 1 小时刷新</strong>。</div>
     </div>
 
     <!-- Team strength -->
@@ -863,8 +917,8 @@
     if (!homeTeam || !awayTeam) { alert("请选择两支球队"); return; }
     if (homeTeam.id === awayTeam.id) { alert("请选择两支不同的球队"); return; }
 
-    const venueHome = state.venue === "home" ? HOME_FIELD : 1.0;
-    const venueAway = state.venue === "home" ? AWAY_FIELD : 1.0;
+    const venueHome = state.venue === "home" ? HOME_FIELD : state.venue === "away" ? AWAY_FIELD : 1.0;
+    const venueAway = state.venue === "home" ? AWAY_FIELD : state.venue === "away" ? HOME_FIELD : 1.0;
 
     // In-tournament adjustment: each finished WC match nudges a team's effective
     // attack/defense, so predictions evolve as the group stage unfolds.
@@ -932,8 +986,8 @@
     if (homeTeam.id === awayTeam.id) { alert("请选择两支不同的球队"); return; }
 
     // Deterministic analytic model (same as before), computed up front.
-    const venueHome = state.venue === "home" ? HOME_FIELD : 1.0;
-    const venueAway = state.venue === "home" ? AWAY_FIELD : 1.0;
+    const venueHome = state.venue === "home" ? HOME_FIELD : state.venue === "away" ? AWAY_FIELD : 1.0;
+    const venueAway = state.venue === "home" ? AWAY_FIELD : state.venue === "away" ? HOME_FIELD : 1.0;
     const ha = tournAdj(homeTeam), aa = tournAdj(awayTeam);
     const hAtk = clamp01(homeTeam.atk + ha.atk), hDef = clamp01(homeTeam.def + ha.def);
     const aAtk = clamp01(awayTeam.atk + aa.atk), aDef = clamp01(awayTeam.def + aa.def);
@@ -946,7 +1000,7 @@
 
     // Lock UI and run the simulation across a randomized 30-60s window.
     simRunning = true;
-    const ctrls = ["homeTeam", "awayTeam", "fixtureSelect", "dateSelect", "swapBtn", "simBtn"];
+    const ctrls = ["homeTeam", "awayTeam", "fixtureSelect", "dateSelect", "simBtn"];
     ctrls.forEach(id => $(id).disabled = true);
     const btn = $("simBtn");
     btn.classList.add("running");
@@ -1016,6 +1070,9 @@
     // Markets grid
     renderMarkets(m, mk);
 
+    // Asian handicap & goals board (probability instead of odds)
+    renderAsianBoard(m, lh, la, homeTeam, awayTeam);
+
     // Top scores
     $("topScores").innerHTML = top.map((s,i) =>
       `<div class="topscore-item ${i===0?'rank1':''}">
@@ -1036,8 +1093,8 @@
     // Last 3 months results & status
     renderRecent(homeTeam, awayTeam);
 
-    // Live group standings
-    renderStandings(homeTeam, awayTeam);
+    // Knockout bracket (tournament-wide, hourly refresh)
+    renderKnockout();
 
     // Strength (uses in-tournament adjusted ratings)
     renderStrength(homeTeam, awayTeam, lh, la, hAtk, hDef, aAtk, aDef);
@@ -1087,6 +1144,100 @@
        <div class="market-box"><h4>双重机会 Double Chance</h4>${dcHtml}</div>
        <div class="market-box"><h4>进球特征 Goals</h4>${miscHtml}</div>
        <div class="market-box"><h4>零封 Clean Sheet</h4>${csHtml}</div>`;
+  }
+
+  /* ---------- Asian handicap & goals board (probability replaces odds) ---------- */
+  function roundQuarter(x) { return Math.round(x * 4) / 4; }
+
+  // Trim trailing .0 so 2.0 -> "2", keep 2.5 -> "2.5"
+  function nf(x) { const r = Math.round(x * 100) / 100; return Number.isInteger(r) ? String(r) : String(r); }
+
+  // Handicap label like screenshot: -2 / -1.5 (whole·half) or -1.5/2 (quarter = -1.75)
+  function fmtHcap(v) {
+    if (Math.abs(v) < 1e-9) return "0";
+    const sign = v < 0 ? "-" : "+";
+    const a = Math.abs(v);
+    if (Math.abs(Math.round(v * 2) - v * 2) < 1e-9) return sign + nf(a); // whole or half line
+    return sign + nf(a - 0.25) + "/" + nf(a + 0.25);                      // quarter line
+  }
+  // Total label: 3 / 2.5 (whole·half) or 2.5/3 (quarter = 2.75)
+  function fmtTotal(v) {
+    if (Math.abs(Math.round(v * 2) - v * 2) < 1e-9) return nf(v);
+    return nf(v - 0.25) + "/" + nf(v + 0.25);
+  }
+
+  // Settlement fraction for an adjusted margin/total: win=1, half-win=0.75, push=0.5,
+  // half-loss=0.25, loss=0. Unifies whole / half / quarter lines into one win-probability.
+  function ahSettle(adj) {
+    if (adj >= 0.5) return 1;
+    if (Math.abs(adj - 0.25) < 1e-9) return 0.75;
+    if (Math.abs(adj) < 1e-9) return 0.5;
+    if (Math.abs(adj + 0.25) < 1e-9) return 0.25;
+    return 0;
+  }
+  function ahHomeWin(m, hc) {
+    let p = 0;
+    for (let h = 0; h <= MAXG; h++)
+      for (let a = 0; a <= MAXG; a++) p += m[h][a] * ahSettle((h - a) + hc);
+    return p;
+  }
+  function ouWin(m, line, over) {
+    let p = 0;
+    for (let h = 0; h <= MAXG; h++)
+      for (let a = 0; a <= MAXG; a++) {
+        const t = h + a;
+        p += m[h][a] * ahSettle(over ? (t - line) : (line - t));
+      }
+    return p;
+  }
+
+  function renderAsianBoard(m, lh, la, home, away) {
+    const el = $("ahBoard"); if (!el) return;
+    const steps = [-0.5, -0.25, 0, 0.25, 0.5];
+
+    // Center the handicap on the model's expected margin (favourite gets a negative line).
+    const cH = roundQuarter(la - lh);
+    const hcaps = steps.map(d => cH + d);
+    // Center the total on the model's expected goals; keep lines positive.
+    const cT = Math.max(0.75, roundQuarter(lh + la));
+    const totals = steps.map(d => cT + d).filter(x => x >= 0.5);
+
+    const hName = home.name.split(" ")[0], aName = away.name.split(" ")[0];
+
+    const homeProbs = hcaps.map(hc => ahHomeWin(m, hc));
+    const awayProbs = homeProbs.map(p => 1 - p); // mirror line -> complementary settlement
+    const hMax = Math.max(...homeProbs), aMax = Math.max(...awayProbs);
+
+    const overProbs = totals.map(L => ouWin(m, L, true));
+    const underProbs = totals.map(L => ouWin(m, L, false));
+    const oMax = Math.max(...overProbs), uMax = Math.max(...underProbs);
+
+    const cell = (line, prob, best) =>
+      `<td class="ah-cell${best ? ' best' : ''}">
+        <div class="ah-line">${line}</div>
+        <div class="ah-prob">${(prob * 100).toFixed(1)}%</div>
+      </td>`;
+
+    const hcHome = hcaps.map((hc, i) => cell(fmtHcap(hc), homeProbs[i], homeProbs[i] === hMax)).join("");
+    const hcAway = hcaps.map((hc, i) => cell(fmtHcap(-hc), awayProbs[i], awayProbs[i] === aMax)).join("");
+    const ouOver = totals.map((L, i) => cell("大 " + fmtTotal(L), overProbs[i], overProbs[i] === oMax)).join("");
+    const ouUnder = totals.map((L, i) => cell("小 " + fmtTotal(L), underProbs[i], underProbs[i] === uMax)).join("");
+
+    el.innerHTML =
+      `<div class="ah-sec">
+         <div class="ah-sec-title">让球 / Handicap</div>
+         <table class="ah-table">
+           <tr><td class="ah-team">${hName}</td>${hcHome}</tr>
+           <tr><td class="ah-team">${aName}</td>${hcAway}</tr>
+         </table>
+       </div>
+       <div class="ah-sec">
+         <div class="ah-sec-title">进球：大 / 小 · Goals Over / Under</div>
+         <table class="ah-table">
+           <tr><td class="ah-rowlabel">大球 Over</td>${ouOver}</tr>
+           <tr><td class="ah-rowlabel">小球 Under</td>${ouUnder}</tr>
+         </table>
+       </div>`;
   }
 
   function renderHeatmap(m) {
@@ -1179,37 +1330,160 @@
     return rows;
   }
 
-  function standTableHtml(group, selIds) {
-    const rows = groupStandings(group);
-    let html = `<div class="stand-group"><div class="stand-gtitle">${group} 组 Group ${group}</div>
-      <table class="stand-table">
-        <tr><th>#</th><th>球队</th><th>场</th><th>胜</th><th>平</th><th>负</th><th>进</th><th>失</th><th>净</th><th>分</th></tr>`;
-    rows.forEach(r => {
-      const q = r.rank <= 2 ? "q" : "";
-      const sel = selIds.includes(r.id) ? "sel" : "";
-      html += `<tr class="${q} ${sel}">
-        <td><span class="rk">${r.rank}</span></td>
-        <td>${r.name}${r.live ? ' <span class="stand-live">●</span>' : ''}</td>
-        <td>${r.p}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td>
-        <td>${r.gf}</td><td>${r.ga}</td><td>${r.gd > 0 ? "+" : ""}${r.gd}</td>
-        <td class="stand-pts">${r.pts}</td></tr>`;
+  /* ---------- Knockout bracket (hourly) ---------- */
+  // Current qualification picture from live standings: top-2 of each group + 8 best 3rds.
+  function qualificationData() {
+    const groups = [...new Set(TEAMS.map(t => t.group))].sort();
+    const perGroup = {};
+    const thirds = [];
+    groups.forEach(g => {
+      const rows = groupStandings(g);
+      perGroup[g] = rows;
+      const third = rows.find(r => r.rank === 3);
+      if (third) thirds.push({ ...third, group: g });
     });
-    html += `</table></div>`;
-    return html;
+    thirds.sort((a, b) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf || a.name.localeCompare(b.name));
+    const qualThirdIds = new Set(thirds.slice(0, 8).map(t => t.id));
+    return { groups, perGroup, thirds, qualThirdIds };
   }
 
-  function renderStandings(home, away) {
-    if (!home || !away) return;
-    const groups = home.group === away.group ? [home.group] : [home.group, away.group];
-    const selIds = [home.id, away.id];
-    let html = groups.map(g => standTableHtml(g, selIds)).join("");
-    const ha = tournAdj(home), aa = tournAdj(away);
-    const sign = v => (v >= 0 ? "+" : "") + v.toFixed(2);
-    const fmt = (t, adj) => adj.n
-      ? `${t.name.split(" ")[0]} 进攻 ${sign(adj.atk)} / 防守 ${sign(adj.def)}（已赛${adj.n}场·场均${adj.ppg.toFixed(1)}分）`
-      : `${t.name.split(" ")[0]} 暂无本届数据`;
-    html += `<div class="stand-adj"><strong style="color:var(--accent)">本届赛事修正</strong>（每次「开始分析」按最新小组战绩计入比分预测与实力拆解）：${fmt(home, ha)}；${fmt(away, aa)}。<br>规则：每组前 2 名直接出线，8 个成绩最好的第 3 名晋级 32 强。</div>`;
-    $("standingsWrap").innerHTML = html;
+  // A group is "locked" once all its (6) group-stage matches are finished, so 1st/2nd
+  // are confirmed and can be placed into the bracket.
+  function groupComplete(group) {
+    const ms = (typeof fixtures !== "undefined" ? fixtures : [])
+      .filter(fx => fx.group === group && validFx(fx));
+    return ms.length >= 6 && ms.every(fx => statusOf(fx).done);
+  }
+
+  // Assign the 8 best third-placed teams to the 8 official third-place slots, respecting
+  // each slot's allowed source groups (valid bipartite matching via backtracking).
+  function assignThirds(qThirds) {
+    const slots = Object.values(R32_SLOTS).flat()
+      .filter(s => /^3rd /.test(s))
+      .map(s => ({ s, allow: new Set(s.slice(4).split("/")) }));
+    const avail = qThirds.map(t => t.group);
+    const byGroup = {}; qThirds.forEach(t => { byGroup[t.group] = t.name; });
+    const result = {}, used = new Set();
+    const ordered = [...slots].sort((a, b) =>
+      avail.filter(g => a.allow.has(g)).length - avail.filter(g => b.allow.has(g)).length);
+    (function bt(i) {
+      if (i >= ordered.length) return true;
+      const { s, allow } = ordered[i];
+      for (const g of avail) {
+        if (used.has(g) || !allow.has(g)) continue;
+        used.add(g); result[s] = byGroup[g];
+        if (bt(i + 1)) return true;
+        used.delete(g); delete result[s];
+      }
+      return false;
+    })(0);
+    return result;
+  }
+
+  // Official FIFA 2026 Round-of-32 slots (match 73-88): [topSlot, bottomSlot]
+  const R32_SLOTS = {
+    73: ["A组第2", "B组第2"],
+    74: ["E组第1", "3rd A/B/C/D/F"],
+    75: ["F组第1", "C组第2"],
+    76: ["C组第1", "F组第2"],
+    77: ["I组第1", "3rd C/D/F/G/H"],
+    78: ["E组第2", "I组第2"],
+    79: ["A组第1", "3rd C/E/F/H/I"],
+    80: ["L组第1", "3rd E/H/I/J/K"],
+    81: ["D组第1", "3rd B/E/F/I/J"],
+    82: ["G组第1", "3rd A/E/H/I/J"],
+    83: ["K组第2", "L组第2"],
+    84: ["H组第1", "J组第2"],
+    85: ["B组第1", "3rd E/F/G/I/J"],
+    86: ["J组第1", "H组第2"],
+    87: ["K组第1", "3rd D/E/I/J/L"],
+    88: ["D组第2", "G组第2"],
+  };
+
+  // Official winner-feed tree. Left half feeds the final from the left, right from the right.
+  // Each column: list of [matchNo, topFeederNo, bottomFeederNo]; R32 columns list raw match numbers.
+  const BRACKET = {
+    left: [
+      { h: "1/16 决赛", r32: [74, 77, 73, 75, 83, 84, 81, 82] },
+      { h: "1/8 决赛", win: [[89, 74, 77], [90, 73, 75], [93, 83, 84], [94, 81, 82]] },
+      { h: "1/4 决赛", win: [[97, 89, 90], [98, 93, 94]] },
+      { h: "半决赛", win: [[101, 97, 98]] },
+    ],
+    final: { h: "决赛 Final", win: [[104, 101, 102]] },
+    right: [
+      { h: "半决赛", win: [[102, 99, 100]] },
+      { h: "1/4 决赛", win: [[99, 91, 92], [100, 95, 96]] },
+      { h: "1/8 决赛", win: [[91, 76, 78], [92, 79, 80], [95, 86, 88], [96, 85, 87]] },
+      { h: "1/16 决赛", r32: [76, 78, 79, 80, 86, 88, 85, 87] },
+    ],
+  };
+
+  function renderKnockout() {
+    const groupsEl = $("koGroups"); if (!groupsEl) return;
+    const { groups, perGroup, thirds, qualThirdIds } = qualificationData();
+
+    // Qualification grid (live)
+    groupsEl.innerHTML = groups.map(g => {
+      const rows = perGroup[g];
+      const rowsHtml = rows.map(r => {
+        let cls, tag;
+        if (r.rank <= 2) { cls = "adv"; tag = `<span class="ko-tag t-adv">出线</span>`; }
+        else if (r.rank === 3 && qualThirdIds.has(r.id)) { cls = "adv3"; tag = `<span class="ko-tag t-adv3">最佳三</span>`; }
+        else { cls = "out"; tag = `<span class="ko-tag t-out">淘汰</span>`; }
+        return `<div class="ko-row ${cls}">
+          <span class="ko-rk">${r.rank}</span>
+          <span class="ko-nm">${r.name}${r.live ? ' <span class="stand-live">●</span>' : ''}</span>
+          ${tag}</div>`;
+      }).join("");
+      return `<div class="ko-grp"><div class="ko-grp-h">${g} 组 Group ${g}</div>${rowsHtml}</div>`;
+    }).join("");
+
+    // Third-place race (live)
+    $("koThird").innerHTML = `<b>最佳第三名排名 Best 3rd-Place（取前 8）：</b>` +
+      thirds.map((t, i) => {
+        const qualified = i < 8;
+        return `<span class="${qualified ? 'q' : ''}">${i + 1}.${t.name}(${t.group}组·${t.pts}分${t.gd >= 0 ? '+' : ''}${t.gd})${qualified ? '✓' : ''}</span>`;
+      }).join(" &nbsp; ");
+
+    // Static official bracket; fill in teams already locked into the knockout stage.
+    const complete = {}; groups.forEach(g => { complete[g] = groupComplete(g); });
+    const allComplete = groups.every(g => complete[g]);
+    const thirdAssign = allComplete ? assignThirds(thirds.slice(0, 8)) : {};
+
+    const isThird = s => /^3rd/.test(s);
+    function slotTeam(s) {
+      const wr = s.match(/^([A-L])组第([12])$/);
+      if (wr) {
+        if (!complete[wr[1]]) return null;
+        const row = perGroup[wr[1]].find(r => r.rank === +wr[2]);
+        return row ? row.name : null;
+      }
+      if (isThird(s)) return thirdAssign[s] || null;
+      return null; // 胜者 M.. slots stay as labels (no prediction)
+    }
+    function slotHtml(s) {
+      const team = slotTeam(s);
+      if (team) return `<div class="kb-slot filled">${team}<span class="kb-src">${s}</span></div>`;
+      return `<div class="kb-slot${isThird(s) ? ' third' : ''}">${s}</div>`;
+    }
+    function box(top, bottom, no, isFinal) {
+      return `<div class="kb-match${isFinal ? ' kb-final' : ''}">
+        ${slotHtml(top)}<div class="kb-vs">VS</div>${slotHtml(bottom)}
+        <div class="kb-num">M${no}</div></div>`;
+    }
+    function colHtml(col, isFinal) {
+      let body;
+      if (col.r32) body = col.r32.map(n => box(R32_SLOTS[n][0], R32_SLOTS[n][1], n)).join("");
+      else body = col.win.map(([no, a, b]) => box("胜者 M" + a, "胜者 M" + b, no, isFinal)).join("");
+      return `<div class="kb-col"><div class="kb-col-h">${col.h}</div><div class="kb-col-body">${body}</div></div>`;
+    }
+
+    $("koBracket").innerHTML =
+      BRACKET.left.map(c => colHtml(c)).join("") +
+      colHtml(BRACKET.final, true) +
+      BRACKET.right.map(c => colHtml(c)).join("");
+
+    const el = $("koStamp"); if (el) el.textContent = "更新于 " + nowStamp() + " · 每小时刷新";
   }
 
   /* ---------- Team form / key players / depth ---------- */
@@ -1629,7 +1903,8 @@
     $("homeTeam").value = fx.home;
     $("awayTeam").value = fx.away;
     // host-nation auto venue
-    const venue = HOST_NATIONS.includes(fx.home) ? "home" : "neutral";
+    const venue = HOST_NATIONS.includes(fx.home) ? "home"
+      : HOST_NATIONS.includes(fx.away) ? "away" : "neutral";
     state.venue = venue;
     document.querySelectorAll("#venueToggle .toggle-pill").forEach(p =>
       p.classList.toggle("active", p.dataset.venue === venue));
@@ -1665,8 +1940,6 @@
           }
         }
       }
-      // group standings reflect live results -> keep fresh on every poll
-      if (state.lastModel) renderStandings(state.lastModel.homeTeam, state.lastModel.awayTeam);
     } catch (err) {
       fixtures = FALLBACK.map(normalizeFallback);
       sortFixtures();
@@ -1683,13 +1956,7 @@
     e.target.classList.add("active");
     state.venue = e.target.dataset.venue;
   });
-  $("homeForm").addEventListener("input", e => { state.homeForm = +e.target.value; $("homeFormVal").textContent = (e.target.value>0?'+':'')+e.target.value; });
-  $("awayForm").addEventListener("input", e => { state.awayForm = +e.target.value; $("awayFormVal").textContent = (e.target.value>0?'+':'')+e.target.value; });
   $("simBtn").addEventListener("click", runMonteCarlo);
-  $("swapBtn").addEventListener("click", () => {
-    const h = $("homeTeam").value; $("homeTeam").value = $("awayTeam").value; $("awayTeam").value = h;
-    resetPrediction(); // back to 0:0 until「开始分析」is clicked again
-  });
   $("homeTeam").addEventListener("change", resetPrediction);
   $("awayTeam").addEventListener("change", resetPrediction);
   $("dateSelect").addEventListener("change", onDateChange);
@@ -1710,6 +1977,9 @@
       renderRecent(state.lastModel.homeTeam, state.lastModel.awayTeam);
     }
   }, 24 * 60 * 60 * 1000);
+
+  // 淘汰赛晋级图：每 1 小时自动刷新（按最新小组排名重算出线形势与对阵推演）
+  setInterval(() => { if (state.lastModel) renderKnockout(); }, 60 * 60 * 1000);
 })();
 </script>
 </body>
