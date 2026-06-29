@@ -346,21 +346,38 @@
   .ko-note { font-size:11px; color:var(--text-dim); margin-top:16px; line-height:1.7; }
 
   /* Mirrored official bracket */
-  .kb-wrap { overflow-x:auto; padding:4px 2px 10px; }
-  .kb-bracket { display:flex; gap:10px; min-width:max-content; align-items:stretch; }
-  .kb-col { display:flex; flex-direction:column; min-width:128px; }
-  .kb-col-h { font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.5px;
-    color:var(--text-dim); text-align:center; margin-bottom:10px; flex:0 0 auto; }
-  .kb-col-body { flex:1 1 auto; display:flex; flex-direction:column; justify-content:space-around; gap:10px; }
-  .kb-match { background:var(--surface-alt); border:1px solid var(--border); border-radius:8px; padding:8px 10px; }
-  .kb-slot { font-size:12px; font-weight:700; color:var(--text); white-space:nowrap; }
-  .kb-slot.third { color:var(--accent); font-weight:600; }
-  .kb-slot.filled { color:var(--value); font-weight:800; }
-  .kb-src { font-size:9px; color:var(--text-dim); font-weight:600; margin-left:5px; }
-  .kb-vs { font-size:9px; color:var(--text-dim); font-weight:700; margin:3px 0; letter-spacing:.5px; }
-  .kb-num { font-size:9px; color:var(--text-dim); margin-top:6px; text-align:right; font-weight:600; }
-  .kb-final { background:rgba(255,215,0,0.06); border-color:rgba(255,215,0,0.4); }
-  .kb-final .kb-slot { color:var(--gold); }
+  .ko-stamp { margin-left:auto; font-size:10px; font-weight:600; color:var(--text-dim);
+    text-transform:none; letter-spacing:0; }
+  .kb-wrap { overflow-x:auto; padding:8px 4px 14px; }
+  .kb-bracket { display:flex; gap:16px; min-width:max-content; align-items:stretch; }
+  .kb-col { display:flex; flex-direction:column; min-width:152px; }
+  .kb-col-h { align-self:center; font-size:10px; font-weight:800; letter-spacing:.5px; color:var(--text-dim);
+    background:var(--surface-alt); border:1px solid var(--border); border-radius:20px; padding:4px 14px; margin-bottom:14px; flex:0 0 auto; }
+  .kb-col-body { flex:1 1 auto; display:flex; flex-direction:column; justify-content:space-around; gap:12px; }
+  .kb-match { position:relative; background:var(--surface-alt); border:1px solid var(--border); border-radius:10px;
+    overflow:hidden; transition:border-color .2s; }
+  .kb-match:hover { border-color:var(--text-dim); }
+  .kb-slot { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:9px 11px;
+    font-size:12px; font-weight:700; color:var(--text); }
+  .kb-slot + .kb-slot { border-top:1px solid var(--border); }
+  .kb-slot .kb-nm { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0; }
+  .kb-slot.third .kb-nm { color:var(--accent); font-weight:600; }
+  .kb-slot.filled { background:rgba(56,217,107,0.07); }
+  .kb-slot.filled .kb-nm { color:var(--value); font-weight:800; }
+  .kb-src { font-size:9px; color:var(--text-dim); font-weight:600; flex-shrink:0; }
+  .kb-num { font-size:9px; color:var(--text-dim); text-align:center; font-weight:700; letter-spacing:.5px;
+    padding:3px 8px; border-top:1px dashed var(--border); background:rgba(0,0,0,0.14); }
+  /* subtle connector nubs pointing toward the center */
+  .kb-col.left .kb-match::after, .kb-col.right .kb-match::after,
+  .kb-col.center .kb-match::before, .kb-col.center .kb-match::after {
+    content:''; position:absolute; top:50%; width:8px; height:2px; background:var(--border); }
+  .kb-col.left .kb-match::after { right:-8px; }
+  .kb-col.right .kb-match::after { left:-8px; }
+  .kb-col.center .kb-match::before { left:-8px; }
+  .kb-col.center .kb-match::after { right:-8px; }
+  .kb-final { border-color:rgba(255,215,0,0.45); box-shadow:0 0 16px rgba(255,215,0,0.08); }
+  .kb-final .kb-slot .kb-nm { color:var(--gold); }
+  .kb-final .kb-num { color:var(--gold); }
 
   @media (max-width: 640px) {
     .matchup { flex-direction: column; align-items: stretch; }
@@ -529,30 +546,11 @@
       <div class="upset-note">指数越高代表越可能出现冷门：综合「冷门球队取胜概率」与「平局概率」加权计算（爆冷指数 = 冷门胜率 + ½ × 平局率）。当双方实力接近时不构成真正意义上的"爆冷"。</div>
     </div>
 
-    <!-- Value betting -->
-    <div class="card">
-      <div class="card-title">赔率价值分析 / Value &amp; Kelly Calculator</div>
-      <div class="value-intro">
-        输入博彩公司的<strong style="color:var(--text)">十进制赔率(欧赔)</strong>,系统会与模型的"公平赔率"对比,
-        计算价值边际(Edge)、期望收益(EV)和建议的凯利投注比例。<span style="color:var(--value)">绿色高亮</span>= 模型认为有正期望价值的投注。
-      </div>
-      <div class="odds-input-grid">
-        <div class="oi"><label>主胜赔率 Home</label><input type="number" id="inHome" step="0.01" placeholder="如 2.10"></div>
-        <div class="oi"><label>平局赔率 Draw</label><input type="number" id="inDraw" step="0.01" placeholder="如 3.30"></div>
-        <div class="oi"><label>客胜赔率 Away</label><input type="number" id="inAway" step="0.01" placeholder="如 3.50"></div>
-      </div>
-      <table class="value-table" id="valueTable"></table>
-    </div>
-
     <!-- Knockout bracket (official structure, hourly) -->
     <div class="card">
-      <div class="card-title">淘汰赛晋级图 / Knockout Bracket</div>
-      <div class="ko-block-title">出线形势 / Qualification<span class="ko-stamp" id="koStamp"></span></div>
-      <div class="ko-groups" id="koGroups"></div>
-      <div class="ko-third" id="koThird"></div>
-      <div class="ko-block-title">淘汰赛对阵 / Knockout Bracket（官方赛制 · 32 强 → 决赛）</div>
+      <div class="card-title">淘汰赛对阵图 / Knockout Bracket<span class="ko-stamp" id="koStamp"></span></div>
       <div class="kb-wrap"><div class="kb-bracket" id="koBracket"></div></div>
-      <div class="ko-note">出线规则：每组前 2 名直接晋级，外加成绩最好的 8 个第 3 名，共 32 队进入淘汰赛。<strong style="color:var(--value)">出线形势</strong>依据实时小组排名计算（<strong style="color:var(--value)">绿</strong>=直接出线，<strong style="color:var(--accent)">青</strong>=最佳第三出线，<strong style="color:var(--away)">红</strong>=暂遭淘汰）。下方<strong style="color:var(--accent)">淘汰赛对阵</strong>为 FIFA 官方固定赛制（M73–M104），仅展示每场对阵双方，不做胜负推测。<strong style="color:var(--value)">已锁定名次的球队（小组全部赛完）会直接填入对应位置</strong>（绿色，后附原名额标签）；第三名待全部小组赛完后按官方可选组别填入；未定位置仍显示名额（小组名次 / 第三名组别组合 / 胜者编号）。本模块<strong style="color:var(--accent)">每 1 小时刷新</strong>。</div>
+      <div class="ko-note">FIFA 官方固定赛制（32 强 M73 → 决赛 M104），仅依据真实赛果填充，不做胜负推测。<strong style="color:var(--value)">已锁定名次的球队（小组全部赛完）直接填入对应位置</strong>（绿色高亮，后附原名额标签）；第三名按官方可选组别匹配填入；<strong style="color:var(--value)">每场淘汰赛结束后，真实胜者自动进入下一轮</strong>（点球决胜若接口仅给常规时间比分则暂留名额）；未定位置显示名额（小组名次 / 第三名组别组合 / 胜者编号）。对阵图<strong style="color:var(--accent)">每 1 小时刷新</strong>。</div>
     </div>
 
     <!-- Team strength -->
@@ -604,6 +602,21 @@
       <div class="card-title">近3个月战绩与状态评估 / Last 3 Months Form</div>
       <div class="form-grid" id="recentGrid"></div>
       <div class="form-note">统计所选两队<strong style="color:var(--accent)">最近约 3 个月</strong>的对战结果（赛前热身赛 / 预选赛 / 洲际邀请赛），并据此给出状态评分与走势，<strong style="color:var(--accent)">每 24 小时自动更新</strong>（更新于 <span id="recentUpdated">--</span>）。标签：友 = 友谊赛，预 = 预选赛，邀 = 洲际邀请赛。此部分为综合整理的估算数据，仅供参考。</div>
+    </div>
+
+    <!-- Value betting -->
+    <div class="card">
+      <div class="card-title">赔率价值分析 / Value &amp; Kelly Calculator</div>
+      <div class="value-intro">
+        输入博彩公司的<strong style="color:var(--text)">十进制赔率(欧赔)</strong>,系统会与模型的"公平赔率"对比,
+        计算价值边际(Edge)、期望收益(EV)和建议的凯利投注比例。<span style="color:var(--value)">绿色高亮</span>= 模型认为有正期望价值的投注。
+      </div>
+      <div class="odds-input-grid">
+        <div class="oi"><label>主胜赔率 Home</label><input type="number" id="inHome" step="0.01" placeholder="如 2.10"></div>
+        <div class="oi"><label>平局赔率 Draw</label><input type="number" id="inDraw" step="0.01" placeholder="如 3.30"></div>
+        <div class="oi"><label>客胜赔率 Away</label><input type="number" id="inAway" step="0.01" placeholder="如 3.50"></div>
+      </div>
+      <table class="value-table" id="valueTable"></table>
     </div>
 
     <!-- Summary stats -->
@@ -1419,36 +1432,23 @@
   };
 
   function renderKnockout() {
-    const groupsEl = $("koGroups"); if (!groupsEl) return;
-    const { groups, perGroup, thirds, qualThirdIds } = qualificationData();
+    const bracketEl = $("koBracket"); if (!bracketEl) return;
+    const { groups, perGroup, thirds } = qualificationData();
 
-    // Qualification grid (live)
-    groupsEl.innerHTML = groups.map(g => {
-      const rows = perGroup[g];
-      const rowsHtml = rows.map(r => {
-        let cls, tag;
-        if (r.rank <= 2) { cls = "adv"; tag = `<span class="ko-tag t-adv">出线</span>`; }
-        else if (r.rank === 3 && qualThirdIds.has(r.id)) { cls = "adv3"; tag = `<span class="ko-tag t-adv3">最佳三</span>`; }
-        else { cls = "out"; tag = `<span class="ko-tag t-out">淘汰</span>`; }
-        return `<div class="ko-row ${cls}">
-          <span class="ko-rk">${r.rank}</span>
-          <span class="ko-nm">${r.name}${r.live ? ' <span class="stand-live">●</span>' : ''}</span>
-          ${tag}</div>`;
-      }).join("");
-      return `<div class="ko-grp"><div class="ko-grp-h">${g} 组 Group ${g}</div>${rowsHtml}</div>`;
-    }).join("");
-
-    // Third-place race (live)
-    $("koThird").innerHTML = `<b>最佳第三名排名 Best 3rd-Place（取前 8）：</b>` +
-      thirds.map((t, i) => {
-        const qualified = i < 8;
-        return `<span class="${qualified ? 'q' : ''}">${i + 1}.${t.name}(${t.group}组·${t.pts}分${t.gd >= 0 ? '+' : ''}${t.gd})${qualified ? '✓' : ''}</span>`;
-      }).join(" &nbsp; ");
-
-    // Static official bracket; fill in teams already locked into the knockout stage.
+    // Fill in teams already locked into the knockout stage.
     const complete = {}; groups.forEach(g => { complete[g] = groupComplete(g); });
     const allComplete = groups.every(g => complete[g]);
     const thirdAssign = allComplete ? assignThirds(thirds.slice(0, 8)) : {};
+
+    // Winner of a finished knockout match (fixture id == official match no, e.g. 73-104).
+    // No prediction: only resolved once the real match is played and decided.
+    function winnerOf(no) {
+      const fx = (typeof fixtures !== "undefined" ? fixtures : []).find(f => f.id === String(no));
+      if (!fx || !statusOf(fx).done) return null;
+      if (fx.hs > fx.as) return teamName(fx.home);
+      if (fx.as > fx.hs) return teamName(fx.away);
+      return null; // drawn in regulation (shootout winner unknown) -> keep label
+    }
 
     const isThird = s => /^3rd/.test(s);
     function slotTeam(s) {
@@ -1459,29 +1459,31 @@
         return row ? row.name : null;
       }
       if (isThird(s)) return thirdAssign[s] || null;
-      return null; // 胜者 M.. slots stay as labels (no prediction)
+      const wm = s.match(/^胜者 M(\d+)$/);
+      if (wm) return winnerOf(+wm[1]); // advance the real winner into the next round
+      return null;
     }
     function slotHtml(s) {
       const team = slotTeam(s);
-      if (team) return `<div class="kb-slot filled">${team}<span class="kb-src">${s}</span></div>`;
-      return `<div class="kb-slot${isThird(s) ? ' third' : ''}">${s}</div>`;
+      if (team) return `<div class="kb-slot filled"><span class="kb-nm">${team}</span><span class="kb-src">${s}</span></div>`;
+      return `<div class="kb-slot${isThird(s) ? ' third' : ''}"><span class="kb-nm">${s}</span></div>`;
     }
     function box(top, bottom, no, isFinal) {
       return `<div class="kb-match${isFinal ? ' kb-final' : ''}">
-        ${slotHtml(top)}<div class="kb-vs">VS</div>${slotHtml(bottom)}
-        <div class="kb-num">M${no}</div></div>`;
+        ${slotHtml(top)}${slotHtml(bottom)}
+        <div class="kb-num">${isFinal ? '🏆 ' : ''}M${no}</div></div>`;
     }
-    function colHtml(col, isFinal) {
+    function colHtml(col, side, isFinal) {
       let body;
       if (col.r32) body = col.r32.map(n => box(R32_SLOTS[n][0], R32_SLOTS[n][1], n)).join("");
       else body = col.win.map(([no, a, b]) => box("胜者 M" + a, "胜者 M" + b, no, isFinal)).join("");
-      return `<div class="kb-col"><div class="kb-col-h">${col.h}</div><div class="kb-col-body">${body}</div></div>`;
+      return `<div class="kb-col ${side}"><div class="kb-col-h">${col.h}</div><div class="kb-col-body">${body}</div></div>`;
     }
 
-    $("koBracket").innerHTML =
-      BRACKET.left.map(c => colHtml(c)).join("") +
-      colHtml(BRACKET.final, true) +
-      BRACKET.right.map(c => colHtml(c)).join("");
+    bracketEl.innerHTML =
+      BRACKET.left.map(c => colHtml(c, "left")).join("") +
+      colHtml(BRACKET.final, "center", true) +
+      BRACKET.right.map(c => colHtml(c, "right")).join("");
 
     const el = $("koStamp"); if (el) el.textContent = "更新于 " + nowStamp() + " · 每小时刷新";
   }
