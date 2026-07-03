@@ -649,54 +649,54 @@
 
   /* ---------- Team data: attack & defense ratings (0-1 scale) ---------- */
   const TEAMS = [
-    { id:"1",  name:"墨西哥 Mexico",        group:"A", atk:0.80, def:0.74 },
+    { id:"1",  name:"墨西哥 Mexico",        group:"A", atk:0.84, def:0.78 },
     { id:"2",  name:"南非 South Africa",    group:"A", atk:0.52, def:0.55 },
-    { id:"3",  name:"韩国 South Korea",     group:"A", atk:0.70, def:0.68 },
-    { id:"4",  name:"捷克 Czech Republic",  group:"A", atk:0.72, def:0.74 },
-    { id:"5",  name:"加拿大 Canada",        group:"B", atk:0.62, def:0.60 },
+    { id:"3",  name:"韩国 South Korea",     group:"A", atk:0.66, def:0.68 },
+    { id:"4",  name:"捷克 Czech Republic",  group:"A", atk:0.64, def:0.68 },
+    { id:"5",  name:"加拿大 Canada",        group:"B", atk:0.68, def:0.60 },
     { id:"6",  name:"波黑 Bosnia",          group:"B", atk:0.60, def:0.56 },
-    { id:"7",  name:"卡塔尔 Qatar",         group:"B", atk:0.46, def:0.48 },
-    { id:"8",  name:"瑞士 Switzerland",     group:"B", atk:0.78, def:0.82 },
-    { id:"9",  name:"巴西 Brazil",          group:"C", atk:0.96, def:0.88 },
-    { id:"10", name:"摩洛哥 Morocco",       group:"C", atk:0.72, def:0.80 },
+    { id:"7",  name:"卡塔尔 Qatar",         group:"B", atk:0.46, def:0.44 },
+    { id:"8",  name:"瑞士 Switzerland",     group:"B", atk:0.80, def:0.82 },
+    { id:"9",  name:"巴西 Brazil",          group:"C", atk:0.96, def:0.90 },
+    { id:"10", name:"摩洛哥 Morocco",       group:"C", atk:0.76, def:0.80 },
     { id:"11", name:"海地 Haiti",           group:"C", atk:0.30, def:0.26 },
-    { id:"12", name:"苏格兰 Scotland",      group:"C", atk:0.62, def:0.66 },
-    { id:"13", name:"美国 United States",   group:"D", atk:0.78, def:0.76 },
-    { id:"14", name:"巴拉圭 Paraguay",      group:"D", atk:0.58, def:0.66 },
+    { id:"12", name:"苏格兰 Scotland",      group:"C", atk:0.56, def:0.66 },
+    { id:"13", name:"美国 United States",   group:"D", atk:0.80, def:0.78 },
+    { id:"14", name:"巴拉圭 Paraguay",      group:"D", atk:0.58, def:0.70 },
     { id:"15", name:"澳大利亚 Australia",   group:"D", atk:0.54, def:0.58 },
-    { id:"16", name:"土耳其 Turkey",        group:"D", atk:0.74, def:0.68 },
-    { id:"17", name:"德国 Germany",         group:"E", atk:0.92, def:0.86 },
-    { id:"18", name:"库拉索 Curacao",       group:"E", atk:0.26, def:0.24 },
+    { id:"16", name:"土耳其 Turkey",        group:"D", atk:0.68, def:0.64 },
+    { id:"17", name:"德国 Germany",         group:"E", atk:0.92, def:0.82 },
+    { id:"18", name:"库拉索 Curacao",       group:"E", atk:0.26, def:0.22 },
     { id:"19", name:"科特迪瓦 Ivory Coast", group:"E", atk:0.68, def:0.64 },
-    { id:"20", name:"厄瓜多尔 Ecuador",     group:"E", atk:0.62, def:0.72 },
-    { id:"21", name:"荷兰 Netherlands",     group:"F", atk:0.90, def:0.82 },
-    { id:"22", name:"日本 Japan",           group:"F", atk:0.76, def:0.74 },
-    { id:"23", name:"瑞典 Sweden",          group:"F", atk:0.74, def:0.70 },
-    { id:"24", name:"突尼斯 Tunisia",       group:"F", atk:0.50, def:0.60 },
+    { id:"20", name:"厄瓜多尔 Ecuador",     group:"E", atk:0.62, def:0.74 },
+    { id:"21", name:"荷兰 Netherlands",     group:"F", atk:0.90, def:0.80 },
+    { id:"22", name:"日本 Japan",           group:"F", atk:0.78, def:0.74 },
+    { id:"23", name:"瑞典 Sweden",          group:"F", atk:0.74, def:0.66 },
+    { id:"24", name:"突尼斯 Tunisia",       group:"F", atk:0.50, def:0.52 },
     { id:"25", name:"比利时 Belgium",       group:"G", atk:0.88, def:0.78 },
-    { id:"26", name:"埃及 Egypt",           group:"G", atk:0.58, def:0.60 },
+    { id:"26", name:"埃及 Egypt",           group:"G", atk:0.60, def:0.60 },
     { id:"27", name:"伊朗 Iran",            group:"G", atk:0.60, def:0.72 },
     { id:"28", name:"新西兰 New Zealand",   group:"G", atk:0.32, def:0.36 },
-    { id:"29", name:"西班牙 Spain",         group:"H", atk:0.95, def:0.88 },
-    { id:"30", name:"佛得角 Cape Verde",    group:"H", atk:0.36, def:0.40 },
+    { id:"29", name:"西班牙 Spain",         group:"H", atk:0.95, def:0.90 },
+    { id:"30", name:"佛得角 Cape Verde",    group:"H", atk:0.36, def:0.46 },
     { id:"31", name:"沙特 Saudi Arabia",    group:"H", atk:0.48, def:0.52 },
-    { id:"32", name:"乌拉圭 Uruguay",       group:"H", atk:0.82, def:0.84 },
-    { id:"33", name:"法国 France",          group:"I", atk:0.96, def:0.90 },
+    { id:"32", name:"乌拉圭 Uruguay",       group:"H", atk:0.74, def:0.78 },
+    { id:"33", name:"法国 France",          group:"I", atk:0.97, def:0.90 },
     { id:"34", name:"塞内加尔 Senegal",     group:"I", atk:0.70, def:0.74 },
-    { id:"35", name:"伊拉克 Iraq",          group:"I", atk:0.40, def:0.44 },
-    { id:"36", name:"挪威 Norway",          group:"I", atk:0.78, def:0.64 },
+    { id:"35", name:"伊拉克 Iraq",          group:"I", atk:0.40, def:0.40 },
+    { id:"36", name:"挪威 Norway",          group:"I", atk:0.80, def:0.62 },
     { id:"37", name:"阿根廷 Argentina",     group:"J", atk:0.94, def:0.90 },
     { id:"38", name:"阿尔及利亚 Algeria",   group:"J", atk:0.56, def:0.58 },
-    { id:"39", name:"奥地利 Austria",       group:"J", atk:0.70, def:0.68 },
+    { id:"39", name:"奥地利 Austria",       group:"J", atk:0.70, def:0.64 },
     { id:"40", name:"约旦 Jordan",          group:"J", atk:0.34, def:0.42 },
     { id:"41", name:"葡萄牙 Portugal",      group:"K", atk:0.90, def:0.82 },
     { id:"42", name:"刚果(金) DR Congo",    group:"K", atk:0.44, def:0.46 },
-    { id:"43", name:"乌兹别克斯坦 Uzbekistan", group:"K", atk:0.42, def:0.48 },
-    { id:"44", name:"哥伦比亚 Colombia",    group:"K", atk:0.76, def:0.76 },
+    { id:"43", name:"乌兹别克斯坦 Uzbekistan", group:"K", atk:0.42, def:0.44 },
+    { id:"44", name:"哥伦比亚 Colombia",    group:"K", atk:0.78, def:0.76 },
     { id:"45", name:"英格兰 England",       group:"L", atk:0.90, def:0.88 },
-    { id:"46", name:"克罗地亚 Croatia",     group:"L", atk:0.80, def:0.80 },
+    { id:"46", name:"克罗地亚 Croatia",     group:"L", atk:0.80, def:0.78 },
     { id:"47", name:"加纳 Ghana",           group:"L", atk:0.60, def:0.58 },
-    { id:"48", name:"巴拿马 Panama",        group:"L", atk:0.38, def:0.44 },
+    { id:"48", name:"巴拿马 Panama",        group:"L", atk:0.34, def:0.44 },
   ];
 
   /* ---------- Squad profiles (curated) ----------
@@ -1468,15 +1468,37 @@
       if (team) return `<div class="kb-slot filled"><span class="kb-nm">${team}</span><span class="kb-src">${s}</span></div>`;
       return `<div class="kb-slot${isThird(s) ? ' third' : ''}"><span class="kb-nm">${s}</span></div>`;
     }
-    function box(top, bottom, no, isFinal) {
+    // Winner-fed box: prefer the team the live data has already advanced INTO this
+    // match (fixture home/away). This resolves penalty-shootout feeders, where the
+    // feeder ended level and score alone can't decide the winner.
+    const koFixture = no => (typeof fixtures !== "undefined" ? fixtures : []).find(f => f.id === String(no));
+    function winSlotHtml(label, team) {
+      if (team) return `<div class="kb-slot filled"><span class="kb-nm">${team}</span><span class="kb-src">${label}</span></div>`;
+      return slotHtml(label);
+    }
+    function winBox(no, a, b, isFinal) {
+      const fx = koFixture(no);
+      const assigned = fx && validFx(fx);
+      const top = assigned ? teamName(fx.home) : winnerOf(a);
+      const bot = assigned ? teamName(fx.away) : winnerOf(b);
       return `<div class="kb-match${isFinal ? ' kb-final' : ''}">
-        ${slotHtml(top)}${slotHtml(bottom)}
+        ${winSlotHtml("胜者 M" + a, top)}${winSlotHtml("胜者 M" + b, bot)}
         <div class="kb-num">${isFinal ? '🏆 ' : ''}M${no}</div></div>`;
+    }
+    // R32 box: same idea — prefer the exact team the data assigned to this slot
+    // (authoritative 3rd-place placement), else fall back to computed standings.
+    function r32Box(no) {
+      const [topLbl, botLbl] = R32_SLOTS[no];
+      const fx = koFixture(no);
+      const assigned = fx && validFx(fx);
+      return `<div class="kb-match">
+        ${winSlotHtml(topLbl, assigned ? teamName(fx.home) : null)}${winSlotHtml(botLbl, assigned ? teamName(fx.away) : null)}
+        <div class="kb-num">M${no}</div></div>`;
     }
     function colHtml(col, side, isFinal) {
       let body;
-      if (col.r32) body = col.r32.map(n => box(R32_SLOTS[n][0], R32_SLOTS[n][1], n)).join("");
-      else body = col.win.map(([no, a, b]) => box("胜者 M" + a, "胜者 M" + b, no, isFinal)).join("");
+      if (col.r32) body = col.r32.map(n => r32Box(n)).join("");
+      else body = col.win.map(([no, a, b]) => winBox(no, a, b, isFinal)).join("");
       return `<div class="kb-col ${side}"><div class="kb-col-h">${col.h}</div><div class="kb-col-body">${body}</div></div>`;
     }
 
@@ -1741,31 +1763,49 @@
   const HOST_NATIONS = ["1","5","13"]; // Mexico, Canada, USA
 
   // Embedded fallback: [id, homeId, awayId, group, "MM/DD/YYYY HH:MM"]
+  // [id, homeId, awayId, group, "MM/DD/YYYY HH:MM", hs, as, finished(1)] — score/finished
+  // fields optional (unplayed matches omit them). Knockout rounds carry their real
+  // team assignments; still-TBD slots use homeId/awayId = 0. Snapshot as of 07/03.
   const FALLBACK = [
-    [1,1,2,"A","06/11/2026 13:00"],[2,3,4,"A","06/11/2026 20:00"],[3,5,6,"B","06/12/2026 15:00"],
-    [4,13,14,"D","06/12/2026 18:00"],[5,11,12,"C","06/13/2026 21:00"],[6,15,16,"D","06/13/2026 21:00"],
-    [7,9,10,"C","06/13/2026 18:00"],[8,7,8,"B","06/13/2026 12:00"],[9,19,20,"E","06/14/2026 19:00"],
-    [10,17,18,"E","06/14/2026 12:00"],[11,21,22,"F","06/14/2026 15:00"],[12,23,24,"F","06/14/2026 20:00"],
-    [13,27,28,"G","06/15/2026 18:00"],[14,29,30,"H","06/15/2026 12:00"],[15,25,26,"G","06/15/2026 12:00"],
-    [16,31,32,"H","06/15/2026 18:00"],[17,33,34,"I","06/16/2026 15:00"],[18,35,36,"I","06/16/2026 18:00"],
-    [19,37,38,"J","06/16/2026 20:00"],[20,39,40,"J","06/16/2026 21:00"],[21,41,42,"K","06/17/2026 12:00"],
-    [22,45,46,"L","06/17/2026 15:00"],[23,43,44,"K","06/17/2026 20:00"],[24,47,48,"L","06/17/2026 19:00"],
-    [25,1,3,"A","06/18/2026 19:00"],[26,8,6,"B","06/18/2026 12:00"],[27,5,7,"B","06/18/2026 15:00"],
-    [28,4,2,"A","06/18/2026 12:00"],[29,9,11,"C","06/19/2026 21:00"],[30,12,10,"C","06/19/2026 18:00"],
-    [31,13,15,"D","06/19/2026 12:00"],[32,16,14,"D","06/19/2026 20:00"],[33,17,19,"E","06/20/2026 16:00"],
-    [34,20,18,"E","06/20/2026 19:00"],[35,21,23,"F","06/20/2026 12:00"],[36,24,22,"F","06/20/2026 22:00"],
-    [37,25,27,"G","06/21/2026 12:00"],[38,28,26,"G","06/21/2026 18:00"],[39,29,31,"H","06/21/2026 12:00"],
-    [40,32,30,"H","06/21/2026 18:00"],[41,33,35,"I","06/22/2026 17:00"],[42,36,34,"I","06/22/2026 20:00"],
-    [43,37,39,"J","06/22/2026 12:00"],[44,40,38,"J","06/22/2026 20:00"],[45,41,43,"K","06/23/2026 12:00"],
-    [46,48,46,"L","06/23/2026 19:00"],[47,44,42,"K","06/23/2026 20:00"],[48,45,47,"L","06/23/2026 16:00"],
-    [49,12,9,"C","06/24/2026 18:00"],[50,10,11,"C","06/24/2026 18:00"],[51,2,3,"A","06/24/2026 19:00"],
-    [52,4,1,"A","06/24/2026 19:00"],[53,6,7,"B","06/24/2026 12:00"],[54,8,5,"B","06/24/2026 12:00"],
-    [55,18,19,"E","06/25/2026 16:00"],[56,20,17,"E","06/25/2026 16:00"],[57,14,15,"D","06/25/2026 19:00"],
-    [58,16,13,"D","06/25/2026 19:00"],[59,22,23,"F","06/25/2026 18:00"],[60,24,21,"F","06/25/2026 18:00"],
-    [61,34,35,"I","06/26/2026 15:00"],[62,36,33,"I","06/26/2026 15:00"],[63,26,27,"G","06/26/2026 20:00"],
-    [64,28,25,"G","06/26/2026 20:00"],[65,30,31,"H","06/26/2026 19:00"],[66,32,29,"H","06/26/2026 18:00"],
-    [67,48,45,"L","06/27/2026 17:00"],[68,46,47,"L","06/27/2026 17:00"],[69,38,39,"J","06/27/2026 21:00"],
-    [70,40,37,"J","06/27/2026 21:00"],[71,44,41,"K","06/27/2026 19:30"],[72,42,43,"K","06/27/2026 19:30"]
+    // ---- Group stage (matchday 1-3, all finished) ----
+    [1,1,2,"A","06/11/2026 13:00",2,0,1],[2,3,4,"A","06/11/2026 20:00",2,1,1],[3,5,6,"B","06/12/2026 15:00",1,1,1],
+    [4,13,14,"D","06/12/2026 18:00",4,1,1],[5,11,12,"C","06/13/2026 21:00",0,1,1],[6,15,16,"D","06/13/2026 21:00",2,0,1],
+    [7,9,10,"C","06/13/2026 18:00",1,1,1],[8,7,8,"B","06/13/2026 12:00",1,1,1],[9,19,20,"E","06/14/2026 19:00",1,0,1],
+    [10,17,18,"E","06/14/2026 12:00",7,1,1],[11,21,22,"F","06/14/2026 15:00",2,2,1],[12,23,24,"F","06/14/2026 20:00",5,1,1],
+    [13,27,28,"G","06/15/2026 18:00",2,2,1],[14,29,30,"H","06/15/2026 12:00",0,0,1],[15,25,26,"G","06/15/2026 12:00",1,1,1],
+    [16,31,32,"H","06/15/2026 18:00",1,1,1],[17,33,34,"I","06/16/2026 15:00",3,1,1],[18,35,36,"I","06/16/2026 18:00",1,4,1],
+    [19,37,38,"J","06/16/2026 20:00",3,0,1],[20,39,40,"J","06/16/2026 21:00",3,1,1],[21,41,42,"K","06/17/2026 12:00",1,1,1],
+    [22,45,46,"L","06/17/2026 15:00",4,2,1],[23,43,44,"K","06/17/2026 20:00",1,3,1],[24,47,48,"L","06/17/2026 19:00",1,0,1],
+    [25,1,3,"A","06/18/2026 19:00",1,0,1],[26,8,6,"B","06/18/2026 12:00",4,1,1],[27,5,7,"B","06/18/2026 15:00",6,0,1],
+    [28,4,2,"A","06/18/2026 12:00",1,1,1],[29,9,11,"C","06/19/2026 21:00",3,0,1],[30,12,10,"C","06/19/2026 18:00",0,1,1],
+    [31,13,15,"D","06/19/2026 12:00",2,0,1],[32,16,14,"D","06/19/2026 20:00",0,1,1],[33,17,19,"E","06/20/2026 16:00",2,1,1],
+    [34,20,18,"E","06/20/2026 19:00",0,0,1],[35,21,23,"F","06/20/2026 12:00",5,1,1],[36,24,22,"F","06/20/2026 22:00",0,4,1],
+    [37,25,27,"G","06/21/2026 12:00",0,0,1],[38,28,26,"G","06/21/2026 18:00",1,3,1],[39,29,31,"H","06/21/2026 12:00",4,0,1],
+    [40,32,30,"H","06/21/2026 18:00",2,2,1],[41,33,35,"I","06/22/2026 17:00",3,0,1],[42,36,34,"I","06/22/2026 20:00",3,2,1],
+    [43,37,39,"J","06/22/2026 12:00",2,0,1],[44,40,38,"J","06/22/2026 20:00",1,2,1],[45,41,43,"K","06/23/2026 12:00",5,0,1],
+    [46,48,46,"L","06/23/2026 19:00",0,1,1],[47,44,42,"K","06/23/2026 20:00",1,0,1],[48,45,47,"L","06/23/2026 16:00",0,0,1],
+    [49,12,9,"C","06/24/2026 18:00",0,3,1],[50,10,11,"C","06/24/2026 18:00",4,2,1],[51,2,3,"A","06/24/2026 19:00",1,0,1],
+    [52,4,1,"A","06/24/2026 19:00",0,3,1],[53,6,7,"B","06/24/2026 12:00",3,1,1],[54,8,5,"B","06/24/2026 12:00",2,1,1],
+    [55,18,19,"E","06/25/2026 16:00",0,2,1],[56,20,17,"E","06/25/2026 16:00",2,1,1],[57,14,15,"D","06/25/2026 19:00",0,0,1],
+    [58,16,13,"D","06/25/2026 19:00",3,2,1],[59,22,23,"F","06/25/2026 18:00",1,1,1],[60,24,21,"F","06/25/2026 18:00",1,3,1],
+    [61,34,35,"I","06/26/2026 15:00",5,0,1],[62,36,33,"I","06/26/2026 15:00",1,4,1],[63,26,27,"G","06/26/2026 20:00",1,1,1],
+    [64,28,25,"G","06/26/2026 20:00",1,5,1],[65,30,31,"H","06/26/2026 19:00",0,0,1],[66,32,29,"H","06/26/2026 18:00",0,1,1],
+    [67,48,45,"L","06/27/2026 17:00",0,2,1],[68,46,47,"L","06/27/2026 17:00",2,1,1],[69,38,39,"J","06/27/2026 21:00",3,3,1],
+    [70,40,37,"J","06/27/2026 21:00",1,3,1],[71,44,41,"K","06/27/2026 19:30",0,0,1],[72,42,43,"K","06/27/2026 19:30",3,1,1],
+    // ---- Round of 32 (M73-88). M74/M75 decided on penalties (1-1). ----
+    [73,2,5,"R32","06/28/2026 12:00",0,1,1],[74,17,14,"R32","06/29/2026 16:30",1,1,1],[75,21,10,"R32","06/29/2026 19:00",1,1,1],
+    [76,9,22,"R32","06/29/2026 12:00",2,1,1],[77,33,23,"R32","06/30/2026 17:00",3,0,1],[78,19,36,"R32","06/30/2026 12:00",1,2,1],
+    [79,1,20,"R32","06/30/2026 19:00",2,0,1],[80,45,42,"R32","07/01/2026 12:00",2,1,1],[81,13,6,"R32","07/01/2026 17:00",2,0,1],
+    [82,25,34,"R32","07/01/2026 13:00",3,2,1],[83,41,46,"R32","07/02/2026 19:00",2,1,1],[84,29,39,"R32","07/02/2026 12:00",3,0,1],
+    [85,8,38,"R32","07/02/2026 20:00"],[86,37,30,"R32","07/03/2026 18:00"],[87,44,47,"R32","07/03/2026 20:30"],[88,15,26,"R32","07/03/2026 13:00"],
+    // ---- Round of 16 (M89-96): teams assigned as R32 winners resolve ----
+    [89,14,33,"R16","07/04/2026 17:00"],[90,5,10,"R16","07/04/2026 12:00"],[91,9,36,"R16","07/05/2026 16:00"],
+    [92,1,45,"R16","07/05/2026 18:00"],[93,41,29,"R16","07/06/2026 14:00"],[94,13,25,"R16","07/06/2026 17:00"],
+    [95,0,0,"R16","07/07/2026 12:00"],[96,0,0,"R16","07/07/2026 13:00"],
+    // ---- Quarter-finals / semis / final (TBD) ----
+    [97,0,0,"QF","07/09/2026 16:00"],[98,0,0,"QF","07/10/2026 12:00"],[99,0,0,"QF","07/11/2026 17:00"],
+    [100,0,0,"QF","07/11/2026 20:00"],[101,0,0,"SF","07/14/2026 14:00"],[102,0,0,"SF","07/15/2026 15:00"],
+    [103,0,0,"3RD","07/18/2026 17:00"],[104,0,0,"FINAL","07/19/2026 15:00"]
   ];
 
   let fixtures = [];
@@ -1791,8 +1831,9 @@
     };
   }
   function normalizeFallback(f) {
+    const fin = f[7] === 1; // optional finished flag; older 5-tuples default to unplayed
     return { id:String(f[0]), home:String(f[1]), away:String(f[2]), group:f[3], date:f[4],
-      hs:0, as:0, finished:false, elapsed:"notstarted" };
+      hs:+f[5]||0, as:+f[6]||0, finished:fin, elapsed:fin ? "finished" : "notstarted" };
   }
 
   function statusOf(fx) {
