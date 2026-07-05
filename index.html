@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>World Cup 2026 - 智能赛事分析与赔率价值工具</title>
+<title>全球足球赛事 - 智能分析与赔率价值工具</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -67,6 +67,14 @@
   }
   .card-title::before { content: ''; width: 3px; height: 13px; background: var(--accent); border-radius: 2px; }
 
+  /* Competition selector */
+  .comp-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px;
+    padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .comp-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--text-dim); flex-shrink: 0; }
+  .comp-row select { width: auto; min-width: 240px; flex: 0 1 300px; }
+  .comp-desc { font-size: 11px; color: var(--text-dim); flex: 1; min-width: 160px; }
+
   /* Matchup selectors */
   .matchup { display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; justify-content: center; }
   .team-picker { flex: 1; min-width: 200px; max-width: 340px; }
@@ -84,6 +92,8 @@
     background-repeat: no-repeat; background-position: right 14px center; }
   select:hover, input:hover { border-color: var(--accent); }
   select:focus, input:focus { outline: none; border-color: var(--accent); }
+  optgroup { color: var(--text-dim); font-weight: 700; background: var(--surface); }
+  option { color: var(--text); font-weight: 600; background: var(--surface-alt); }
 
   .vs-box {
     display: flex; align-items: center; justify-content: center; width: 46px; height: 46px;
@@ -213,6 +223,43 @@
   .value-table tr.is-value { background: var(--value-bg); }
   .value-badge { display: inline-block; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 4px;
     background: var(--value); color: #06210f; margin-left: 6px; }
+
+  /* League standings table */
+  .standings-table { width: 100%; border-collapse: collapse; }
+  .standings-table th { font-size: 11px; color: var(--text-dim); font-weight: 600; text-transform: uppercase;
+    text-align: center; padding: 7px 6px; border-bottom: 1px solid var(--border); }
+  .standings-table th.sc-team, .standings-table th.sc-rank { text-align: left; }
+  .standings-table td { font-size: 13px; padding: 8px 6px; text-align: center; border-bottom: 1px solid var(--border); font-weight: 600; }
+  .standings-table td.sc-team { text-align: left; color: var(--text); font-weight: 700; }
+  .standings-table td.sc-rank { text-align: left; color: var(--text-dim); font-weight: 700; width: 30px; }
+  .standings-table td.sc-pts { color: var(--accent); font-weight: 800; }
+  .standings-table tr:last-child td { border-bottom: none; }
+  .standings-table tr.sc-home { background: rgba(56,189,248,0.12); }
+  .standings-table tr.sc-away { background: rgba(248,113,113,0.12); }
+  .standings-table .sc-gd-pos { color: var(--value); }
+  .standings-table .sc-gd-neg { color: var(--text-dim); }
+  .standings-empty { font-size: 13px; color: var(--text-dim); padding: 18px 4px; text-align: center; }
+
+  /* License / CDK activation box (top-right of setup card) */
+  .setup-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+  .license-box { flex: 0 0 auto; min-width: 236px; max-width: 300px; background: var(--surface-alt);
+    border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
+  .license-box.active { border-color: var(--value); }
+  .license-box .lic-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--text-dim); margin-bottom: 8px; }
+  .license-box .lic-row { display: flex; gap: 6px; }
+  .license-box input { flex: 1; min-width: 0; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 6px; color: var(--text); padding: 7px 9px; font-size: 13px; }
+  .license-box input:focus { outline: none; border-color: var(--accent); }
+  .license-box .lic-btn { flex: 0 0 auto; background: var(--accent); color: #06210f; border: none; border-radius: 6px;
+    padding: 7px 14px; font-size: 13px; font-weight: 700; cursor: pointer; }
+  .license-box .lic-btn:hover { filter: brightness(1.08); }
+  .license-box .lic-msg { font-size: 11px; margin-top: 6px; min-height: 14px; color: var(--text-dim); }
+  .license-box .lic-msg.ok { color: var(--value); }
+  .license-box .lic-msg.err { color: #f87171; }
+  .license-box .lic-status { font-size: 14px; font-weight: 800; color: var(--value); }
+  .license-box .lic-sub { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+  .license-box .lic-change { color: var(--accent); cursor: pointer; text-decoration: underline; margin-left: 8px; font-size: 11px; font-weight: 600; }
 
   /* Strength */
   .strength-section { display: flex; margin-bottom: 4px; }
@@ -392,26 +439,35 @@
 <body>
 <div class="app">
   <div class="header">
-    <h1>World Cup 2026 智能赛事分析引擎</h1>
-    <div class="sub">攻防分离泊松模型 + Dixon-Coles 低比分修正 &middot; 全盘口概率 &middot; 赔率价值与凯利投注计算</div>
+    <h1>全球足球智能赛事分析引擎</h1>
+    <div class="sub">覆盖全球足彩热门赛事：世界杯/欧洲杯/美洲杯/亚洲杯 · 欧冠/欧联 · 五大联赛及英冠/荷/葡/苏/瑞/比/土/俄 · 日职/K职联/中超/澳超/沙特超 · 美职联/巴甲/阿甲/墨超 &middot; 泊松 + Dixon-Coles 模型 · 全盘口概率 · 凯利价值计算</div>
   </div>
 
   <!-- Setup card -->
   <div class="card">
-    <div class="card-title">选择对阵 / Match Setup</div>
+    <div class="setup-head">
+      <div class="card-title" style="margin:0">选择赛事与对阵 / Competition &amp; Match Setup</div>
+      <div class="license-box" id="licenseBox"></div>
+    </div>
+
+    <div class="comp-row">
+      <label class="comp-label" for="compSelect">赛事 / Competition</label>
+      <select id="compSelect"></select>
+      <span class="comp-desc" id="compDesc"></span>
+    </div>
 
     <div class="data-status" id="dataStatus">
       <span class="data-dot"></span>
       <span id="dataStatusText">正在连接实时赛程数据…</span>
     </div>
 
-    <div class="fixture-row">
+    <div class="fixture-row" id="fixtureRow">
       <div class="fx-date">
         <label style="display:block; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:var(--text-dim); margin-bottom:8px;">日期 / Date</label>
         <select id="dateSelect"><option value="">全部日期 / All Dates</option></select>
       </div>
       <div class="fx-pick">
-        <label style="display:block; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:var(--text-dim); margin-bottom:8px;">真实赛程 / Real Fixtures (北京时间 · 自动填充对阵)</label>
+        <label style="display:block; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:var(--text-dim); margin-bottom:8px;">赛程 / Fixtures (北京时间 · 自动填充对阵)</label>
         <select id="fixtureSelect"><option value="">-- 选择一场真实比赛 --</option></select>
       </div>
       <button class="btn-mini" id="refreshBtn">刷新比分</button>
@@ -547,7 +603,7 @@
     </div>
 
     <!-- Knockout bracket (official structure, hourly) -->
-    <div class="card">
+    <div class="card" id="koCard">
       <div class="card-title">淘汰赛对阵图 / Knockout Bracket<span class="ko-stamp" id="koStamp"></span></div>
       <div class="kb-wrap"><div class="kb-bracket" id="koBracket"></div></div>
       <div class="ko-note">FIFA 官方固定赛制（32 强 M73 → 决赛 M104），仅依据真实赛果填充，不做胜负推测。<strong style="color:var(--value)">已锁定名次的球队（小组全部赛完）直接填入对应位置</strong>（绿色高亮，后附原名额标签）；第三名按官方可选组别匹配填入；<strong style="color:var(--value)">每场淘汰赛结束后，真实胜者自动进入下一轮</strong>（点球决胜若接口仅给常规时间比分则暂留名额）；未定位置显示名额（小组名次 / 第三名组别组合 / 胜者编号）。对阵图<strong style="color:var(--accent)">每 1 小时刷新</strong>。</div>
@@ -594,14 +650,21 @@
     <div class="card">
       <div class="card-title">球队状态 · 关键球员 · 阵容深度 / Form, Key Players &amp; Depth</div>
       <div class="form-grid" id="formGrid"></div>
-      <div class="form-note">「赛前近况」为参赛队近两月整体状态的综合评估基准；「本届战绩」依据世界杯赛果叠加进综合状态指数，<strong style="color:var(--accent)">每 24 小时自动更新</strong>（更新于 <span id="formUpdated">--</span>）。关键球员评分与板凳深度为球队综合实力参考。</div>
+      <div class="form-note">「赛前近况」为球队近两月整体状态的综合评估基准；「本赛事战绩」依据当前赛事的实时赛果叠加进综合状态指数（世界杯等杯赛提供实时数据，联赛以近况基准为准），<strong style="color:var(--accent)">每 24 小时自动更新</strong>（更新于 <span id="formUpdated">--</span>）。关键球员评分与板凳深度为球队综合实力参考。</div>
     </div>
 
     <!-- Last 3 months results & status -->
     <div class="card">
       <div class="card-title">近3个月战绩与状态评估 / Last 3 Months Form</div>
       <div class="form-grid" id="recentGrid"></div>
-      <div class="form-note">统计所选两队<strong style="color:var(--accent)">最近约 3 个月</strong>的对战结果（赛前热身赛 / 预选赛 / 洲际邀请赛），并据此给出状态评分与走势，<strong style="color:var(--accent)">每 24 小时自动更新</strong>（更新于 <span id="recentUpdated">--</span>）。标签：友 = 友谊赛，预 = 预选赛，邀 = 洲际邀请赛。此部分为综合整理的估算数据，仅供参考。</div>
+      <div class="form-note">统计所选两队<strong style="color:var(--accent)">最近约 3 个月</strong>的对战结果，并据此给出状态评分与走势，<strong style="color:var(--accent)">每 24 小时自动更新</strong>（更新于 <span id="recentUpdated">--</span>）。标签：友=友谊赛，预=预选赛，邀=洲际邀请赛（国家队）；联=联赛，杯=国内杯赛，洲=洲际赛事（俱乐部）。此部分为综合整理的估算数据，仅供参考。</div>
+    </div>
+
+    <!-- League standings (non-World-Cup only) -->
+    <div class="card" id="standingsCard" style="display:none">
+      <div class="card-title">赛事积分榜 / League Standings</div>
+      <table class="standings-table" id="standingsTable"></table>
+      <div class="form-note">当前赛事真实积分榜（仅收录已提供真实数据的赛事），<strong style="color:var(--accent)">每 12 小时自动更新</strong>（更新于 <span id="standingsUpdated">--</span>）。所选两队所在行分别以<span style="color:#38bdf8">蓝</span>／<span style="color:#f87171">红</span>高亮。列：场=已赛，胜/平/负，进=进球，失=失球，净=净胜球，积=积分。</div>
     </div>
 
     <!-- Value betting -->
@@ -638,8 +701,8 @@
     </div>
   </div>
 
-  <div class="footer">
-    World Cup 2026 Analytics Engine &middot; 48 队 / 12 组 &middot; Bivariate Poisson + Dixon-Coles Model
+  <div class="footer" id="footer">
+    Global Football Analytics Engine &middot; 30 赛事 / 620+ 球队 &middot; Bivariate Poisson + Dixon-Coles Model
   </div>
 </div>
 
@@ -647,8 +710,8 @@
 (function() {
   "use strict";
 
-  /* ---------- Team data: attack & defense ratings (0-1 scale) ---------- */
-  const TEAMS = [
+  /* ---------- World Cup team data: attack & defense ratings (0-1 scale) ---------- */
+  const WC_TEAMS = [
     { id:"1",  name:"墨西哥 Mexico",        group:"A", atk:0.84, def:0.78 },
     { id:"2",  name:"南非 South Africa",    group:"A", atk:0.52, def:0.55 },
     { id:"3",  name:"韩国 South Korea",     group:"A", atk:0.66, def:0.68 },
@@ -702,7 +765,7 @@
   /* ---------- Squad profiles (curated) ----------
      d = 板凳/阵容深度 0-100, f = 赛前近两月综合状态基准 0-100,
      p = 关键球员 [姓名, 位置, 综合评分 0-100]. 世界杯期间战绩由实时数据叠加更新。 */
-  const SQUADS = {
+  const WC_SQUADS = {
     "1":  { d:70, f:68, p:[["Santiago Giménez","FW",80],["Edson Álvarez","MF",81],["Hirving Lozano","FW",80]] },
     "2":  { d:52, f:55, p:[["Percy Tau","FW",74],["Lyle Foster","FW",74],["Ronwen Williams","GK",78]] },
     "3":  { d:68, f:70, p:[["Son Heung-min","FW",87],["Lee Kang-in","MF",82],["Kim Min-jae","DF",85]] },
@@ -752,11 +815,22 @@
     "47": { d:60, f:60, p:[["Mohammed Kudus","MF",83],["Iñaki Williams","FW",80],["Thomas Partey","MF",81]] },
     "48": { d:42, f:50, p:[["Adalberto Carrasquilla","MF",74],["José Fajardo","FW",72],["Aníbal Godoy","MF",72]] },
   };
-  function squad(id) { return SQUADS[id] || { d:50, f:55, p:[] }; }
+  // Curated squad if available; otherwise derive plausible depth/form from the team's
+  // attack/defense ratings so the depth bar & form baseline stay meaningful for
+  // rating-only competitions (key players / recent left empty -> graceful fallback UI).
+  function squad(id) {
+    if (SQUADS[id]) return SQUADS[id];
+    const t = (typeof TEAMS !== "undefined" ? TEAMS : []).find(x => x.id === id);
+    if (t) {
+      const o = (t.atk + t.def) / 2; // overall 0.2..1.0
+      return { d: Math.round(30 + o * 60), f: Math.round(35 + o * 55), p: [] };
+    }
+    return { d:50, f:55, p:[] };
+  }
 
   /* ---------- Last 3 months results (curated, oldest -> newest) ----------
      Each entry: [对手, 本队进球, 本队失球, 赛事类型]  (友=友谊赛, 预=预选赛, 邀=洲际邀请赛) */
-  const RECENT3M = {
+  const WC_RECENT3M = {
     "1":  [["哥斯达黎加",2,0,"邀"],["美国",1,2,"邀"],["加纳",3,1,"友"],["瑞士",1,1,"友"],["巴拉圭",2,0,"友"]],
     "2":  [["卢旺达",2,0,"预"],["贝宁",1,2,"预"],["尼日利亚",1,1,"友"],["乌干达",2,1,"友"],["赞比亚",1,1,"友"]],
     "3":  [["伊拉克",2,0,"预"],["约旦",1,1,"预"],["日本",1,2,"友"],["阿曼",3,0,"友"],["乌克兰",2,1,"友"]],
@@ -807,6 +881,926 @@
     "48": [["美国",1,3,"邀"],["危地马拉",2,0,"友"],["洪都拉斯",1,1,"友"],["加拿大",1,2,"友"],["哥斯达黎加",1,0,"友"]],
   };
   function recent3m(id) { return RECENT3M[id] || []; }
+
+  /* ============================================================
+     LEAGUE DATASETS — global club competitions
+     Same rating scale as the World Cup (atk/def 0.2–1.0). Club teams have
+     no group; recent-form type labels: 联=联赛, 杯=国内杯赛, 洲=洲际/欧战.
+     These curated ratings are estimates for analysis only.
+     ============================================================ */
+
+  /* ---------- 英超 English Premier League ---------- */
+  const EPL_TEAMS = [
+    { id:"e1",  name:"曼城 Man City",           atk:0.93, def:0.85 },
+    { id:"e2",  name:"阿森纳 Arsenal",          atk:0.90, def:0.88 },
+    { id:"e3",  name:"利物浦 Liverpool",        atk:0.92, def:0.84 },
+    { id:"e4",  name:"切尔西 Chelsea",          atk:0.84, def:0.78 },
+    { id:"e5",  name:"曼联 Man United",         atk:0.78, def:0.74 },
+    { id:"e6",  name:"热刺 Tottenham",          atk:0.82, def:0.70 },
+    { id:"e7",  name:"纽卡斯尔 Newcastle",      atk:0.80, def:0.78 },
+    { id:"e8",  name:"阿斯顿维拉 Aston Villa",  atk:0.78, def:0.74 },
+    { id:"e9",  name:"布莱顿 Brighton",         atk:0.74, def:0.70 },
+    { id:"e10", name:"西汉姆 West Ham",         atk:0.68, def:0.64 },
+    { id:"e11", name:"水晶宫 Crystal Palace",   atk:0.68, def:0.72 },
+    { id:"e12", name:"布伦特福德 Brentford",    atk:0.70, def:0.62 },
+    { id:"e13", name:"富勒姆 Fulham",           atk:0.66, def:0.66 },
+    { id:"e14", name:"伯恩茅斯 Bournemouth",    atk:0.72, def:0.64 },
+    { id:"e15", name:"诺丁汉森林 Nottm Forest", atk:0.70, def:0.72 },
+    { id:"e16", name:"埃弗顿 Everton",          atk:0.60, def:0.68 },
+    { id:"e17", name:"狼队 Wolves",             atk:0.58, def:0.58 },
+    { id:"e18", name:"利兹联 Leeds",            atk:0.56, def:0.54 },
+    { id:"e19", name:"伯恩利 Burnley",          atk:0.52, def:0.54 },
+    { id:"e20", name:"桑德兰 Sunderland",       atk:0.54, def:0.52 },
+  ];
+  const EPL_SQUADS = {
+    "e1":  { d:88, f:80, p:[["Erling Haaland","FW",91],["Rodri","MF",90],["Phil Foden","MF",86]] },
+    "e2":  { d:86, f:82, p:[["Bukayo Saka","FW",87],["Martin Ødegaard","MF",86],["William Saliba","DF",86]] },
+    "e3":  { d:86, f:84, p:[["Mohamed Salah","FW",89],["Virgil van Dijk","DF",88],["Dominik Szoboszlai","MF",84]] },
+    "e4":  { d:82, f:74, p:[["Cole Palmer","MF",87],["Moisés Caicedo","MF",84],["Nicolas Jackson","FW",80]] },
+    "e5":  { d:76, f:66, p:[["Bruno Fernandes","MF",87],["Rasmus Højlund","FW",79],["Kobbie Mainoo","MF",80]] },
+    "e6":  { d:76, f:68, p:[["Son Heung-min","FW",86],["James Maddison","MF",83],["Cristian Romero","DF",84]] },
+    "e7":  { d:74, f:74, p:[["Alexander Isak","FW",86],["Bruno Guimarães","MF",84],["Anthony Gordon","FW",82]] },
+    "e8":  { d:74, f:74, p:[["Ollie Watkins","FW",84],["John McGinn","MF",80],["Emiliano Martínez","GK",85]] },
+    "e9":  { d:70, f:70, p:[["Kaoru Mitoma","FW",82],["Danny Welbeck","FW",78],["Bart Verbruggen","GK",78]] },
+    "e10": { d:68, f:64, p:[["Jarrod Bowen","FW",82],["Mohammed Kudus","MF",82],["Lucas Paquetá","MF",82]] },
+    "e11": { d:66, f:68, p:[["Eberechi Eze","MF",83],["Jean-Philippe Mateta","FW",80],["Marc Guéhi","DF",82]] },
+    "e12": { d:66, f:66, p:[["Bryan Mbeumo","FW",82],["Yoane Wissa","FW",80],["Christian Nørgaard","MF",78]] },
+    "e13": { d:64, f:64, p:[["Raúl Jiménez","FW",78],["Andreas Pereira","MF",78],["Bernd Leno","GK",80]] },
+    "e14": { d:66, f:68, p:[["Antoine Semenyo","FW",79],["Justin Kluivert","FW",78],["Illia Zabarnyi","DF",78]] },
+    "e15": { d:66, f:70, p:[["Morgan Gibbs-White","MF",82],["Chris Wood","FW",78],["Anthony Elanga","FW",79]] },
+    "e16": { d:60, f:60, p:[["Dominic Calvert-Lewin","FW",76],["Jordan Pickford","GK",84],["James Tarkowski","DF",79]] },
+    "e17": { d:58, f:58, p:[["Matheus Cunha","FW",80],["Pablo Sarabia","MF",76],["José Sá","GK",80]] },
+    "e18": { d:56, f:56, p:[["Patrick Bamford","FW",72],["Daniel James","MF",74],["Illan Meslier","GK",74]] },
+    "e19": { d:52, f:52, p:[["Lyle Foster","FW",70],["James Trafford","GK",74],["Josh Cullen","MF",72]] },
+    "e20": { d:54, f:54, p:[["Wilson Isidor","FW",70],["Jobe Bellingham","MF",72],["Patrick Roberts","MF",72]] },
+  };
+  const EPL_RECENT3M = {
+    "e1":  [["切尔西",2,1,"联"],["利物浦",1,1,"联"],["纽卡斯尔",3,0,"联"],["布莱顿",2,2,"联"],["埃弗顿",4,0,"联"]],
+    "e2":  [["曼联",2,0,"联"],["热刺",2,1,"联"],["富勒姆",3,1,"联"],["曼城",1,1,"联"],["维拉",2,0,"联"]],
+    "e3":  [["曼城",1,1,"联"],["切尔西",3,1,"联"],["西汉姆",2,0,"联"],["布莱顿",2,2,"联"],["诺丁汉森林",3,1,"联"]],
+    "e4":  [["曼城",1,2,"联"],["利物浦",1,3,"联"],["狼队",3,0,"联"],["富勒姆",2,1,"联"],["水晶宫",1,1,"联"]],
+    "e5":  [["阿森纳",0,2,"联"],["热刺",2,2,"联"],["埃弗顿",1,0,"联"],["布伦特福德",1,1,"联"],["西汉姆",2,1,"联"]],
+    "e6":  [["阿森纳",1,2,"联"],["曼联",2,2,"联"],["布莱顿",3,1,"联"],["伯恩茅斯",2,0,"联"],["狼队",4,0,"联"]],
+    "e7":  [["曼城",0,3,"联"],["维拉",2,1,"联"],["富勒姆",1,1,"联"],["利兹联",3,0,"联"],["埃弗顿",2,0,"联"]],
+    "e8":  [["阿森纳",0,2,"联"],["纽卡斯尔",1,2,"联"],["伯恩利",3,0,"联"],["热刺",0,0,"联"],["西汉姆",2,1,"联"]],
+    "e9":  [["利物浦",2,2,"联"],["热刺",1,3,"联"],["桑德兰",2,0,"联"],["曼城",2,2,"联"],["水晶宫",1,1,"联"]],
+    "e10": [["曼联",1,2,"联"],["利物浦",0,2,"联"],["狼队",2,1,"联"],["维拉",1,2,"联"],["伯恩利",3,1,"联"]],
+    "e11": [["切尔西",1,1,"联"],["布莱顿",1,1,"联"],["利兹联",2,0,"联"],["曼城",0,2,"联"],["富勒姆",2,1,"联"]],
+    "e12": [["曼联",1,1,"联"],["热刺",2,3,"联"],["伯恩茅斯",2,2,"联"],["桑德兰",3,0,"联"],["埃弗顿",1,0,"联"]],
+    "e13": [["切尔西",1,2,"联"],["纽卡斯尔",1,1,"联"],["水晶宫",1,2,"联"],["狼队",2,0,"联"],["利兹联",1,1,"联"]],
+    "e14": [["布伦特福德",2,2,"联"],["热刺",0,2,"联"],["伯恩利",3,1,"联"],["埃弗顿",1,1,"联"],["利物浦",1,3,"联"]],
+    "e15": [["利物浦",1,3,"联"],["水晶宫",1,1,"联"],["狼队",2,0,"联"],["曼联",2,2,"联"],["桑德兰",2,1,"联"]],
+    "e16": [["曼联",0,1,"联"],["纽卡斯尔",0,2,"联"],["布伦特福德",0,1,"联"],["伯恩利",2,1,"联"],["富勒姆",1,1,"联"]],
+    "e17": [["热刺",0,4,"联"],["切尔西",0,3,"联"],["富勒姆",0,2,"联"],["伯恩利",1,1,"联"],["曼联",1,2,"联"]],
+    "e18": [["水晶宫",0,2,"联"],["埃弗顿",1,1,"联"],["富勒姆",1,1,"联"],["纽卡斯尔",0,3,"联"],["布伦特福德",1,2,"联"]],
+    "e19": [["维拉",0,3,"联"],["狼队",1,1,"联"],["伯恩茅斯",1,3,"联"],["埃弗顿",1,2,"联"],["桑德兰",1,1,"联"]],
+    "e20": [["布莱顿",0,2,"联"],["布伦特福德",0,3,"联"],["伯恩利",1,1,"联"],["曼联",1,2,"联"],["利兹联",2,1,"联"]],
+  };
+
+  /* ---------- 中超 Chinese Super League ---------- */
+  const CSL_TEAMS = [
+    { id:"c1",  name:"上海海港 Shanghai Port",       atk:0.72, def:0.66 },
+    { id:"c2",  name:"上海申花 Shanghai Shenhua",    atk:0.70, def:0.68 },
+    { id:"c3",  name:"成都蓉城 Chengdu Rongcheng",   atk:0.68, def:0.66 },
+    { id:"c4",  name:"北京国安 Beijing Guoan",       atk:0.66, def:0.62 },
+    { id:"c5",  name:"山东泰山 Shandong Taishan",    atk:0.68, def:0.60 },
+    { id:"c6",  name:"浙江队 Zhejiang FC",           atk:0.64, def:0.58 },
+    { id:"c7",  name:"武汉三镇 Wuhan Three Towns",   atk:0.60, def:0.56 },
+    { id:"c8",  name:"天津津门虎 Tianjin Jinmen",    atk:0.56, def:0.58 },
+    { id:"c9",  name:"河南队 Henan FC",              atk:0.54, def:0.56 },
+    { id:"c10", name:"青岛海牛 Qingdao Hainiu",      atk:0.50, def:0.54 },
+    { id:"c11", name:"长春亚泰 Changchun Yatai",     atk:0.52, def:0.52 },
+    { id:"c12", name:"大连英博 Dalian Yingbo",       atk:0.50, def:0.50 },
+    { id:"c13", name:"深圳新鹏城 Shenzhen Peng City",atk:0.48, def:0.52 },
+    { id:"c14", name:"青岛西海岸 Qingdao West Coast",atk:0.46, def:0.48 },
+    { id:"c15", name:"云南玉昆 Yunnan Yukun",        atk:0.46, def:0.46 },
+    { id:"c16", name:"梅州客家 Meizhou Hakka",       atk:0.44, def:0.46 },
+  ];
+  const CSL_SQUADS = {
+    "c1":  { d:70, f:74, p:[["武磊 Wu Lei","FW",80],["巴尔加斯 Vargas","FW",80],["李昂 Li Ang","DF",74]] },
+    "c2":  { d:68, f:72, p:[["马莱莱 Malele","FW",78],["于汉超 Yu Hanchao","MF",72],["蒋圣龙 Jiang Shenglong","DF",75]] },
+    "c3":  { d:66, f:70, p:[["费利佩 Felipe","FW",77],["韦世豪 Wei Shihao","FW",76],["罗慕洛 Romulo","MF",76]] },
+    "c4":  { d:64, f:66, p:[["张玉宁 Zhang Yuning","FW",78],["古加 Guga","FW",76],["李磊 Li Lei","DF",73]] },
+    "c5":  { d:64, f:64, p:[["克雷桑 Cresnar","FW",78],["费莱尼 Fellaini","MF",78],["石柯 Shi Ke","DF",74]] },
+    "c6":  { d:60, f:62, p:[["莱昂纳多 Leonardo","FW",76],["穆谢奎 Musleh","FW",74],["王钰栋 Wang Yudong","FW",72]] },
+    "c7":  { d:58, f:58, p:[["斯坦丘 Stanciu","MF",80],["马尔康 Malcom","FW",76],["谢鹏飞 Xie Pengfei","MF",72]] },
+    "c8":  { d:54, f:56, p:[["贝里奇 Beric","FW",74],["王秋明 Wang Qiuming","MF",70],["巴顿 Barton","MF",70]] },
+    "c9":  { d:54, f:54, p:[["卡兰加 Kalanga","FW",73],["多拉多 Dourado","FW",73],["黄紫昌 Huang Zichang","MF",70]] },
+    "c10": { d:50, f:52, p:[["高翔 Gao Xiang","MF",68],["斯泰潘 Stepan","FW",71],["莱昂 Leon","DF",68]] },
+    "c11": { d:52, f:52, p:[["谭龙 Tan Long","FW",73],["塞尔吉尼奥 Serginho","MF",72],["张力 Zhang Li","DF",68]] },
+    "c12": { d:50, f:50, p:[["曼佐基 Manzoki","FW",71],["林良铭 Lin Liangming","FW",73],["童磊 Tong Lei","DF",68]] },
+    "c13": { d:48, f:50, p:[["塞尔纳斯 Cernat","MF",70],["普雷西亚多 Preciado","FW",72],["戴伟浚 Dai Weijun","MF",71]] },
+    "c14": { d:46, f:48, p:[["巴巴卡尔 Babacar","FW",70],["高华泽 Gao Huaze","MF",66],["宋龙 Song Long","DF",66]] },
+    "c15": { d:46, f:48, p:[["韦斯利 Wesley","FW",70],["王上源 Wang Shangyuan","MF",68],["陈业 Chen Ye","DF",64]] },
+    "c16": { d:44, f:46, p:[["杜加利奇 Dugalic","FW",70],["廖锦涛 Liao Jintao","MF",66],["尹聪耀 Yin Congyao","FW",66]] },
+  };
+  const CSL_RECENT3M = {
+    "c1":  [["山东泰山",2,1,"联"],["北京国安",1,0,"联"],["成都蓉城",1,1,"联"],["浙江队",3,1,"联"],["申花",1,1,"联"]],
+    "c2":  [["成都蓉城",2,0,"联"],["浙江队",1,1,"联"],["天津津门虎",2,1,"联"],["海港",1,1,"联"],["河南队",3,0,"联"]],
+    "c3":  [["申花",0,2,"联"],["海港",1,1,"联"],["武汉三镇",2,0,"联"],["长春亚泰",2,1,"联"],["青岛海牛",1,0,"联"]],
+    "c4":  [["海港",0,1,"联"],["山东泰山",1,1,"联"],["深圳新鹏城",2,0,"联"],["梅州客家",3,1,"联"],["浙江队",1,2,"联"]],
+    "c5":  [["海港",1,2,"联"],["国安",1,1,"联"],["河南队",3,0,"联"],["青岛西海岸",2,0,"联"],["武汉三镇",2,1,"联"]],
+    "c6":  [["海港",1,3,"联"],["申花",1,1,"联"],["天津津门虎",2,1,"联"],["国安",2,1,"联"],["云南玉昆",3,0,"联"]],
+    "c7":  [["成都蓉城",0,2,"联"],["山东泰山",1,2,"联"],["大连英博",2,1,"联"],["长春亚泰",1,1,"联"],["梅州客家",2,0,"联"]],
+    "c8":  [["申花",1,2,"联"],["浙江队",1,2,"联"],["河南队",1,1,"联"],["青岛海牛",2,1,"联"],["深圳新鹏城",1,1,"联"]],
+    "c9":  [["申花",0,3,"联"],["山东泰山",0,3,"联"],["天津津门虎",1,1,"联"],["云南玉昆",2,1,"联"],["青岛西海岸",1,0,"联"]],
+    "c10": [["成都蓉城",0,1,"联"],["天津津门虎",1,2,"联"],["梅州客家",1,1,"联"],["大连英博",1,1,"联"],["长春亚泰",0,2,"联"]],
+    "c11": [["武汉三镇",1,1,"联"],["成都蓉城",1,2,"联"],["青岛海牛",2,0,"联"],["云南玉昆",1,1,"联"],["深圳新鹏城",1,0,"联"]],
+    "c12": [["武汉三镇",1,2,"联"],["青岛海牛",1,1,"联"],["青岛西海岸",2,1,"联"],["梅州客家",1,1,"联"],["河南队",0,1,"联"]],
+    "c13": [["国安",0,2,"联"],["天津津门虎",1,1,"联"],["长春亚泰",0,1,"联"],["云南玉昆",1,1,"联"],["青岛西海岸",2,1,"联"]],
+    "c14": [["山东泰山",0,2,"联"],["河南队",0,1,"联"],["大连英博",1,2,"联"],["深圳新鹏城",1,2,"联"],["梅州客家",1,1,"联"]],
+    "c15": [["河南队",1,2,"联"],["浙江队",0,3,"联"],["长春亚泰",1,1,"联"],["深圳新鹏城",1,1,"联"],["青岛西海岸",1,1,"联"]],
+    "c16": [["国安",1,3,"联"],["武汉三镇",0,2,"联"],["青岛海牛",1,1,"联"],["大连英博",1,1,"联"],["云南玉昆",1,1,"联"]],
+  };
+
+  /* ---------- K职联 K League 1 (Korea) ---------- */
+  const KL_TEAMS = [
+    { id:"k1",  name:"蔚山现代 Ulsan HD",          atk:0.74, def:0.68 },
+    { id:"k2",  name:"全北现代 Jeonbuk Motors",    atk:0.72, def:0.66 },
+    { id:"k3",  name:"金泉尚武 Gimcheon Sangmu",   atk:0.66, def:0.62 },
+    { id:"k4",  name:"浦项制铁 Pohang Steelers",   atk:0.66, def:0.64 },
+    { id:"k5",  name:"首尔FC FC Seoul",            atk:0.72, def:0.66 },
+    { id:"k6",  name:"光州FC Gwangju FC",          atk:0.50, def:0.50 },
+    { id:"k7",  name:"仁川联 Incheon United",      atk:0.62, def:0.62 },
+    { id:"k8",  name:"江原FC Gangwon FC",          atk:0.64, def:0.60 },
+    { id:"k9",  name:"富川FC1995 Bucheon FC 1995", atk:0.56, def:0.54 },
+    { id:"k10", name:"济州SK Jeju SK",             atk:0.56, def:0.56 },
+    { id:"k11", name:"大田市民 Daejeon Hana",      atk:0.54, def:0.52 },
+    { id:"k12", name:"安养FC FC Anyang",           atk:0.50, def:0.52 },
+  ];
+  const KL_SQUADS = {
+    "k1":  { d:70, f:72, p:[["Erick Farías","FW",78],["Lee Chung-yong","MF",76],["Kim Young-gwon","DF",78]] },
+    "k2":  { d:68, f:68, p:[["Tiago Orobó","FW",77],["Lee Seung-woo","MF",78],["Song Bum-keun","GK",78]] },
+    "k3":  { d:64, f:70, p:[["Lee Dong-gyeong","MF",78],["Cho Gue-sung","FW",79],["Kim Tae-hyeon","DF",73]] },
+    "k4":  { d:62, f:64, p:[["Lars Veldwijk","FW",76],["Han Chan-hee","MF",73],["Hwang In-jae","DF",72]] },
+    "k5":  { d:62, f:62, p:[["Jesse Lingard","MF",78],["Ilyutchenko","FW",75],["Ki Sung-yueng","MF",76]] },
+    "k6":  { d:52, f:54, p:[["Asani","MF",75],["Jasir Asani","FW",75],["Ahn Young-gyu","DF",70]] },
+    "k8":  { d:60, f:64, p:[["Yang Min-hyeok","FW",76],["Lee Sang-heon","MF",72],["Kim Dae-woo","DF",70]] },
+    "k10": { d:56, f:56, p:[["Yuri","FW",74],["Kim Bong-soo","MF",71],["Jeong Woon","DF",70]] },
+    "k11": { d:54, f:52, p:[["Joo Min-kyu","FW",75],["Lee Jin-hyun","MF",70],["Lee Chang-geun","DF",69]] },
+    "k12": { d:50, f:52, p:[["Mo Jae-hyeon","FW",71],["Kim Un-seong","MF",69],["Park Jae-yong","DF",68]] },
+  };
+  const KL_RECENT3M = {
+    "k1":  [["全北现代",2,1,"联"],["浦项制铁",1,1,"联"],["首尔FC",3,0,"联"],["江原FC",2,2,"联"],["仁川联",2,0,"联"]],
+    "k2":  [["蔚山现代",1,2,"联"],["金泉尚武",1,1,"联"],["济州SK",2,0,"联"],["富川FC1995",3,1,"联"],["大田市民",2,1,"联"]],
+    "k3":  [["江原FC",2,0,"联"],["全北现代",1,1,"联"],["光州FC",2,1,"联"],["首尔FC",1,1,"联"],["安养FC",3,0,"联"]],
+    "k4":  [["蔚山现代",1,1,"联"],["仁川联",2,1,"联"],["济州SK",1,1,"联"],["富川FC1995",2,0,"联"],["首尔FC",1,2,"联"]],
+    "k5":  [["蔚山现代",2,1,"联"],["金泉尚武",2,1,"联"],["浦项制铁",2,1,"联"],["安养FC",2,0,"联"],["江原FC",1,1,"联"]],
+    "k6":  [["金泉尚武",1,2,"联"],["江原FC",1,1,"联"],["仁川联",0,2,"联"],["大田市民",1,1,"联"],["济州SK",1,1,"联"]],
+    "k7":  [["蔚山现代",1,1,"联"],["浦项制铁",1,2,"联"],["光州FC",2,0,"联"],["富川FC1995",2,1,"联"],["安养FC",2,1,"联"]],
+    "k8":  [["金泉尚武",0,2,"联"],["蔚山现代",2,2,"联"],["济州SK",2,0,"联"],["大田市民",1,1,"联"],["首尔FC",1,1,"联"]],
+    "k9":  [["全北现代",1,3,"联"],["浦项制铁",0,2,"联"],["仁川联",1,2,"联"],["安养FC",1,1,"联"],["大田市民",2,2,"联"]],
+    "k10": [["全北现代",0,2,"联"],["江原FC",1,1,"联"],["富川FC1995",2,0,"联"],["仁川联",1,1,"联"],["光州FC",1,1,"联"]],
+    "k11": [["全北现代",1,2,"联"],["光州FC",1,2,"联"],["首尔FC",1,1,"联"],["富川FC1995",2,2,"联"],["安养FC",2,0,"联"]],
+    "k12": [["首尔FC",0,2,"联"],["金泉尚武",0,3,"联"],["仁川联",1,2,"联"],["大田市民",0,2,"联"],["富川FC1995",1,1,"联"]],
+  };
+
+  /* ---------- 西甲 La Liga ---------- */
+  const ES_TEAMS = [
+    { id:"es1", name:"皇家马德里 Real Madrid", atk:0.94, def:0.86 },
+    { id:"es2", name:"巴塞罗那 Barcelona",      atk:0.93, def:0.82 },
+    { id:"es3", name:"马德里竞技 Atlético",     atk:0.84, def:0.86 },
+    { id:"es4", name:"毕尔巴鄂 Athletic Club",  atk:0.76, def:0.78 },
+    { id:"es5", name:"皇家社会 Real Sociedad",  atk:0.72, def:0.72 },
+    { id:"es6", name:"比利亚雷亚尔 Villarreal", atk:0.76, def:0.70 },
+    { id:"es7", name:"皇家贝蒂斯 Real Betis",   atk:0.72, def:0.68 },
+    { id:"es8", name:"塞维利亚 Sevilla",        atk:0.66, def:0.66 },
+    { id:"es9", name:"赫罗纳 Girona",           atk:0.68, def:0.62 },
+    { id:"es10",name:"巴伦西亚 Valencia",       atk:0.62, def:0.64 },
+    { id:"es11",name:"塞尔塔 Celta Vigo",       atk:0.64, def:0.60 },
+    { id:"es12",name:"奥萨苏纳 Osasuna",        atk:0.58, def:0.62 },
+    { id:"es13",name:"赫塔菲 Getafe",           atk:0.54, def:0.66 },
+    { id:"es14",name:"马略卡 Mallorca",         atk:0.56, def:0.64 },
+    { id:"es15",name:"拉约 Rayo Vallecano",     atk:0.58, def:0.62 },
+    { id:"es16",name:"西班牙人 Espanyol",       atk:0.56, def:0.58 },
+    { id:"es17",name:"阿拉维斯 Alavés",         atk:0.54, def:0.58 },
+    { id:"es18",name:"莱万特 Levante",          atk:0.52, def:0.52 },
+    { id:"es19",name:"埃尔切 Elche",            atk:0.50, def:0.54 },
+    { id:"es20",name:"奥维耶多 Real Oviedo",    atk:0.48, def:0.52 },
+  ];
+
+  /* ---------- 意甲 Serie A ---------- */
+  const IT_TEAMS = [
+    { id:"it1", name:"国际米兰 Inter",          atk:0.90, def:0.86 },
+    { id:"it2", name:"那不勒斯 Napoli",         atk:0.86, def:0.84 },
+    { id:"it3", name:"尤文图斯 Juventus",       atk:0.82, def:0.82 },
+    { id:"it4", name:"AC米兰 AC Milan",         atk:0.84, def:0.78 },
+    { id:"it5", name:"亚特兰大 Atalanta",       atk:0.84, def:0.76 },
+    { id:"it6", name:"罗马 AS Roma",            atk:0.76, def:0.78 },
+    { id:"it7", name:"拉齐奥 Lazio",            atk:0.74, def:0.74 },
+    { id:"it8", name:"佛罗伦萨 Fiorentina",     atk:0.72, def:0.72 },
+    { id:"it9", name:"博洛尼亚 Bologna",        atk:0.72, def:0.74 },
+    { id:"it10",name:"都灵 Torino",             atk:0.62, def:0.66 },
+    { id:"it11",name:"乌迪内斯 Udinese",        atk:0.60, def:0.64 },
+    { id:"it12",name:"科莫 Como",               atk:0.64, def:0.62 },
+    { id:"it13",name:"热那亚 Genoa",            atk:0.56, def:0.62 },
+    { id:"it14",name:"卡利亚里 Cagliari",       atk:0.54, def:0.58 },
+    { id:"it15",name:"维罗纳 Hellas Verona",    atk:0.52, def:0.58 },
+    { id:"it16",name:"莱切 Lecce",              atk:0.52, def:0.56 },
+    { id:"it17",name:"帕尔马 Parma",            atk:0.54, def:0.56 },
+    { id:"it18",name:"萨索洛 Sassuolo",         atk:0.58, def:0.54 },
+    { id:"it19",name:"比萨 Pisa",               atk:0.50, def:0.54 },
+    { id:"it20",name:"克雷莫纳 Cremonese",      atk:0.48, def:0.52 },
+  ];
+
+  /* ---------- 德甲 Bundesliga ---------- */
+  const DE_TEAMS = [
+    { id:"de1", name:"拜仁慕尼黑 Bayern",       atk:0.94, def:0.86 },
+    { id:"de2", name:"勒沃库森 Leverkusen",     atk:0.86, def:0.82 },
+    { id:"de3", name:"多特蒙德 Dortmund",       atk:0.84, def:0.76 },
+    { id:"de4", name:"莱比锡 RB Leipzig",       atk:0.82, def:0.80 },
+    { id:"de5", name:"斯图加特 Stuttgart",      atk:0.78, def:0.72 },
+    { id:"de6", name:"法兰克福 Frankfurt",      atk:0.78, def:0.72 },
+    { id:"de7", name:"弗赖堡 Freiburg",         atk:0.68, def:0.70 },
+    { id:"de8", name:"沃尔夫斯堡 Wolfsburg",    atk:0.66, def:0.64 },
+    { id:"de9", name:"门兴 M'gladbach",         atk:0.66, def:0.62 },
+    { id:"de10",name:"美因茨 Mainz",            atk:0.64, def:0.66 },
+    { id:"de11",name:"云达不莱梅 Werder Bremen",atk:0.64, def:0.60 },
+    { id:"de12",name:"霍芬海姆 Hoffenheim",     atk:0.62, def:0.58 },
+    { id:"de13",name:"奥格斯堡 Augsburg",       atk:0.58, def:0.60 },
+    { id:"de14",name:"柏林联合 Union Berlin",   atk:0.56, def:0.62 },
+    { id:"de15",name:"科隆 Köln",               atk:0.58, def:0.56 },
+    { id:"de16",name:"圣保利 St. Pauli",        atk:0.52, def:0.60 },
+    { id:"de17",name:"海登海姆 Heidenheim",     atk:0.52, def:0.54 },
+    { id:"de18",name:"汉堡 Hamburg",            atk:0.54, def:0.54 },
+  ];
+
+  /* ---------- 法甲 Ligue 1 ---------- */
+  const FR_TEAMS = [
+    { id:"fr1", name:"巴黎圣日耳曼 PSG",        atk:0.94, def:0.86 },
+    { id:"fr2", name:"摩纳哥 Monaco",           atk:0.80, def:0.74 },
+    { id:"fr3", name:"马赛 Marseille",          atk:0.80, def:0.74 },
+    { id:"fr4", name:"里尔 Lille",              atk:0.76, def:0.76 },
+    { id:"fr5", name:"里昂 Lyon",               atk:0.74, def:0.70 },
+    { id:"fr6", name:"尼斯 Nice",               atk:0.72, def:0.74 },
+    { id:"fr7", name:"里尔斯特拉斯堡 Strasbourg",atk:0.70, def:0.66 },
+    { id:"fr8", name:"朗斯 Lens",               atk:0.68, def:0.70 },
+    { id:"fr9", name:"雷恩 Rennes",             atk:0.68, def:0.64 },
+    { id:"fr10",name:"布雷斯特 Brest",          atk:0.64, def:0.62 },
+    { id:"fr11",name:"图卢兹 Toulouse",         atk:0.62, def:0.62 },
+    { id:"fr12",name:"欧塞尔 Auxerre",          atk:0.58, def:0.58 },
+    { id:"fr13",name:"南特 Nantes",             atk:0.56, def:0.60 },
+    { id:"fr14",name:"昂热 Angers",             atk:0.52, def:0.58 },
+    { id:"fr15",name:"勒阿弗尔 Le Havre",       atk:0.52, def:0.56 },
+    { id:"fr16",name:"洛里昂 Lorient",          atk:0.54, def:0.54 },
+    { id:"fr17",name:"梅斯 Metz",               atk:0.50, def:0.52 },
+    { id:"fr18",name:"巴黎FC Paris FC",         atk:0.54, def:0.54 },
+  ];
+
+  /* ---------- 英冠 EFL Championship ---------- */
+  const EC_TEAMS = [
+    { id:"ec1", name:"莱斯特城 Leicester",      atk:0.68, def:0.62 },
+    { id:"ec2", name:"南安普顿 Southampton",    atk:0.66, def:0.60 },
+    { id:"ec3", name:"伊普斯维奇 Ipswich",      atk:0.64, def:0.60 },
+    { id:"ec4", name:"米德尔斯堡 Middlesbrough",atk:0.62, def:0.60 },
+    { id:"ec5", name:"西布罗姆 West Brom",      atk:0.60, def:0.62 },
+    { id:"ec6", name:"考文垂 Coventry",         atk:0.62, def:0.58 },
+    { id:"ec7", name:"诺维奇 Norwich",          atk:0.60, def:0.56 },
+    { id:"ec8", name:"布里斯托城 Bristol City", atk:0.58, def:0.58 },
+    { id:"ec9", name:"谢周三 Sheffield Wed",    atk:0.56, def:0.56 },
+    { id:"ec10",name:"斯旺西 Swansea",          atk:0.56, def:0.56 },
+    { id:"ec11",name:"沃特福德 Watford",        atk:0.58, def:0.54 },
+    { id:"ec12",name:"赫尔城 Hull City",        atk:0.54, def:0.56 },
+    { id:"ec13",name:"普雷斯顿 Preston",        atk:0.52, def:0.58 },
+    { id:"ec14",name:"米尔沃尔 Millwall",       atk:0.52, def:0.58 },
+    { id:"ec15",name:"布莱克本 Blackburn",      atk:0.54, def:0.54 },
+    { id:"ec16",name:"卡迪夫城 Cardiff",        atk:0.52, def:0.54 },
+    { id:"ec17",name:"QPR 女王公园",            atk:0.52, def:0.52 },
+    { id:"ec18",name:"斯托克城 Stoke City",     atk:0.52, def:0.54 },
+    { id:"ec19",name:"德比郡 Derby County",     atk:0.50, def:0.54 },
+    { id:"ec20",name:"谢菲联 Sheffield Utd",    atk:0.56, def:0.56 },
+    { id:"ec21",name:"卢顿 Luton Town",         atk:0.52, def:0.52 },
+    { id:"ec22",name:"牛津联 Oxford Utd",       atk:0.48, def:0.50 },
+    { id:"ec23",name:"朴茨茅斯 Portsmouth",     atk:0.48, def:0.52 },
+    { id:"ec24",name:"查尔顿 Charlton",         atk:0.48, def:0.50 },
+  ];
+
+  /* ---------- 荷甲 Eredivisie ---------- */
+  const NL_TEAMS = [
+    { id:"nl1", name:"埃因霍温 PSV",            atk:0.84, def:0.76 },
+    { id:"nl2", name:"阿贾克斯 Ajax",           atk:0.80, def:0.74 },
+    { id:"nl3", name:"费耶诺德 Feyenoord",      atk:0.80, def:0.74 },
+    { id:"nl4", name:"阿尔克马尔 AZ Alkmaar",   atk:0.72, def:0.68 },
+    { id:"nl5", name:"乌得勒支 Utrecht",        atk:0.68, def:0.66 },
+    { id:"nl6", name:"特温特 Twente",           atk:0.68, def:0.66 },
+    { id:"nl7", name:"海伦芬 Heerenveen",       atk:0.60, def:0.58 },
+    { id:"nl8", name:"戈埃斯 Go Ahead Eagles",  atk:0.58, def:0.60 },
+    { id:"nl9", name:"奈梅亨 NEC Nijmegen",     atk:0.58, def:0.58 },
+    { id:"nl10",name:"斯巴达鹿特丹 Sparta",     atk:0.56, def:0.56 },
+    { id:"nl11",name:"福图纳锡塔德 Fortuna",    atk:0.54, def:0.56 },
+    { id:"nl12",name:"兹沃勒 PEC Zwolle",       atk:0.54, def:0.54 },
+    { id:"nl13",name:"格罗宁根 Groningen",      atk:0.54, def:0.56 },
+    { id:"nl14",name:"海牙 ADO Den Haag",       atk:0.52, def:0.52 },
+    { id:"nl15",name:"埃因霍温FC Volendam",     atk:0.50, def:0.52 },
+    { id:"nl16",name:"赫拉克勒斯 Heracles",     atk:0.52, def:0.50 },
+    { id:"nl17",name:"泰尔斯达 Telstar",        atk:0.48, def:0.50 },
+    { id:"nl18",name:"埃克塞尔西奥 Excelsior",  atk:0.48, def:0.50 },
+  ];
+
+  /* ---------- 葡超 Primeira Liga ---------- */
+  const PT_TEAMS = [
+    { id:"pt1", name:"本菲卡 Benfica",          atk:0.86, def:0.80 },
+    { id:"pt2", name:"波尔图 Porto",            atk:0.84, def:0.80 },
+    { id:"pt3", name:"葡萄牙体育 Sporting CP",  atk:0.86, def:0.82 },
+    { id:"pt4", name:"布拉加 Braga",            atk:0.74, def:0.70 },
+    { id:"pt5", name:"吉马良斯 Vitória SC",     atk:0.64, def:0.64 },
+    { id:"pt6", name:"法马利康 Famalicão",      atk:0.62, def:0.60 },
+    { id:"pt7", name:"莫雷伦斯 Moreirense",     atk:0.56, def:0.58 },
+    { id:"pt8", name:"圣克拉拉 Santa Clara",    atk:0.56, def:0.58 },
+    { id:"pt9", name:"吉尔维森特 Gil Vicente",  atk:0.56, def:0.56 },
+    { id:"pt10",name:"埃斯托里尔 Estoril",      atk:0.54, def:0.56 },
+    { id:"pt11",name:"卡萨皮亚 Casa Pia",       atk:0.52, def:0.56 },
+    { id:"pt12",name:"里奥阿维 Rio Ave",        atk:0.52, def:0.54 },
+    { id:"pt13",name:"纳萨雷纳 Nacional",       atk:0.52, def:0.52 },
+    { id:"pt14",name:"阿罗卡 Arouca",           atk:0.52, def:0.52 },
+    { id:"pt15",name:"法伦斯 Farense",          atk:0.50, def:0.52 },
+    { id:"pt16",name:"埃斯特雷拉 Estrela",      atk:0.50, def:0.52 },
+    { id:"pt17",name:"通德拉 Tondela",          atk:0.48, def:0.50 },
+    { id:"pt18",name:"阿维斯 AVS",              atk:0.48, def:0.48 },
+  ];
+
+  /* ---------- 苏超 Scottish Premiership ---------- */
+  const SC_TEAMS = [
+    { id:"sc1", name:"凯尔特人 Celtic",         atk:0.82, def:0.76 },
+    { id:"sc2", name:"流浪者 Rangers",          atk:0.78, def:0.72 },
+    { id:"sc3", name:"阿伯丁 Aberdeen",         atk:0.64, def:0.64 },
+    { id:"sc4", name:"哈茨 Hearts",             atk:0.64, def:0.62 },
+    { id:"sc5", name:"希伯尼安 Hibernian",      atk:0.62, def:0.60 },
+    { id:"sc6", name:"邓迪联 Dundee Utd",       atk:0.58, def:0.60 },
+    { id:"sc7", name:"基尔马诺克 Kilmarnock",   atk:0.56, def:0.58 },
+    { id:"sc8", name:"圣米伦 St Mirren",        atk:0.54, def:0.58 },
+    { id:"sc9", name:"马瑟韦尔 Motherwell",     atk:0.56, def:0.56 },
+    { id:"sc10",name:"邓迪 Dundee FC",          atk:0.54, def:0.54 },
+    { id:"sc11",name:"利文斯顿 Livingston",     atk:0.50, def:0.54 },
+    { id:"sc12",name:"福尔柯克 Falkirk",        atk:0.50, def:0.52 },
+  ];
+
+  /* ---------- 比甲 Belgian Pro League ---------- */
+  const BE_TEAMS = [
+    { id:"be1", name:"布鲁日 Club Brugge",      atk:0.80, def:0.76 },
+    { id:"be2", name:"安德莱赫特 Anderlecht",   atk:0.74, def:0.72 },
+    { id:"be3", name:"根特 Gent",               atk:0.72, def:0.68 },
+    { id:"be4", name:"标准列日 Standard Liège", atk:0.66, def:0.66 },
+    { id:"be5", name:"皇家联合 Union SG",       atk:0.78, def:0.74 },
+    { id:"be6", name:"亨克 Genk",               atk:0.74, def:0.70 },
+    { id:"be7", name:"安特卫普 Antwerp",        atk:0.70, def:0.68 },
+    { id:"be8", name:"梅赫伦 Mechelen",         atk:0.62, def:0.62 },
+    { id:"be9", name:"沙勒罗瓦 Charleroi",      atk:0.60, def:0.62 },
+    { id:"be10",name:"圣图尔登 Sint-Truiden",   atk:0.56, def:0.58 },
+    { id:"be11",name:"科特赖克 Kortrijk",       atk:0.54, def:0.56 },
+    { id:"be12",name:"欧本 Eupen",              atk:0.52, def:0.54 },
+    { id:"be13",name:"卢万 OH Leuven",          atk:0.56, def:0.56 },
+    { id:"be14",name:"韦斯特洛 Westerlo",       atk:0.56, def:0.54 },
+    { id:"be15",name:"登德尔 Dender",           atk:0.50, def:0.52 },
+    { id:"be16",name:"贝弗伦 Beveren",          atk:0.50, def:0.52 },
+  ];
+
+  /* ---------- 土超 Süper Lig ---------- */
+  const TR_TEAMS = [
+    { id:"tr1", name:"加拉塔萨雷 Galatasaray",  atk:0.84, def:0.80 },
+    { id:"tr2", name:"费内巴切 Fenerbahçe",     atk:0.84, def:0.78 },
+    { id:"tr3", name:"贝西克塔斯 Beşiktaş",     atk:0.74, def:0.70 },
+    { id:"tr4", name:"特拉布宗 Trabzonspor",    atk:0.70, def:0.68 },
+    { id:"tr5", name:"巴萨克 Başakşehir",       atk:0.66, def:0.66 },
+    { id:"tr6", name:"萨姆松 Samsunspor",       atk:0.64, def:0.64 },
+    { id:"tr7", name:"埃于普 Eyüpspor",         atk:0.60, def:0.60 },
+    { id:"tr8", name:"里泽 Rizespor",           atk:0.58, def:0.60 },
+    { id:"tr9", name:"科尼亚 Konyaspor",        atk:0.58, def:0.60 },
+    { id:"tr10",name:"安塔利亚 Antalyaspor",    atk:0.58, def:0.58 },
+    { id:"tr11",name:"卡塞里 Kayserispor",      atk:0.56, def:0.58 },
+    { id:"tr12",name:"加济安泰普 Gaziantep",    atk:0.56, def:0.56 },
+    { id:"tr13",name:"哥兹泰佩 Göztepe",        atk:0.58, def:0.58 },
+    { id:"tr14",name:"阿兰亚 Alanyaspor",       atk:0.56, def:0.56 },
+    { id:"tr15",name:"卡萨帕 Kasımpaşa",        atk:0.54, def:0.54 },
+    { id:"tr16",name:"锡瓦斯 Sivasspor",        atk:0.54, def:0.56 },
+    { id:"tr17",name:"科贾埃利 Kocaelispor",    atk:0.50, def:0.52 },
+    { id:"tr18",name:"卡拉古姆吕克 Karagümrük", atk:0.52, def:0.52 },
+  ];
+
+  /* ---------- 俄超 Russian Premier League ---------- */
+  const RU_TEAMS = [
+    { id:"ru1", name:"泽尼特 Zenit",            atk:0.82, def:0.78 },
+    { id:"ru2", name:"莫斯科火车头 Lokomotiv",  atk:0.74, def:0.70 },
+    { id:"ru3", name:"莫斯科中央陆军 CSKA",     atk:0.74, def:0.72 },
+    { id:"ru4", name:"克拉斯诺达尔 Krasnodar",  atk:0.76, def:0.72 },
+    { id:"ru5", name:"莫斯科斯巴达 Spartak",    atk:0.72, def:0.68 },
+    { id:"ru6", name:"莫斯科迪纳摩 Dinamo M",   atk:0.72, def:0.70 },
+    { id:"ru7", name:"顿河罗斯托夫 Rostov",     atk:0.62, def:0.62 },
+    { id:"ru8", name:"喀山红宝石 Rubin Kazan",  atk:0.62, def:0.62 },
+    { id:"ru9", name:"格罗兹尼 Akhmat",         atk:0.58, def:0.60 },
+    { id:"ru10",name:"下诺夫哥罗德 Pari NN",    atk:0.54, def:0.56 },
+    { id:"ru11",name:"莫斯科迪纳摩2 Dynamo Mkh",atk:0.56, def:0.56 },
+    { id:"ru12",name:"奥伦堡 Orenburg",         atk:0.52, def:0.54 },
+    { id:"ru13",name:"克雷利亚 Krylia Sovetov", atk:0.54, def:0.54 },
+    { id:"ru14",name:"阿克伦 Akron",            atk:0.52, def:0.52 },
+    { id:"ru15",name:"索契 Sochi",              atk:0.52, def:0.52 },
+    { id:"ru16",name:"欣基 Khimki",             atk:0.50, def:0.50 },
+  ];
+
+  /* ---------- 瑞超 Allsvenskan (Sweden) ---------- */
+  const SE_TEAMS = [
+    { id:"se1", name:"马尔默 Malmö FF",           atk:0.68, def:0.66 },
+    { id:"se2", name:"哥德堡 IFK Göteborg",       atk:0.62, def:0.62 },
+    { id:"se3", name:"迪尔加登 Djurgården",       atk:0.68, def:0.64 },
+    { id:"se4", name:"哈马比 Hammarby",           atk:0.66, def:0.62 },
+    { id:"se5", name:"AIK索尔纳 AIK",             atk:0.62, def:0.64 },
+    { id:"se6", name:"埃尔夫斯堡 Elfsborg",       atk:0.66, def:0.62 },
+    { id:"se7", name:"哈肯 BK Häcken",            atk:0.66, def:0.62 },
+    { id:"se8", name:"厄格里特 Örgryte IS",       atk:0.52, def:0.54 },
+    { id:"se9", name:"卡尔马 Kalmar FF",          atk:0.56, def:0.58 },
+    { id:"se10",name:"米亚尔比 Mjällby AIF",      atk:0.60, def:0.58 },
+    { id:"se11",name:"西里乌斯 IK Sirius",        atk:0.56, def:0.56 },
+    { id:"se12",name:"哈尔姆斯塔德 Halmstad",     atk:0.54, def:0.56 },
+    { id:"se13",name:"代格尔福斯 Degerfors",      atk:0.52, def:0.54 },
+    { id:"se14",name:"哥塔 GAIS",                 atk:0.52, def:0.54 },
+    { id:"se15",name:"布罗马波卡纳 Brommapojkarna",atk:0.52, def:0.52 },
+    { id:"se16",name:"韦斯特罗斯 Västerås SK",    atk:0.50, def:0.52 },
+  ];
+
+  /* ---------- 日职联 J1 League ---------- */
+  const JP_TEAMS = [
+    { id:"jp1", name:"神户胜利船 Vissel Kobe",     atk:0.74, def:0.68 },
+    { id:"jp2", name:"广岛三箭 Sanfrecce",         atk:0.72, def:0.70 },
+    { id:"jp3", name:"横滨水手 Yokohama FM",       atk:0.72, def:0.66 },
+    { id:"jp4", name:"川崎前锋 Kawasaki",          atk:0.72, def:0.66 },
+    { id:"jp5", name:"浦和红钻 Urawa Reds",        atk:0.66, def:0.66 },
+    { id:"jp6", name:"鹿岛鹿角 Kashima",           atk:0.70, def:0.66 },
+    { id:"jp7", name:"名古屋鲸八 Nagoya",          atk:0.64, def:0.66 },
+    { id:"jp8", name:"大阪钢巴 Gamba Osaka",       atk:0.66, def:0.62 },
+    { id:"jp9", name:"大阪樱花 Cerezo Osaka",      atk:0.66, def:0.62 },
+    { id:"jp10",name:"FC东京 FC Tokyo",            atk:0.62, def:0.62 },
+    { id:"jp11",name:"东京绿茵 Tokyo Verdy",       atk:0.60, def:0.64 },
+    { id:"jp12",name:"福冈黄蜂 Avispa Fukuoka",    atk:0.58, def:0.64 },
+    { id:"jp13",name:"京都不死鸟 Kyoto Sanga",     atk:0.62, def:0.60 },
+    { id:"jp14",name:"町田泽维亚 Machida Zelvia",  atk:0.64, def:0.66 },
+    { id:"jp15",name:"清水心跳 Shimizu",           atk:0.58, def:0.58 },
+    { id:"jp16",name:"柏太阳神 Kashiwa Reysol",    atk:0.62, def:0.60 },
+    { id:"jp17",name:"横滨FC Yokohama FC",         atk:0.54, def:0.56 },
+    { id:"jp18",name:"冈山绿雉 Fagiano Okayama",   atk:0.54, def:0.58 },
+    { id:"jp19",name:"新潟天鹅 Albirex Niigata",   atk:0.56, def:0.56 },
+    { id:"jp20",name:"湘南比马 Shonan Bellmare",   atk:0.54, def:0.56 },
+  ];
+
+  /* ---------- 澳超 A-League Men ---------- */
+  const AU_TEAMS = [
+    { id:"au1", name:"墨尔本城 Melbourne City",    atk:0.72, def:0.68 },
+    { id:"au2", name:"墨尔本胜利 Melb Victory",    atk:0.70, def:0.66 },
+    { id:"au3", name:"中央海岸 Central Coast",     atk:0.72, def:0.68 },
+    { id:"au4", name:"悉尼FC Sydney FC",           atk:0.68, def:0.66 },
+    { id:"au5", name:"西悉尼 WS Wanderers",        atk:0.64, def:0.62 },
+    { id:"au6", name:"阿德莱德 Adelaide Utd",      atk:0.64, def:0.62 },
+    { id:"au7", name:"麦克阿瑟 Macarthur",         atk:0.60, def:0.60 },
+    { id:"au8", name:"惠灵顿凤凰 Wellington",      atk:0.60, def:0.60 },
+    { id:"au9", name:"布里斯班狮吼 Brisbane Roar", atk:0.58, def:0.58 },
+    { id:"au10",name:"纽卡斯尔喷气机 Newcastle J", atk:0.56, def:0.58 },
+    { id:"au11",name:"珀斯光荣 Perth Glory",       atk:0.54, def:0.56 },
+    { id:"au12",name:"西部联 Western Utd",         atk:0.58, def:0.56 },
+  ];
+
+  /* ---------- 沙特超 Saudi Pro League ---------- */
+  const SD_TEAMS = [
+    { id:"sd1", name:"利雅得新月 Al Hilal",        atk:0.88, def:0.82 },
+    { id:"sd2", name:"利雅得胜利 Al Nassr",        atk:0.86, def:0.78 },
+    { id:"sd3", name:"吉达联合 Al Ittihad",        atk:0.84, def:0.78 },
+    { id:"sd4", name:"吉达国民 Al Ahli",           atk:0.82, def:0.78 },
+    { id:"sd5", name:"利雅得青年 Al Shabab",       atk:0.68, def:0.66 },
+    { id:"sd6", name:"达曼协作 Al Ettifaq",        atk:0.66, def:0.64 },
+    { id:"sd7", name:"利雅得胜利者 Al Qadsiah",    atk:0.68, def:0.66 },
+    { id:"sd8", name:"塔亚文 Al Taawoun",          atk:0.64, def:0.64 },
+    { id:"sd9", name:"费萨里 Al Fateh",            atk:0.58, def:0.60 },
+    { id:"sd10",name:"费哈 Al Fayha",              atk:0.58, def:0.60 },
+    { id:"sd11",name:"利雅得团结 Al Riyadh",       atk:0.56, def:0.60 },
+    { id:"sd12",name:"欧鲁巴 Al Orobah",           atk:0.52, def:0.56 },
+    { id:"sd13",name:"卡利吉 Al Khaleej",          atk:0.56, def:0.58 },
+    { id:"sd14",name:"哈萨 Al Kholood",            atk:0.52, def:0.56 },
+    { id:"sd15",name:"沃赫达 Al Wehda",            atk:0.54, def:0.56 },
+    { id:"sd16",name:"奥克杜德 Al Akhdoud",        atk:0.50, def:0.54 },
+    { id:"sd17",name:"达马克 Damac",               atk:0.52, def:0.56 },
+    { id:"sd18",name:"哈兹姆 Al Hazem",            atk:0.48, def:0.52 },
+  ];
+
+  /* ---------- 美职联 MLS ---------- */
+  const US_TEAMS = [
+    { id:"us1", name:"迈阿密国际 Inter Miami",     atk:0.80, def:0.66 },
+    { id:"us2", name:"洛杉矶FC LAFC",              atk:0.78, def:0.72 },
+    { id:"us3", name:"洛杉矶银河 LA Galaxy",       atk:0.72, def:0.66 },
+    { id:"us4", name:"辛辛那提 FC Cincinnati",     atk:0.74, def:0.72 },
+    { id:"us5", name:"哥伦布机员 Columbus Crew",   atk:0.76, def:0.70 },
+    { id:"us6", name:"圣路易斯城 St. Louis City",  atk:0.62, def:0.62 },
+    { id:"us7", name:"费城联合 Philadelphia",      atk:0.72, def:0.70 },
+    { id:"us8", name:"西雅图海湾人 Seattle",       atk:0.70, def:0.68 },
+    { id:"us9", name:"红牛纽约 NY Red Bulls",      atk:0.66, def:0.66 },
+    { id:"us10",name:"纽约城 NYCFC",               atk:0.68, def:0.66 },
+    { id:"us11",name:"奥兰多城 Orlando City",      atk:0.68, def:0.68 },
+    { id:"us12",name:"夏洛特 Charlotte FC",        atk:0.64, def:0.64 },
+    { id:"us13",name:"纳什维尔 Nashville SC",      atk:0.62, def:0.66 },
+    { id:"us14",name:"亚特兰大联 Atlanta Utd",     atk:0.66, def:0.62 },
+    { id:"us15",name:"奥斯汀 Austin FC",           atk:0.62, def:0.62 },
+    { id:"us16",name:"皇家盐湖城 RSL",             atk:0.62, def:0.62 },
+    { id:"us17",name:"明尼苏达联 Minnesota Utd",   atk:0.62, def:0.64 },
+    { id:"us18",name:"波特兰伐木者 Portland",      atk:0.62, def:0.60 },
+    { id:"us19",name:"圣地亚哥 San Diego FC",      atk:0.66, def:0.62 },
+    { id:"us20",name:"温哥华白帽 Vancouver",       atk:0.66, def:0.64 },
+    { id:"us21",name:"堪萨斯城 Sporting KC",       atk:0.60, def:0.58 },
+    { id:"us22",name:"休斯顿 Houston Dynamo",      atk:0.60, def:0.62 },
+    { id:"us23",name:"达拉斯 FC Dallas",           atk:0.58, def:0.60 },
+    { id:"us24",name:"科罗拉多 Colorado Rapids",   atk:0.60, def:0.58 },
+    { id:"us25",name:"圣何塞 San Jose",            atk:0.58, def:0.54 },
+    { id:"us26",name:"新英格兰 New England",       atk:0.58, def:0.58 },
+    { id:"us27",name:"多伦多FC Toronto FC",        atk:0.56, def:0.56 },
+    { id:"us28",name:"芝加哥火焰 Chicago Fire",    atk:0.58, def:0.58 },
+    { id:"us29",name:"华盛顿联 DC United",         atk:0.56, def:0.56 },
+  ];
+
+  /* ---------- 巴甲 Brasileirão Série A ---------- */
+  const BR_TEAMS = [
+    { id:"br1", name:"帕尔梅拉斯 Palmeiras",       atk:0.84, def:0.82 },
+    { id:"br2", name:"弗拉门戈 Flamengo",          atk:0.86, def:0.80 },
+    { id:"br3", name:"博塔弗戈 Botafogo",          atk:0.80, def:0.78 },
+    { id:"br4", name:"克鲁塞罗 Cruzeiro",          atk:0.76, def:0.74 },
+    { id:"br5", name:"弗鲁米嫩塞 Fluminense",      atk:0.72, def:0.72 },
+    { id:"br6", name:"圣保罗 São Paulo",           atk:0.74, def:0.74 },
+    { id:"br7", name:"国际 Internacional",         atk:0.70, def:0.72 },
+    { id:"br8", name:"巴西国际米 Bahia",           atk:0.70, def:0.70 },
+    { id:"br9", name:"米内罗 Atlético Mineiro",    atk:0.72, def:0.70 },
+    { id:"br10",name:"格雷米奥 Grêmio",            atk:0.68, def:0.66 },
+    { id:"br11",name:"科林蒂安 Corinthians",       atk:0.68, def:0.66 },
+    { id:"br12",name:"红牛布拉甘蒂诺 Bragantino",  atk:0.66, def:0.66 },
+    { id:"br13",name:"塞阿拉 Ceará",               atk:0.60, def:0.62 },
+    { id:"br14",name:"米拉索 Mirassol",            atk:0.62, def:0.60 },
+    { id:"br15",name:"弗塔莱萨 Fortaleza",         atk:0.62, def:0.62 },
+    { id:"br16",name:"瓦斯科达伽马 Vasco",         atk:0.62, def:0.58 },
+    { id:"br17",name:"桑托斯 Santos",              atk:0.60, def:0.58 },
+    { id:"br18",name:"胜利 Vitória",               atk:0.56, def:0.58 },
+    { id:"br19",name:"若因维尔 Juventude",         atk:0.54, def:0.56 },
+    { id:"br20",name:"累西腓体育 Sport Recife",    atk:0.52, def:0.54 },
+  ];
+
+  /* ---------- 阿甲 Argentine Primera División ---------- */
+  const AR_TEAMS = [
+    { id:"ar1", name:"河床 River Plate",           atk:0.82, def:0.78 },
+    { id:"ar2", name:"博卡青年 Boca Juniors",      atk:0.78, def:0.76 },
+    { id:"ar3", name:"拉普拉塔 Estudiantes",       atk:0.72, def:0.74 },
+    { id:"ar4", name:"竞技 Racing Club",           atk:0.74, def:0.72 },
+    { id:"ar5", name:"独立 Independiente",         atk:0.68, def:0.68 },
+    { id:"ar6", name:"圣洛伦索 San Lorenzo",       atk:0.64, def:0.66 },
+    { id:"ar7", name:"塔勒瑞斯 Talleres",          atk:0.66, def:0.66 },
+    { id:"ar8", name:"贝尔格拉诺 Belgrano",        atk:0.62, def:0.64 },
+    { id:"ar9", name:"戈多伊克鲁斯 Godoy Cruz",    atk:0.62, def:0.62 },
+    { id:"ar10",name:"防卫者 Defensa y Justicia",  atk:0.64, def:0.64 },
+    { id:"ar11",name:"拉努斯 Lanús",               atk:0.64, def:0.66 },
+    { id:"ar12",name:"竞技俱乐部 Argentinos Jrs",  atk:0.64, def:0.64 },
+    { id:"ar13",name:"纽维尔老男孩 Newell's",      atk:0.60, def:0.62 },
+    { id:"ar14",name:"罗萨里奥中央 Rosario Cent",  atk:0.64, def:0.64 },
+    { id:"ar15",name:"韦莱斯 Vélez Sarsfield",     atk:0.66, def:0.66 },
+    { id:"ar16",name:"乌拉坎 Huracán",             atk:0.60, def:0.64 },
+    { id:"ar17",name:"竞技学院 Instituto",         atk:0.58, def:0.60 },
+    { id:"ar18",name:"班菲尔德 Banfield",          atk:0.56, def:0.58 },
+    { id:"ar19",name:"科尔多瓦 Central Córdoba",   atk:0.58, def:0.60 },
+    { id:"ar20",name:"蒂格雷 Tigre",               atk:0.56, def:0.60 },
+  ];
+
+  /* ---------- 墨超 Liga MX ---------- */
+  const MX_TEAMS = [
+    { id:"mx1", name:"美洲 Club América",          atk:0.82, def:0.78 },
+    { id:"mx2", name:"蒙特雷 Monterrey",           atk:0.80, def:0.76 },
+    { id:"mx3", name:"瓜达拉哈拉 Guadalajara",     atk:0.72, def:0.70 },
+    { id:"mx4", name:"蒂华纳 Tijuana",             atk:0.68, def:0.66 },
+    { id:"mx5", name:"托卢卡 Toluca",              atk:0.78, def:0.72 },
+    { id:"mx6", name:"老虎 Tigres UANL",           atk:0.78, def:0.76 },
+    { id:"mx7", name:"克鲁斯阿祖尔 Cruz Azul",     atk:0.76, def:0.74 },
+    { id:"mx8", name:"帕丘卡 Pachuca",             atk:0.72, def:0.68 },
+    { id:"mx9", name:"莱昂 León",                  atk:0.68, def:0.66 },
+    { id:"mx10",name:"桑托斯拉古纳 Santos Laguna", atk:0.62, def:0.62 },
+    { id:"mx11",name:"普埃布拉 Puebla",            atk:0.58, def:0.60 },
+    { id:"mx12",name:"内卡萨 Necaxa",              atk:0.62, def:0.62 },
+    { id:"mx13",name:"亚特兰特 Atlas",             atk:0.60, def:0.62 },
+    { id:"mx14",name:"墨西哥大学 Pumas UNAM",      atk:0.64, def:0.64 },
+    { id:"mx15",name:"克雷塔罗 Querétaro",         atk:0.56, def:0.58 },
+    { id:"mx16",name:"马萨特兰 Mazatlán",          atk:0.56, def:0.56 },
+    { id:"mx17",name:"华雷斯 FC Juárez",           atk:0.58, def:0.58 },
+    { id:"mx18",name:"圣路易斯 Atlético San Luis", atk:0.60, def:0.60 },
+  ];
+
+  /* ---------- 欧冠 UEFA Champions League (参赛球队池) ---------- */
+  const UCL_TEAMS = [
+    { id:"ucl1", name:"皇家马德里 Real Madrid",  atk:0.94, def:0.86 },
+    { id:"ucl2", name:"曼城 Man City",           atk:0.93, def:0.85 },
+    { id:"ucl3", name:"拜仁慕尼黑 Bayern",       atk:0.94, def:0.86 },
+    { id:"ucl4", name:"利物浦 Liverpool",        atk:0.92, def:0.84 },
+    { id:"ucl5", name:"国际米兰 Inter",          atk:0.90, def:0.86 },
+    { id:"ucl6", name:"巴黎圣日耳曼 PSG",        atk:0.94, def:0.86 },
+    { id:"ucl7", name:"阿森纳 Arsenal",          atk:0.90, def:0.88 },
+    { id:"ucl8", name:"巴塞罗那 Barcelona",      atk:0.93, def:0.82 },
+    { id:"ucl9", name:"勒沃库森 Leverkusen",     atk:0.86, def:0.82 },
+    { id:"ucl10",name:"马德里竞技 Atlético",     atk:0.84, def:0.86 },
+    { id:"ucl11",name:"多特蒙德 Dortmund",       atk:0.84, def:0.76 },
+    { id:"ucl12",name:"莱比锡 RB Leipzig",       atk:0.82, def:0.80 },
+    { id:"ucl13",name:"那不勒斯 Napoli",         atk:0.86, def:0.84 },
+    { id:"ucl14",name:"尤文图斯 Juventus",       atk:0.82, def:0.82 },
+    { id:"ucl15",name:"AC米兰 AC Milan",         atk:0.84, def:0.78 },
+    { id:"ucl16",name:"亚特兰大 Atalanta",       atk:0.84, def:0.76 },
+    { id:"ucl17",name:"本菲卡 Benfica",          atk:0.86, def:0.80 },
+    { id:"ucl18",name:"葡萄牙体育 Sporting CP",  atk:0.86, def:0.82 },
+    { id:"ucl19",name:"波尔图 Porto",            atk:0.84, def:0.80 },
+    { id:"ucl20",name:"埃因霍温 PSV",            atk:0.84, def:0.76 },
+    { id:"ucl21",name:"费耶诺德 Feyenoord",      atk:0.80, def:0.74 },
+    { id:"ucl22",name:"阿贾克斯 Ajax",           atk:0.80, def:0.74 },
+    { id:"ucl23",name:"布鲁日 Club Brugge",      atk:0.80, def:0.76 },
+    { id:"ucl24",name:"加拉塔萨雷 Galatasaray",  atk:0.84, def:0.80 },
+    { id:"ucl25",name:"凯尔特人 Celtic",         atk:0.82, def:0.76 },
+    { id:"ucl26",name:"摩纳哥 Monaco",           atk:0.80, def:0.74 },
+    { id:"ucl27",name:"马赛 Marseille",          atk:0.80, def:0.74 },
+    { id:"ucl28",name:"比利亚雷亚尔 Villarreal", atk:0.76, def:0.70 },
+    { id:"ucl29",name:"毕尔巴鄂 Athletic Club",  atk:0.76, def:0.78 },
+    { id:"ucl30",name:"纽卡斯尔 Newcastle",      atk:0.80, def:0.78 },
+    { id:"ucl31",name:"切尔西 Chelsea",          atk:0.84, def:0.78 },
+    { id:"ucl32",name:"托特纳姆 Tottenham",      atk:0.82, def:0.70 },
+    { id:"ucl33",name:"博洛尼亚 Bologna",        atk:0.72, def:0.74 },
+    { id:"ucl34",name:"皇家联合 Union SG",       atk:0.78, def:0.74 },
+    { id:"ucl35",name:"卡拉巴赫 Qarabağ",        atk:0.62, def:0.62 },
+    { id:"ucl36",name:"奥林匹亚科斯 Olympiacos", atk:0.68, def:0.66 },
+  ];
+
+  /* ---------- 欧联 UEFA Europa League (参赛球队池) ---------- */
+  const UEL_TEAMS = [
+    { id:"uel1", name:"罗马 AS Roma",            atk:0.76, def:0.78 },
+    { id:"uel2", name:"阿斯顿维拉 Aston Villa",  atk:0.78, def:0.74 },
+    { id:"uel3", name:"波尔图 Porto",            atk:0.84, def:0.80 },
+    { id:"uel4", name:"里昂 Lyon",               atk:0.74, def:0.70 },
+    { id:"uel5", name:"里尔 Lille",              atk:0.76, def:0.76 },
+    { id:"uel6", name:"皇家贝蒂斯 Real Betis",   atk:0.72, def:0.68 },
+    { id:"uel7", name:"费内巴切 Fenerbahçe",     atk:0.84, def:0.78 },
+    { id:"uel8", name:"贝西克塔斯 Beşiktaş",     atk:0.74, def:0.70 },
+    { id:"uel9", name:"布拉加 Braga",            atk:0.74, def:0.70 },
+    { id:"uel10",name:"根特 Gent",               atk:0.72, def:0.68 },
+    { id:"uel11",name:"格拉斯哥流浪者 Rangers",  atk:0.78, def:0.72 },
+    { id:"uel12",name:"费伦茨瓦罗斯 Ferencváros", atk:0.66, def:0.66 },
+    { id:"uel13",name:"顿涅茨克矿工 Shakhtar",   atk:0.72, def:0.70 },
+    { id:"uel14",name:"斯图加特 Stuttgart",      atk:0.78, def:0.72 },
+    { id:"uel15",name:"博洛尼亚 Bologna",        atk:0.72, def:0.74 },
+    { id:"uel16",name:"塞尔塔 Celta Vigo",       atk:0.64, def:0.60 },
+    { id:"uel17",name:"弗赖堡 Freiburg",         atk:0.68, def:0.70 },
+    { id:"uel18",name:"尼斯 Nice",               atk:0.72, def:0.74 },
+    { id:"uel19",name:"布拉格斯拉维亚 Slavia",   atk:0.68, def:0.68 },
+    { id:"uel20",name:"帕纳辛纳科斯 Panathin",   atk:0.66, def:0.66 },
+    { id:"uel21",name:"维克托里亚 Plzeň",        atk:0.62, def:0.62 },
+    { id:"uel22",name:"马卡比特拉维夫 M. Tel Av",atk:0.62, def:0.60 },
+    { id:"uel23",name:"布加勒斯特星 FCSB",       atk:0.62, def:0.62 },
+    { id:"uel24",name:"萨尔茨堡 RB Salzburg",    atk:0.72, def:0.70 },
+  ];
+
+  /* ---------- 欧协联 UEFA Conference League (参赛球队池) ---------- */
+  const UECL_TEAMS = [
+    { id:"uecl1", name:"切尔西 Chelsea",         atk:0.84, def:0.78 },
+    { id:"uecl2", name:"佛罗伦萨 Fiorentina",    atk:0.72, def:0.72 },
+    { id:"uecl3", name:"贝蒂斯 Real Betis",      atk:0.72, def:0.68 },
+    { id:"uecl4", name:"萨姆松 Samsunspor",      atk:0.64, def:0.64 },
+    { id:"uecl5", name:"水晶宫 Crystal Palace",  atk:0.68, def:0.72 },
+    { id:"uecl6", name:"斯特拉斯堡 Strasbourg",  atk:0.70, def:0.66 },
+    { id:"uecl7", name:"美因茨 Mainz",           atk:0.64, def:0.66 },
+    { id:"uecl8", name:"维也纳快速 Rapid Wien",  atk:0.62, def:0.62 },
+    { id:"uecl9", name:"比亚韦斯托克 Jagiellonia",atk:0.58, def:0.60 },
+    { id:"uecl10",name:"莱赫波兹南 Lech Poznań", atk:0.60, def:0.60 },
+    { id:"uecl11",name:"奥莫尼亚 Omonia",        atk:0.58, def:0.58 },
+    { id:"uecl12",name:"AEK雅典 AEK Athens",     atk:0.66, def:0.66 },
+    { id:"uecl13",name:"沙姆罗克 Shamrock R",    atk:0.54, def:0.56 },
+    { id:"uecl14",name:"哈肯 Häcken",            atk:0.60, def:0.58 },
+    { id:"uecl15",name:"采列 Celje",             atk:0.56, def:0.56 },
+    { id:"uecl16",name:"里耶卡 Rijeka",          atk:0.58, def:0.60 },
+    { id:"uecl17",name:"德里塔 Drita",           atk:0.50, def:0.52 },
+    { id:"uecl18",name:"拉库夫 Raków",           atk:0.62, def:0.64 },
+    { id:"uecl19",name:"诺亚 FC Noah",           atk:0.52, def:0.52 },
+    { id:"uecl20",name:"什克伦迪 Shkëndija",     atk:0.50, def:0.52 },
+  ];
+
+  /* ---------- 亚冠精英 AFC Champions League Elite (参赛球队池) ---------- */
+  const ACL_TEAMS = [
+    { id:"acl1", name:"利雅得新月 Al Hilal",       atk:0.88, def:0.82 },
+    { id:"acl2", name:"利雅得胜利 Al Nassr",       atk:0.86, def:0.78 },
+    { id:"acl3", name:"吉达联合 Al Ittihad",       atk:0.84, def:0.78 },
+    { id:"acl4", name:"吉达国民 Al Ahli",          atk:0.82, def:0.78 },
+    { id:"acl5", name:"横滨水手 Yokohama FM",      atk:0.72, def:0.66 },
+    { id:"acl6", name:"神户胜利船 Vissel Kobe",    atk:0.74, def:0.68 },
+    { id:"acl7", name:"川崎前锋 Kawasaki",         atk:0.72, def:0.66 },
+    { id:"acl8", name:"蔚山现代 Ulsan HD",           atk:0.74, def:0.68 },
+    { id:"acl9", name:"光州FC Gwangju",            atk:0.62, def:0.60 },
+    { id:"acl10",name:"上海海港 Shanghai Port",    atk:0.72, def:0.66 },
+    { id:"acl11",name:"上海申花 Shanghai Shenhua", atk:0.70, def:0.68 },
+    { id:"acl12",name:"成都蓉城 Chengdu",          atk:0.68, def:0.66 },
+    { id:"acl13",name:"墨尔本城 Melbourne City",   atk:0.72, def:0.68 },
+    { id:"acl14",name:"中央海岸 Central Coast",    atk:0.72, def:0.68 },
+    { id:"acl15",name:"武里南联 Buriram Utd",      atk:0.66, def:0.64 },
+    { id:"acl16",name:"柔佛DT Johor DT",           atk:0.68, def:0.66 },
+    { id:"acl17",name:"萨德 Al Sadd",              atk:0.72, def:0.70 },
+    { id:"acl18",name:"杜海勒 Al Duhail",          atk:0.70, def:0.68 },
+    { id:"acl19",name:"艾因 Al Ain",               atk:0.70, def:0.68 },
+    { id:"acl20",name:"沙迦 Sharjah",              atk:0.64, def:0.64 },
+    { id:"acl21",name:"波斯波利斯 Persepolis",     atk:0.68, def:0.68 },
+    { id:"acl22",name:"塞帕汉 Sepahan",            atk:0.64, def:0.64 },
+    { id:"acl23",name:"塔什干棉农 Pakhtakor",      atk:0.62, def:0.62 },
+    { id:"acl24",name:"纳萨吉 Nasaf",              atk:0.58, def:0.60 },
+  ];
+
+  /* ---------- 欧洲杯 UEFA Euro (国家队池) ---------- */
+  const EURO_TEAMS = [
+    { id:"euro1", name:"法国 France",          atk:0.97, def:0.90 },
+    { id:"euro2", name:"英格兰 England",       atk:0.90, def:0.88 },
+    { id:"euro3", name:"西班牙 Spain",         atk:0.95, def:0.90 },
+    { id:"euro4", name:"德国 Germany",         atk:0.92, def:0.82 },
+    { id:"euro5", name:"葡萄牙 Portugal",      atk:0.90, def:0.82 },
+    { id:"euro6", name:"荷兰 Netherlands",     atk:0.90, def:0.80 },
+    { id:"euro7", name:"意大利 Italy",         atk:0.84, def:0.84 },
+    { id:"euro8", name:"比利时 Belgium",       atk:0.88, def:0.78 },
+    { id:"euro9", name:"克罗地亚 Croatia",     atk:0.80, def:0.78 },
+    { id:"euro10",name:"丹麦 Denmark",         atk:0.74, def:0.74 },
+    { id:"euro11",name:"瑞士 Switzerland",     atk:0.80, def:0.82 },
+    { id:"euro12",name:"奥地利 Austria",       atk:0.70, def:0.64 },
+    { id:"euro13",name:"土耳其 Turkey",        atk:0.68, def:0.64 },
+    { id:"euro14",name:"乌克兰 Ukraine",       atk:0.66, def:0.66 },
+    { id:"euro15",name:"塞尔维亚 Serbia",      atk:0.70, def:0.68 },
+    { id:"euro16",name:"波兰 Poland",          atk:0.68, def:0.66 },
+    { id:"euro17",name:"苏格兰 Scotland",      atk:0.56, def:0.66 },
+    { id:"euro18",name:"捷克 Czechia",         atk:0.64, def:0.68 },
+    { id:"euro19",name:"匈牙利 Hungary",       atk:0.62, def:0.64 },
+    { id:"euro20",name:"斯洛文尼亚 Slovenia",  atk:0.56, def:0.64 },
+    { id:"euro21",name:"斯洛伐克 Slovakia",    atk:0.58, def:0.62 },
+    { id:"euro22",name:"罗马尼亚 Romania",     atk:0.58, def:0.62 },
+    { id:"euro23",name:"格鲁吉亚 Georgia",     atk:0.58, def:0.58 },
+    { id:"euro24",name:"阿尔巴尼亚 Albania",   atk:0.54, def:0.60 },
+  ];
+
+  /* ---------- 美洲杯 Copa América (国家队池) ---------- */
+  const COPA_TEAMS = [
+    { id:"copa1", name:"阿根廷 Argentina",     atk:0.94, def:0.90 },
+    { id:"copa2", name:"巴西 Brazil",          atk:0.96, def:0.90 },
+    { id:"copa3", name:"乌拉圭 Uruguay",       atk:0.74, def:0.78 },
+    { id:"copa4", name:"哥伦比亚 Colombia",    atk:0.78, def:0.76 },
+    { id:"copa5", name:"厄瓜多尔 Ecuador",     atk:0.62, def:0.74 },
+    { id:"copa6", name:"智利 Chile",           atk:0.62, def:0.62 },
+    { id:"copa7", name:"巴拉圭 Paraguay",      atk:0.58, def:0.70 },
+    { id:"copa8", name:"秘鲁 Peru",            atk:0.54, def:0.62 },
+    { id:"copa9", name:"委内瑞拉 Venezuela",   atk:0.60, def:0.62 },
+    { id:"copa10",name:"玻利维亚 Bolivia",     atk:0.48, def:0.50 },
+    { id:"copa11",name:"墨西哥 Mexico",        atk:0.84, def:0.78 },
+    { id:"copa12",name:"美国 United States",   atk:0.80, def:0.78 },
+    { id:"copa13",name:"加拿大 Canada",        atk:0.68, def:0.60 },
+    { id:"copa14",name:"巴拿马 Panama",        atk:0.56, def:0.58 },
+    { id:"copa15",name:"哥斯达黎加 Costa Rica",atk:0.56, def:0.58 },
+    { id:"copa16",name:"牙买加 Jamaica",       atk:0.56, def:0.54 },
+  ];
+
+  /* ---------- 亚洲杯 AFC Asian Cup (国家队池) ---------- */
+  const AC_TEAMS = [
+    { id:"ac1", name:"日本 Japan",            atk:0.78, def:0.74 },
+    { id:"ac2", name:"韩国 South Korea",      atk:0.72, def:0.72 },
+    { id:"ac3", name:"伊朗 Iran",             atk:0.68, def:0.74 },
+    { id:"ac4", name:"澳大利亚 Australia",    atk:0.62, def:0.66 },
+    { id:"ac5", name:"沙特 Saudi Arabia",     atk:0.62, def:0.62 },
+    { id:"ac6", name:"卡塔尔 Qatar",          atk:0.62, def:0.60 },
+    { id:"ac7", name:"伊拉克 Iraq",           atk:0.58, def:0.60 },
+    { id:"ac8", name:"阿联酋 UAE",            atk:0.58, def:0.58 },
+    { id:"ac9", name:"乌兹别克斯坦 Uzbekistan",atk:0.60, def:0.60 },
+    { id:"ac10",name:"约旦 Jordan",           atk:0.58, def:0.60 },
+    { id:"ac11",name:"中国 China PR",         atk:0.50, def:0.54 },
+    { id:"ac12",name:"巴林 Bahrain",          atk:0.50, def:0.54 },
+    { id:"ac13",name:"叙利亚 Syria",          atk:0.52, def:0.54 },
+    { id:"ac14",name:"阿曼 Oman",             atk:0.52, def:0.56 },
+    { id:"ac15",name:"越南 Vietnam",          atk:0.50, def:0.52 },
+    { id:"ac16",name:"泰国 Thailand",         atk:0.50, def:0.52 },
+    { id:"ac17",name:"印尼 Indonesia",        atk:0.50, def:0.50 },
+    { id:"ac18",name:"印度 India",            atk:0.46, def:0.50 },
+    { id:"ac19",name:"巴勒斯坦 Palestine",    atk:0.48, def:0.52 },
+    { id:"ac20",name:"黎巴嫩 Lebanon",        atk:0.46, def:0.50 },
+    { id:"ac21",name:"马来西亚 Malaysia",     atk:0.46, def:0.48 },
+    { id:"ac22",name:"塔吉克斯坦 Tajikistan", atk:0.48, def:0.50 },
+    { id:"ac23",name:"吉尔吉斯斯坦 Kyrgyzstan",atk:0.48, def:0.50 },
+    { id:"ac24",name:"中国香港 Hong Kong",    atk:0.42, def:0.46 },
+  ];
+
+  /* ---------- Competition registry ---------- */
+  // type "cup"  = tournament with live API, group standings & knockout bracket (World Cup).
+  // type "league" = round-robin club league: same prediction engine, no live fixtures / bracket.
+  // League/cup pool without curated squads/recent — depth & form derive from ratings.
+  const NO_DETAIL = {};
+  function leagueComp(id, name, teams, desc, def1, def2) {
+    return { id, name, type:"league", grouped:false, api:false,
+             teams, squads:NO_DETAIL, recent:NO_DETAIL, desc, def1, def2 };
+  }
+
+  /* ---------- Real fixture calendars (verified against public schedules) ----------
+     Entry format: [round, homeId, awayId, "MM/DD", "HH:MM"] — Beijing time, 2026.
+     When a competition has `realSchedule`, buildLeagueSchedule() uses it verbatim
+     instead of generating a synthetic round-robin. */
+  // K League 1 2026 · Matchday 16–20 (KST 19:30 → 北京 18:30). Source: 2026 K League 1.
+  const KL_SCHED = [
+    [16,"k12","k4","07/04","18:30",2,3],[16,"k11","k9","07/04","18:30",2,2],[16,"k2","k8","07/04","18:30",1,2],
+    [16,"k5","k7","07/05","18:30"],[16,"k3","k10","07/05","18:30"],[16,"k6","k1","07/05","18:30"],
+    [17,"k3","k9","07/11","18:30"],[17,"k6","k4","07/11","18:30"],[17,"k1","k2","07/11","18:30"],
+    [17,"k7","k12","07/12","18:30"],[17,"k10","k11","07/12","18:30"],[17,"k5","k8","07/12","18:30"],
+    [18,"k11","k1","07/18","18:30"],[18,"k8","k3","07/18","18:30"],[18,"k7","k2","07/18","18:30"],
+    [18,"k10","k4","07/18","18:30"],[18,"k12","k6","07/19","18:30"],[18,"k9","k5","07/19","18:30"],
+    [19,"k10","k8","07/21","18:30"],[19,"k1","k7","07/21","18:30"],[19,"k2","k11","07/21","18:30"],
+    [19,"k9","k12","07/22","18:30"],[19,"k6","k3","07/22","18:30"],[19,"k5","k4","07/22","18:30"],
+    [20,"k4","k2","07/25","18:30"],[20,"k3","k11","07/25","18:30"],[20,"k12","k8","07/26","18:30"],
+    [20,"k6","k10","07/26","18:30"],[20,"k7","k9","07/26","18:30"],[20,"k5","k1","07/26","18:30"],
+  ];
+  // Allsvenskan 2026 · Omgång 11–14 (CEST → 北京 +6h). Source: SVT Sport spelschema.
+  const SE_SCHED = [
+    [11,"se11","se10","07/04","01:00",4,4],[11,"se13","se1","07/04","21:00",0,1],[11,"se12","se16","07/04","21:00",1,3],
+    [11,"se2","se5","07/05","20:00"],[11,"se9","se8","07/05","20:00"],[11,"se6","se4","07/05","22:30"],
+    [11,"se7","se3","07/07","01:00"],[11,"se15","se14","07/07","01:00"],
+    [12,"se10","se5","07/11","21:00"],[12,"se8","se7","07/11","23:30"],
+    [12,"se4","se9","07/12","20:00"],[12,"se1","se2","07/12","20:00"],[12,"se16","se13","07/12","20:00"],
+    [12,"se14","se6","07/12","22:30"],[12,"se15","se11","07/12","22:30"],[12,"se3","se12","07/14","01:00"],
+    [13,"se10","se16","07/18","01:00"],[13,"se5","se14","07/18","21:00"],
+    [13,"se2","se15","07/19","20:00"],[13,"se4","se13","07/19","22:30"],[13,"se12","se7","07/19","22:30"],
+    [13,"se6","se11","07/19","22:30"],[13,"se8","se3","07/21","01:00"],[13,"se9","se1","07/21","01:00"],
+    [14,"se16","se8","07/25","01:00"],[14,"se13","se3","07/25","21:00"],[14,"se9","se10","07/25","23:30"],
+    [14,"se15","se4","07/26","20:00"],[14,"se11","se2","07/26","20:00"],[14,"se14","se12","07/26","22:30"],
+    [14,"se1","se6","07/26","22:30"],[14,"se7","se5","07/28","01:00"],
+  ];
+
+  /* ---------- Real league standings (verified against public tables) ----------
+     Row format: [teamId, 场 P, 胜 W, 平 D, 负 L, 进 GF, 失 GA, 积分 Pts]; rows in rank order.
+     Only competitions with verified data appear; others show "无" in the standings module. */
+  const STANDINGS = {
+    // K League 1 2026 · 截至第 15 轮. Source: Transfermarkt / footballdatabase.
+    kl: { asOf:"截至第 15 轮", rows:[
+      ["k5",15,10,2,3,27,12,32],["k2",15,7,5,3,21,12,26],["k1",15,8,2,5,22,20,26],
+      ["k8",15,6,6,3,19,10,24],["k4",15,6,4,5,12,12,22],["k7",15,6,3,6,21,17,21],
+      ["k12",15,4,8,3,19,16,20],["k10",15,5,3,7,13,16,18],["k9",15,4,5,6,11,15,17],
+      ["k11",15,4,4,7,17,16,16],["k3",15,2,8,5,15,21,14],["k6",15,1,4,10,7,37,7],
+    ]},
+    // Allsvenskan 2026 · 截至 07/05. Source: Transfermarkt / ESPN.
+    se: { asOf:"截至 07/05", rows:[
+      ["se11",10,9,1,0,27,10,28],["se7",10,5,5,0,20,14,20],["se6",11,4,6,1,16,11,18],
+      ["se4",11,5,2,4,24,13,17],["se14",11,4,3,4,16,11,15],["se10",10,4,3,3,14,11,15],
+      ["se15",10,4,3,3,15,16,15],["se3",9,4,1,4,19,13,13],["se1",10,4,1,5,20,20,13],
+      ["se5",10,3,3,4,12,16,12],["se16",10,3,3,4,17,22,12],["se13",10,2,4,4,12,16,10],
+      ["se9",10,3,1,6,11,15,10],["se2",10,2,4,4,13,22,10],["se12",10,1,3,6,9,20,6],
+      ["se8",10,1,3,6,10,25,6],
+    ]},
+  };
+
+  const COMPETITIONS = {
+    // ---- 完整明细赛事（含关键球员/近况；世界杯另含实时赛程与淘汰赛对阵图） ----
+    wc:  { id:"wc",  name:"世界杯 World Cup 2026",       type:"cup",    grouped:true,  api:true,
+           teams:WC_TEAMS,  squads:WC_SQUADS,  recent:WC_RECENT3M,
+           desc:"48 队 / 12 组 · 含实时赛程、小组出线形势与官方淘汰赛对阵图", def1:"9", def2:"33" },
+    epl: { id:"epl", name:"英超 Premier League",          type:"league", grouped:false, api:false,
+           teams:EPL_TEAMS, squads:EPL_SQUADS, recent:EPL_RECENT3M,
+           desc:"英格兰足球超级联赛 · 20 队 · 含关键球员与近况明细", def1:"e1", def2:"e3" },
+    csl: { id:"csl", name:"中超 Chinese Super League",    type:"league", grouped:false, api:false,
+           teams:CSL_TEAMS, squads:CSL_SQUADS, recent:CSL_RECENT3M,
+           desc:"中国足球协会超级联赛 · 16 队 · 含关键球员与近况明细", def1:"c1", def2:"c5" },
+    kl:  { id:"kl",  name:"K职联 K League 1",             type:"league", grouped:false, api:false,
+           teams:KL_TEAMS,  squads:KL_SQUADS,  recent:KL_RECENT3M, realSchedule:KL_SCHED,
+           desc:"韩国 K 联赛 1 部 · 12 队 · 第16–20轮真实赛程（北京时间）", def1:"k5", def2:"k7" },
+
+    // ---- 其余赛事：仅攻防评分，阵容深度/状态由评分自动推导 ----
+    es:  leagueComp("es",  "西甲 La Liga",              ES_TEAMS,  "西班牙足球甲级联赛 · 20 队", "es1", "es2"),
+    it:  leagueComp("it",  "意甲 Serie A",              IT_TEAMS,  "意大利足球甲级联赛 · 20 队", "it1", "it2"),
+    de:  leagueComp("de",  "德甲 Bundesliga",           DE_TEAMS,  "德国足球甲级联赛 · 18 队", "de1", "de3"),
+    fr:  leagueComp("fr",  "法甲 Ligue 1",              FR_TEAMS,  "法国足球甲级联赛 · 18 队", "fr1", "fr3"),
+    ec:  leagueComp("ec",  "英冠 EFL Championship",     EC_TEAMS,  "英格兰足球冠军联赛 · 24 队", "ec1", "ec2"),
+    nl:  leagueComp("nl",  "荷甲 Eredivisie",           NL_TEAMS,  "荷兰足球甲级联赛 · 18 队", "nl1", "nl2"),
+    pt:  leagueComp("pt",  "葡超 Primeira Liga",        PT_TEAMS,  "葡萄牙足球超级联赛 · 18 队", "pt1", "pt3"),
+    sc:  leagueComp("sc",  "苏超 Scottish Premiership", SC_TEAMS,  "苏格兰足球超级联赛 · 12 队", "sc1", "sc2"),
+    be:  leagueComp("be",  "比甲 Belgian Pro League",   BE_TEAMS,  "比利时足球甲级联赛 · 16 队", "be1", "be5"),
+    tr:  leagueComp("tr",  "土超 Süper Lig",            TR_TEAMS,  "土耳其足球超级联赛 · 18 队", "tr1", "tr2"),
+    ru:  leagueComp("ru",  "俄超 Russian Premier Lg",   RU_TEAMS,  "俄罗斯足球超级联赛 · 16 队", "ru1", "ru4"),
+    se:  Object.assign(leagueComp("se", "瑞超 Allsvenskan", SE_TEAMS, "瑞典足球超级联赛 · 16 队 · 第11–14轮真实赛程（北京时间）", "se2", "se5"), { realSchedule:SE_SCHED }),
+    jp:  leagueComp("jp",  "日职联 J1 League",          JP_TEAMS,  "日本足球职业联赛 J1 · 20 队", "jp1", "jp3"),
+    au:  leagueComp("au",  "澳超 A-League Men",         AU_TEAMS,  "澳大利亚足球超级联赛 · 12 队", "au1", "au3"),
+    sd:  leagueComp("sd",  "沙特超 Saudi Pro League",   SD_TEAMS,  "沙特阿拉伯足球超级联赛 · 18 队", "sd1", "sd2"),
+    us:  leagueComp("us",  "美职联 MLS",                US_TEAMS,  "美国职业足球大联盟 · 29 队", "us1", "us2"),
+    br:  leagueComp("br",  "巴甲 Brasileirão",          BR_TEAMS,  "巴西足球甲级联赛 · 20 队", "br1", "br2"),
+    ar:  leagueComp("ar",  "阿甲 Primera División",     AR_TEAMS,  "阿根廷足球甲级联赛 · 20 队", "ar1", "ar2"),
+    mx:  leagueComp("mx",  "墨超 Liga MX",              MX_TEAMS,  "墨西哥足球超级联赛 · 18 队", "mx1", "mx2"),
+    ucl: leagueComp("ucl", "欧冠 Champions League",     UCL_TEAMS, "欧洲冠军联赛 · 参赛球队池 36", "ucl1", "ucl3"),
+    uel: leagueComp("uel", "欧联 Europa League",        UEL_TEAMS, "欧洲联赛 · 参赛球队池 24", "uel3", "uel7"),
+    uecl:leagueComp("uecl","欧协联 Conference League",  UECL_TEAMS,"欧洲协会联赛 · 参赛球队池 20", "uecl1", "uecl2"),
+    acl: leagueComp("acl", "亚冠精英 AFC Champions Elite",ACL_TEAMS,"亚足联冠军联赛精英 · 参赛球队池 24", "acl1", "acl5"),
+    euro:leagueComp("euro","欧洲杯 UEFA Euro",          EURO_TEAMS,"欧洲足球锦标赛 · 国家队池 24", "euro1", "euro3"),
+    copa:leagueComp("copa","美洲杯 Copa América",       COPA_TEAMS,"南美足球锦标赛 · 国家队池 16", "copa1", "copa2"),
+    ac:  leagueComp("ac",  "亚洲杯 AFC Asian Cup",      AC_TEAMS,  "亚洲足球锦标赛 · 国家队池 24", "ac1", "ac2"),
+  };
+
+  // Selector layout: grouped by region for a manageable 30+ option list (<optgroup>).
+  const COMP_GROUPS = [
+    { label:"国际大赛 International", ids:["wc", "euro", "copa", "ac"] },
+    { label:"洲际俱乐部 Continental Clubs", ids:["ucl", "uel", "uecl", "acl"] },
+    { label:"欧洲联赛 European Leagues", ids:["epl", "es", "it", "de", "fr", "ec", "nl", "pt", "sc", "be", "tr", "ru", "se"] },
+    { label:"亚洲 / 大洋洲 Asia & Oceania", ids:["jp", "kl", "csl", "au", "sd"] },
+    { label:"美洲 Americas", ids:["us", "br", "ar", "mx"] },
+  ];
+  const COMP_ORDER = COMP_GROUPS.reduce((a, g) => a.concat(g.ids), []);
+
+  // Active dataset pointers — reassigned by setCompetition(). All model/render
+  // functions read these live, so switching competitions just swaps the data.
+  let ACTIVE_COMP = COMPETITIONS.wc;
+  let TEAMS = WC_TEAMS, SQUADS = WC_SQUADS, RECENT3M = WC_RECENT3M;
 
   /* ---------- Model constants ---------- */
   const BASE_GOALS = 1.45;       // baseline expected goals per team (neutral)
@@ -954,7 +1948,88 @@
   }
 
   function disableSim() { const b = $("simBtn"); b.disabled = true; }
-  function enableSim() { if (!simRunning) $("simBtn").disabled = false; }
+  function enableSim() { if (!simRunning) $("simBtn").disabled = !isLicensed(); } // stays locked until activated
+
+  /* ============================================================
+     License / CDK activation (client-side, offline single file)
+     ============================================================ */
+  const LICENSE_KEY = "wcp_license_v1";
+  // 会员档位与时长（天）。life 档 days=0 表示永久有效。
+  const CDK_TIERS = {
+    month:   { label: "月度会员", days: 30 },
+    quarter: { label: "季度会员", days: 90 },
+    year:    { label: "年度会员", days: 365 },
+    life:    { label: "终身会员", days: 0 },
+  };
+  // 卡密池：后续按需往对应档位数组里追加 CDK 即可（大小写与前后空格均忽略）。
+  const CDK_CODES = {
+    month:   ["WCP-MONTH-2026"],
+    quarter: ["WCP-QUARTER-2026"],
+    year:    ["WCP-YEAR-2026"],
+    life:    ["WCP-LIFETIME-OWNER"],
+  };
+
+  function tierOfCode(code) {
+    const norm = (code || "").trim().toUpperCase();
+    if (!norm) return null;
+    for (const tier of Object.keys(CDK_CODES)) {
+      if (CDK_CODES[tier].some(c => c.trim().toUpperCase() === norm)) return tier;
+    }
+    return null;
+  }
+  function getLicense() {
+    try { return JSON.parse(localStorage.getItem(LICENSE_KEY) || "null"); } catch (e) { return null; }
+  }
+  function licenseValid(lic) {
+    if (!lic || !lic.tier) return false;
+    if (lic.expiresAt == null) return true;      // lifetime
+    return Date.now() < lic.expiresAt;
+  }
+  function isLicensed() { return true; } // 免CDK版：始终解锁，全部功能可用
+  function daysLeft(lic) {
+    if (lic.expiresAt == null) return Infinity;
+    return Math.max(0, Math.ceil((lic.expiresAt - Date.now()) / 86400000));
+  }
+  function fmtDate(ms) { const d = new Date(ms); return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`; }
+  function setCdkMsg(text, cls) { const el = $("cdkMsg"); if (el) { el.textContent = text; el.className = "lic-msg " + (cls || ""); } }
+
+  function activateCdk() {
+    const input = $("cdkInput"); if (!input) return;
+    const code = (input.value || "").trim();
+    if (!code) { setCdkMsg("请输入 CDK 卡密", "err"); return; }
+    const tier = tierOfCode(code);
+    if (!tier) { setCdkMsg("卡密无效或不存在，请检查后重试", "err"); return; }
+    const now = Date.now();
+    const days = CDK_TIERS[tier].days;
+    const lic = { code, tier, activatedAt: now, expiresAt: days ? now + days * 86400000 : null };
+    localStorage.setItem(LICENSE_KEY, JSON.stringify(lic));
+    renderLicense();
+    applyLock();
+  }
+  function clearLicense() { localStorage.removeItem(LICENSE_KEY); renderLicense(); applyLock(); }
+
+  function renderLicense() {
+    // 免CDK版：不显示卡密输入框，直接展示“全功能 · 免激活”状态。
+    const box = $("licenseBox"); if (!box) return;
+    box.classList.add("active");
+    box.innerHTML = `<div class="lic-title">授权状态 / License</div>`
+      + `<div class="lic-status">✓ 全功能版 · 免激活</div>`
+      + `<div class="lic-sub">本版本无需 CDK，全部功能已解锁</div>`;
+  }
+
+  // Lock/unlock the tool's core action (Monte Carlo) based on license state.
+  function applyLock() {
+    const locked = !isLicensed();
+    const btn = $("simBtn");
+    if (btn && !simRunning) {
+      btn.disabled = locked;
+      btn.textContent = locked ? "🔒 请先激活 / Activate to Use" : "蒙特卡洛模拟 / Monte Carlo";
+    }
+    if (locked) {
+      const hint = $("predHint");
+      if (hint) hint.textContent = "本工具需授权后使用：请在右上角输入 CDK 卡密并点击「确定」激活（支持月度 / 季度 / 年度 / 终身）。";
+    }
+  }
 
   /* ---------- Reset to 0:0 (pre-analysis state) ---------- */
   function resetPrediction() {
@@ -971,6 +2046,7 @@
     $("predCaption").textContent = "最可能比分 / Most Likely Scoreline";
     $("predHint").textContent = "点击「蒙特卡洛模拟」运行预测（约 30–60 秒），查看最有可能的比分与完整概率";
     enableSim();
+    applyLock(); // keep hint/button consistent with license state
   }
 
   /* ---------- Finished match: show real score, block analysis ---------- */
@@ -993,6 +2069,7 @@
   /* ---------- Monte Carlo run (single analysis trigger, 30-60s) ---------- */
   function runMonteCarlo() {
     if (simRunning || state.lockedFinished) return;
+    if (!isLicensed()) { applyLock(); alert("请先在右上角输入 CDK 卡密并点击「确定」激活工具后再使用。"); return; }
     const homeTeam = TEAMS.find(t => t.id === $("homeTeam").value);
     const awayTeam = TEAMS.find(t => t.id === $("awayTeam").value);
     if (!homeTeam || !awayTeam) { alert("请选择两支球队"); return; }
@@ -1106,8 +2183,8 @@
     // Last 3 months results & status
     renderRecent(homeTeam, awayTeam);
 
-    // Knockout bracket (tournament-wide, hourly refresh)
-    renderKnockout();
+    // Knockout bracket (tournament-wide, hourly refresh) — cup competitions only
+    if (ACTIVE_COMP.type === "cup") renderKnockout();
 
     // Strength (uses in-tournament adjusted ratings)
     renderStrength(homeTeam, awayTeam, lh, la, hAtk, hDef, aAtk, aDef);
@@ -1568,7 +2645,7 @@
     let badges;
     const items = fi.rec.items.slice(-5);
     if (items.length === 0) {
-      badges = `<span class="fb-none">本届世界杯尚未开赛 · 采用赛前近况评估</span>`;
+      badges = `<span class="fb-none">暂无本赛事实时战绩 · 采用近况基准评估</span>`;
     } else {
       badges = items.map(it => {
         if (it.live) return `<span class="fb fb-live">${it.opp} ${it.gfor}-${it.gag} ●</span>`;
@@ -1692,6 +2769,35 @@
     const el = $("recentUpdated"); if (el) el.textContent = nowStamp();
   }
 
+  // League standings module (non-World-Cup). Shows verified real tables only; the two
+  // currently selected teams are highlighted. Auto-refreshes on a 12h cadence.
+  function renderStandings() {
+    const card = $("standingsCard"); if (!card) return;
+    if (ACTIVE_COMP.type === "cup") { card.style.display = "none"; return; } // WC has bracket instead
+    card.style.display = "";
+    const tbl = $("standingsTable");
+    const data = STANDINGS[ACTIVE_COMP.id];
+    const stampEl = $("standingsUpdated");
+    if (!data || !data.rows || !data.rows.length) {
+      tbl.innerHTML = `<tr><td class="standings-empty">该赛事暂无积分榜数据（未收录）· 无</td></tr>`;
+      if (stampEl) stampEl.textContent = "无";
+      return;
+    }
+    const hid = $("homeTeam").value, aid = $("awayTeam").value;
+    let html = `<tr><th class="sc-rank">#</th><th class="sc-team">球队 Team</th><th>场</th><th>胜</th><th>平</th><th>负</th><th>进</th><th>失</th><th>净</th><th>积分</th></tr>`;
+    data.rows.forEach((r, i) => {
+      const [id, P, W, D, L, GF, GA, Pts] = r;
+      const gd = GF - GA;
+      const rowCls = id === hid ? "sc-home" : id === aid ? "sc-away" : "";
+      const gdCls = gd > 0 ? "sc-gd-pos" : gd < 0 ? "sc-gd-neg" : "";
+      html += `<tr class="${rowCls}"><td class="sc-rank">${i + 1}</td><td class="sc-team">${teamName(id)}</td>`
+        + `<td>${P}</td><td>${W}</td><td>${D}</td><td>${L}</td><td>${GF}</td><td>${GA}</td>`
+        + `<td class="${gdCls}">${gd > 0 ? "+" : ""}${gd}</td><td class="sc-pts">${Pts}</td></tr>`;
+    });
+    tbl.innerHTML = html;
+    if (stampEl) stampEl.textContent = `${nowStamp()} · ${data.asOf}`;
+  }
+
   function renderStrength(home, away, lh, la, hAtk, hDef, aAtk, aDef) {
     // fall back to base ratings if effective values were not provided
     hAtk = hAtk != null ? hAtk : home.atk; hDef = hDef != null ? hDef : home.def;
@@ -1747,12 +2853,59 @@
 
   /* ---------- Team dropdown options ---------- */
   function buildOptions() {
-    const sorted = [...TEAMS].sort((a,b)=>a.group.localeCompare(b.group) || a.name.localeCompare(b.name));
-    const opts = sorted.map(t => `<option value="${t.id}">[${t.group}] ${t.name}</option>`).join("");
+    const grouped = ACTIVE_COMP.grouped;
+    const sorted = [...TEAMS].sort((a, b) =>
+      grouped ? ((a.group || "").localeCompare(b.group || "") || a.name.localeCompare(b.name))
+              : a.name.localeCompare(b.name));
+    const opts = sorted.map(t =>
+      `<option value="${t.id}">${grouped ? `[${t.group}] ` : ""}${t.name}</option>`).join("");
     $("homeTeam").innerHTML = opts;
     $("awayTeam").innerHTML = opts;
-    $("homeTeam").value = "9";  // Brazil
-    $("awayTeam").value = "33"; // France
+    // Sensible default matchup for the active competition (falls back to first two teams).
+    const d1 = ACTIVE_COMP.def1, d2 = ACTIVE_COMP.def2;
+    $("homeTeam").value = TEAMS.some(t => t.id === d1) ? d1 : (TEAMS[0] && TEAMS[0].id);
+    $("awayTeam").value = TEAMS.some(t => t.id === d2) ? d2 : (TEAMS[1] && TEAMS[1].id);
+  }
+
+  /* ---------- Competition switching ---------- */
+  function buildCompSelect() {
+    $("compSelect").innerHTML = COMP_GROUPS.map(g =>
+      `<optgroup label="${g.label}">` +
+      g.ids.filter(k => COMPETITIONS[k])
+           .map(k => `<option value="${k}">${COMPETITIONS[k].name}</option>`).join("") +
+      `</optgroup>`).join("");
+    $("compSelect").value = ACTIVE_COMP.id;
+  }
+
+  // Swap the active dataset and reconfigure the cup-only UI (live fixtures + bracket).
+  function setCompetition(compId) {
+    const comp = COMPETITIONS[compId] || COMPETITIONS.wc;
+    ACTIVE_COMP = comp;
+    TEAMS = comp.teams; SQUADS = comp.squads; RECENT3M = comp.recent;
+
+    $("compDesc").textContent = comp.desc || "";
+    const isCup = comp.type === "cup";
+
+    // Date + fixture pickers are available for EVERY competition. Only the knockout
+    // bracket stays cup-only (needs group/knockout structure & live data).
+    const ko = $("koCard"); if (ko) ko.style.display = isCup ? "" : "none";
+
+    // Reset venue + any prior fixture selection when switching competitions.
+    state.venue = "neutral";
+    document.querySelectorAll("#venueToggle .toggle-pill").forEach(p =>
+      p.classList.toggle("active", p.dataset.venue === "neutral"));
+    $("fixtureSelect").value = "";
+    $("dateSelect").value = "";
+    showLiveBanner(null);
+
+    buildOptions();
+    resetPrediction();
+    renderStandings(); // show/refresh the standings module for this competition
+
+    // World Cup: live API + embedded fallback. Other competitions: a generated
+    // round-robin schedule so the same date/fixture selectors work (no live scores).
+    if (isCup && comp.api) loadFixtures();
+    else buildLeagueSchedule(comp);
   }
 
   /* ============================================================
@@ -1868,7 +3021,9 @@
     const st = statusOf(fx);
     if (st.done) scoreTag = `  ${fx.hs}-${fx.as} 完`;
     else if (st.live) scoreTag = `  ${fx.hs}-${fx.as} ●`;
-    return `${dt} ${tm}  ${teamName(fx.home)} vs ${teamName(fx.away)} [${fx.group}]${scoreTag}`;
+    // Cup fixtures carry a group tag; generated league fixtures encode matchday in the id.
+    const tag = fx.group ? ` [${fx.group}]` : ` [第${Math.floor(+fx.id / 1000)}轮]`;
+    return `${dt} ${tm}  ${teamName(fx.home)} vs ${teamName(fx.away)}${tag}${scoreTag}`;
   }
 
   // Sortable timestamp (Beijing-based, monotonic with real kickoff order)
@@ -1912,9 +3067,17 @@
   function buildFixtureSelect() {
     const prev = $("fixtureSelect").value;     // preserve current selection across refreshes
     const dateF = $("dateSelect").value;        // active date filter (empty = all)
+    const anyFixtures = fixtures.filter(validFx).length > 0;
     let valid = fixtures.filter(validFx);
     if (dateF) valid = valid.filter(fx => dateKey(fx) === dateF);
-    const opts = ['<option value="">-- 选择一场真实比赛 --</option>']
+    // No fabricated fixtures: when nothing is scheduled (or the chosen date has none),
+    // the placeholder reads "无" so the user sees the competition simply isn't running.
+    const placeholder = !anyFixtures
+      ? '<option value="">-- 该赛事暂无赛程 · 无 --</option>'
+      : (valid.length === 0
+          ? '<option value="">-- 该日期无比赛 · 无 --</option>'
+          : '<option value="">-- 选择一场真实比赛 --</option>');
+    const opts = [placeholder]
       .concat(valid.map(fx => `<option value="${fx.id}">${fixtureLabel(fx)}</option>`));
     $("fixtureSelect").innerHTML = opts.join("");
     if (prev && valid.some(fx => fx.id === prev)) $("fixtureSelect").value = prev; // restore if still visible
@@ -1945,9 +3108,16 @@
     if (!fx) return;
     $("homeTeam").value = fx.home;
     $("awayTeam").value = fx.away;
-    // host-nation auto venue
-    const venue = HOST_NATIONS.includes(fx.home) ? "home"
-      : HOST_NATIONS.includes(fx.away) ? "away" : "neutral";
+    renderStandings(); // re-highlight the two teams' rows in the standings table
+    // Venue: World Cup is played at host/neutral sites (host-nation auto venue); other
+    // competitions are real home/away, so the listed home team gets home advantage.
+    let venue;
+    if (ACTIVE_COMP.type === "cup") {
+      venue = HOST_NATIONS.includes(fx.home) ? "home"
+        : HOST_NATIONS.includes(fx.away) ? "away" : "neutral";
+    } else {
+      venue = "home";
+    }
     state.venue = venue;
     document.querySelectorAll("#venueToggle .toggle-pill").forEach(p =>
       p.classList.toggle("active", p.dataset.venue === venue));
@@ -1958,7 +3128,52 @@
     else resetPrediction();
   }
 
+  // Build a "MM/DD/YYYY HH:MM" source string that, after toBeijing()'s +14h shift,
+  // displays exactly the intended Beijing wall-clock time (so grouping/labels align).
+  function fmtSourceFromBeijing(ms) {
+    const d = new Date(ms - BEIJING_OFFSET_HOURS * 3600 * 1000);
+    return `${pad2(d.getUTCMonth() + 1)}/${pad2(d.getUTCDate())}/${d.getUTCFullYear()} ${pad2(d.getUTCHours())}:${pad2(d.getUTCMinutes())}`;
+  }
+
+  function buildLeagueSchedule(comp) {
+    // Prefer a verified real calendar when the competition provides one.
+    if (comp.realSchedule && comp.realSchedule.length) {
+      const cnt = {};
+      fixtures = comp.realSchedule.map(([r, home, away, md, hm, hs, as]) => {
+        cnt[r] = (cnt[r] || 0) + 1;
+        const [mm, dd] = md.split("/").map(Number);
+        const [hh, mi] = hm.split(":").map(Number);
+        const ms = Date.UTC(2026, mm - 1, dd, hh, mi);
+        // A trailing score pair means the match is finished: show the real result and
+        // block re-simulation (same behaviour as World Cup finished fixtures).
+        const played = hs != null && as != null;
+        return { id: String(r * 1000 + cnt[r]), home, away, group: "",
+                 date: fmtSourceFromBeijing(ms),
+                 hs: played ? hs : 0, as: played ? as : 0,
+                 finished: played, elapsed: played ? "finished" : "notstarted" };
+      });
+      sortFixtures();
+      buildDateSelect();
+      buildFixtureSelect();
+      const short = comp.name.split(" ")[0];
+      setDataStatus("online", `${short} · 真实赛程（北京时间 · 共 ${fixtures.length} 场，无实时比分）· 选择比赛后可模拟`);
+      return;
+    }
+
+    // No verified calendar for this competition (unrecorded or off-season): do NOT
+    // fabricate matches. Leave the schedule empty so date/fixture pickers read "无".
+    // The user can still pick two teams manually below and run the simulation.
+    fixtures = [];
+    buildDateSelect();
+    buildFixtureSelect();
+    const short = comp.name.split(" ")[0];
+    setDataStatus("", `${short} · 暂无进行中的真实赛程（未收录实时赛程 / 当前非赛季）· 可在下方手动选择两队进行模拟`);
+  }
+
   async function loadFixtures() {
+    // Only the World Cup (cup + api) has a live fixtures feed. For other competitions
+    // this is a no-op so the 60s poll never clobbers the generated league schedule.
+    if (ACTIVE_COMP.type !== "cup" || !ACTIVE_COMP.api) return;
     setDataStatus("", "正在连接实时赛程数据…");
     try {
       const resp = await fetch(API_URL, { cache: "no-cache" });
@@ -1999,19 +3214,34 @@
     e.target.classList.add("active");
     state.venue = e.target.dataset.venue;
   });
+  $("compSelect").addEventListener("change", e => setCompetition(e.target.value));
   $("simBtn").addEventListener("click", runMonteCarlo);
-  $("homeTeam").addEventListener("change", resetPrediction);
-  $("awayTeam").addEventListener("change", resetPrediction);
+  $("homeTeam").addEventListener("change", () => { resetPrediction(); renderStandings(); });
+  $("awayTeam").addEventListener("change", () => { resetPrediction(); renderStandings(); });
   $("dateSelect").addEventListener("change", onDateChange);
   $("fixtureSelect").addEventListener("change", onFixtureChange);
-  $("refreshBtn").addEventListener("click", loadFixtures);
+  $("refreshBtn").addEventListener("click", () => {
+    if (ACTIVE_COMP.type === "cup" && ACTIVE_COMP.api) loadFixtures();
+    else buildLeagueSchedule(ACTIVE_COMP);
+  });
   ["inHome","inDraw","inAway"].forEach(id => $(id).addEventListener("input", computeValue));
 
   /* ---------- Boot ---------- */
-  buildOptions();
-  resetPrediction(); // show 0:0 by default; reveal real prediction only on「开始分析」
-  loadFixtures();
-  setInterval(loadFixtures, 60000); // refresh live scores / banner every 60s
+  buildCompSelect();
+  setCompetition(ACTIVE_COMP.id); // builds team options, resets 0:0 view, loads WC fixtures
+  renderLicense();                // paint CDK box (input if unlicensed, status if active)
+  applyLock();                    // gate the Monte Carlo action until activated
+  setInterval(loadFixtures, 60000); // refresh live scores / banner every 60s (no-op for leagues)
+
+  // 授权状态巡检：每 60s 检查一次；仅在“原本已激活但刚到期”时重绘授权框并上锁，
+  // 避免在用户正输入卡密时重绘输入框而清掉已输入内容。
+  setInterval(() => {
+    if (!isLicensed()) {
+      const box = $("licenseBox");
+      if (box && box.classList.contains("active")) renderLicense();
+      applyLock();
+    }
+  }, 60000);
 
   // 球队状态 & 近3个月战绩模块：每 24 小时自动刷新一次（不随 60s 实时比分刷新）
   setInterval(() => {
@@ -2021,8 +3251,11 @@
     }
   }, 24 * 60 * 60 * 1000);
 
-  // 淘汰赛晋级图：每 1 小时自动刷新（按最新小组排名重算出线形势与对阵推演）
-  setInterval(() => { if (state.lastModel) renderKnockout(); }, 60 * 60 * 1000);
+  // 赛事积分榜模块：每 12 小时自动刷新一次（重置更新时间戳；仅非世界杯赛事显示）
+  setInterval(renderStandings, 12 * 60 * 60 * 1000);
+
+  // 淘汰赛晋级图：每 1 小时自动刷新（仅世界杯等杯赛，按最新小组排名重算出线形势与对阵推演）
+  setInterval(() => { if (state.lastModel && ACTIVE_COMP.type === "cup") renderKnockout(); }, 60 * 60 * 1000);
 })();
 </script>
 </body>
