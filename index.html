@@ -1721,6 +1721,49 @@
     [14,"se1","se6","07/26","22:30"],[14,"se7","se5","07/28","01:00"],
   ];
 
+  /* ---------- UEFA Champions League qualifying (2026-27, 1st qualifying round) ----------
+     Separate from the group-stage "ucl" pool. Ratings are rough (minor nations),
+     names use 体彩-style Chinese where applicable. 28 teams = 14 first-leg ties. */
+  const UQR_TEAMS = [
+    { id:"uqr1", name:"萨巴赫 Sabah",                 atk:0.54, def:0.53 },
+    { id:"uqr2", name:"新圣徒 The New Saints",        atk:0.50, def:0.50 },
+    { id:"uqr3", name:"弗洛里亚纳 Floriana",          atk:0.46, def:0.47 },
+    { id:"uqr4", name:"三叶草流浪者 Shamrock Rovers", atk:0.55, def:0.54 },
+    { id:"uqr5", name:"塔林弗洛拉 Flora",             atk:0.52, def:0.52 },
+    { id:"uqr6", name:"伊比利亚1999 Iberia 1999",     atk:0.49, def:0.49 },
+    { id:"uqr7", name:"林肯红魔 Lincoln Red Imps",    atk:0.52, def:0.52 },
+    { id:"uqr8", name:"埃斯卡尔德斯国际 Inter d'Escaldes", atk:0.42, def:0.45 },
+    { id:"uqr9", name:"特雷菲奥里 Tre Fiori",         atk:0.40, def:0.44 },
+    { id:"uqr10",name:"拉恩 Larne",                   atk:0.50, def:0.50 },
+    { id:"uqr11",name:"阿拉拉特亚美尼亚 Ararat-Armenia", atk:0.53, def:0.52 },
+    { id:"uqr12",name:"里加 Riga FC",                 atk:0.52, def:0.51 },
+    { id:"uqr13",name:"瓦尔达尔 Vardar",              atk:0.50, def:0.50 },
+    { id:"uqr14",name:"库奥皮奥 KuPS",                atk:0.52, def:0.52 },
+    { id:"uqr15",name:"考纳斯 Kauno Žalgiris",        atk:0.50, def:0.50 },
+    { id:"uqr16",name:"德里塔 Drita",                 atk:0.54, def:0.53 },
+    { id:"uqr17",name:"维捷布斯克 ML Vitebsk",        atk:0.44, def:0.46 },
+    { id:"uqr18",name:"克拉约瓦大学 U. Craiova",      atk:0.58, def:0.56 },
+    { id:"uqr19",name:"佩特罗库布 Petrocub",          atk:0.50, def:0.50 },
+    { id:"uqr20",name:"埃格纳蒂亚 Egnatia",           atk:0.51, def:0.51 },
+    { id:"uqr21",name:"巴尼亚卢卡博拉茨 Borac B.L.",  atk:0.53, def:0.52 },
+    { id:"uqr22",name:"索菲亚列夫斯基 Levski Sofia",  atk:0.56, def:0.55 },
+    { id:"uqr23",name:"雷克维京 Víkingur Reykjavík",  atk:0.50, def:0.50 },
+    { id:"uqr24",name:"杰尔 ETO Győr",                atk:0.53, def:0.52 },
+    { id:"uqr25",name:"阿拉木图卡伊拉特 Kairat",      atk:0.58, def:0.56 },
+    { id:"uqr26",name:"苏杰斯卡 Sutjeska",            atk:0.48, def:0.49 },
+    { id:"uqr27",name:"克拉克斯 KÍ Klaksvík",         atk:0.48, def:0.48 },
+    { id:"uqr28",name:"比森 Atert Bissen",            atk:0.40, def:0.44 },
+  ];
+  // 1st qualifying round · first legs (round=1). Beijing time, 2026. Source: Wikipedia/UEFA.
+  const UQR_SCHED = [
+    [1,"uqr1","uqr2","07/08","00:00"],[1,"uqr7","uqr8","07/08","00:00"],[1,"uqr11","uqr12","07/08","00:00"],[1,"uqr15","uqr16","07/08","00:00"],
+    [1,"uqr13","uqr14","07/08","01:00"],[1,"uqr3","uqr4","07/08","01:30"],
+    [1,"uqr9","uqr10","07/08","02:30"],[1,"uqr21","uqr22","07/08","02:30"],[1,"uqr27","uqr28","07/08","02:45"],
+    [1,"uqr23","uqr24","07/08","03:00"],
+    [1,"uqr25","uqr26","07/08","23:00"],
+    [1,"uqr5","uqr6","07/09","00:00"],[1,"uqr17","uqr18","07/09","01:00"],[1,"uqr19","uqr20","07/09","01:00"],
+  ];
+
   /* ---------- Real league standings (verified against public tables) ----------
      Row format: [teamId, 场 P, 胜 W, 平 D, 负 L, 进 GF, 失 GA, 积分 Pts]; rows in rank order.
      Only competitions with verified data appear; others show "无" in the standings module. */
@@ -1779,6 +1822,7 @@
     ar:  leagueComp("ar",  "阿甲 Primera División",     AR_TEAMS,  "阿根廷足球甲级联赛 · 20 队", "ar1", "ar2"),
     mx:  leagueComp("mx",  "墨超 Liga MX",              MX_TEAMS,  "墨西哥足球超级联赛 · 18 队", "mx1", "mx2"),
     ucl: leagueComp("ucl", "欧冠 Champions League",     UCL_TEAMS, "欧洲冠军联赛 · 参赛球队池 36", "ucl1", "ucl3"),
+    uqr: Object.assign(leagueComp("uqr", "欧冠预选赛 UCL Qualifying", UQR_TEAMS, "欧冠资格赛第一轮 · 首回合真实赛程（北京时间）· 28 队 14 场", "uqr1", "uqr2"), { realSchedule:UQR_SCHED }),
     uel: leagueComp("uel", "欧联 Europa League",        UEL_TEAMS, "欧洲联赛 · 参赛球队池 24", "uel3", "uel7"),
     uecl:leagueComp("uecl","欧协联 Conference League",  UECL_TEAMS,"欧洲协会联赛 · 参赛球队池 20", "uecl1", "uecl2"),
     acl: leagueComp("acl", "亚冠精英 AFC Champions Elite",ACL_TEAMS,"亚足联冠军联赛精英 · 参赛球队池 24", "acl1", "acl5"),
@@ -1790,7 +1834,7 @@
   // Selector layout: grouped by region for a manageable 30+ option list (<optgroup>).
   const COMP_GROUPS = [
     { label:"国际大赛 International", ids:["wc", "euro", "copa", "ac"] },
-    { label:"洲际俱乐部 Continental Clubs", ids:["ucl", "uel", "uecl", "acl"] },
+    { label:"洲际俱乐部 Continental Clubs", ids:["ucl", "uqr", "uel", "uecl", "acl"] },
     { label:"欧洲联赛 European Leagues", ids:["epl", "es", "it", "de", "fr", "ec", "nl", "pt", "sc", "be", "tr", "ru", "se"] },
     { label:"亚洲 / 大洋洲 Asia & Oceania", ids:["jp", "kl", "csl", "au", "sd"] },
     { label:"美洲 Americas", ids:["us", "br", "ar", "mx"] },
