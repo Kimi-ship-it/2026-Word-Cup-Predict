@@ -434,6 +434,21 @@
     .odds-input-grid { grid-template-columns: 1fr; }
     .predicted-score { gap: 12px; }
   }
+  /* 动态闪耀公告栏 */
+  .notice-bar{position:relative;margin:16px 0 6px;padding:12px 22px;border-radius:12px;text-align:center;
+    font-weight:700;font-size:15px;letter-spacing:.5px;color:#fff;overflow:hidden;
+    background:linear-gradient(90deg,#7b2ff7,#f107a3,#ff6a00,#f107a3,#7b2ff7);background-size:300% 100%;
+    animation:noticeFlow 6s linear infinite, noticePulse 2.4s ease-in-out infinite;
+    border:1px solid rgba(255,255,255,.28)}
+  .notice-bar::before{content:"";position:absolute;top:0;left:-60%;width:45%;height:100%;
+    background:linear-gradient(120deg,transparent,rgba(255,255,255,.6),transparent);transform:skewX(-20deg);
+    animation:noticeShine 3.2s ease-in-out infinite}
+  .notice-bar span{position:relative;z-index:1}
+  .notice-bar b{color:#fff700;text-shadow:0 0 8px rgba(255,247,0,.85)}
+  @keyframes noticeFlow{0%{background-position:0% 50%}100%{background-position:300% 50%}}
+  @keyframes noticeShine{0%{left:-60%}55%{left:120%}100%{left:120%}}
+  @keyframes noticePulse{0%,100%{box-shadow:0 0 10px rgba(241,7,163,.45),0 0 4px rgba(123,47,247,.5)}
+    50%{box-shadow:0 0 26px rgba(241,7,163,.85),0 0 12px rgba(255,106,0,.7)}}
 </style>
 </head>
 <body>
@@ -442,6 +457,8 @@
     <h1>全球足球智能赛事分析引擎</h1>
     <div class="sub">覆盖全球足彩热门赛事：世界杯/欧洲杯/美洲杯/亚洲杯 · 欧冠/欧联 · 五大联赛及英冠/荷/葡/苏/瑞/比/土/俄 · 日职/K职联/中超/澳超/沙特超 · 美职联/巴甲/阿甲/墨超 &middot; 泊松 + Dixon-Coles 模型 · 全盘口概率 · 凯利价值计算</div>
   </div>
+
+  <div class="notice-bar"><span>如有任何续费及技术问题，请联系 VX：<b>obama2888</b></span></div>
 
   <!-- Setup card -->
   <div class="card">
@@ -703,6 +720,7 @@
 
   <div class="footer" id="footer">
     Global Football Analytics Engine &middot; 30 赛事 / 620+ 球队 &middot; Bivariate Poisson + Dixon-Coles Model
+    <div style="margin-top:6px">技术支持请联系 VX：obama2888</div>
   </div>
 </div>
 
