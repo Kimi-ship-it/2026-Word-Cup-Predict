@@ -1548,6 +1548,12 @@
     { id:"uel22",name:"马卡比特拉维夫 M. Tel Av",atk:0.62, def:0.60 },
     { id:"uel23",name:"布加勒斯特星 FCSB",       atk:0.62, def:0.62 },
     { id:"uel24",name:"萨尔茨堡 RB Salzburg",    atk:0.72, def:0.70 },
+    // 2026-27 资格赛首轮参赛队（评分偏保守，对齐体彩译名）
+    { id:"uel25",name:"伏伊伏丁那 Vojvodina",    atk:0.54, def:0.55 },
+    { id:"uel26",name:"索菲亚中央陆军 CSKA Sofia",atk:0.57, def:0.56 },
+    { id:"uel27",name:"德里城 Derry City",       atk:0.50, def:0.52 },
+    { id:"uel28",name:"斯普利特海杜克 Hajduk",   atk:0.62, def:0.60 },
+    { id:"uel29",name:"日利纳 Žilina",           atk:0.53, def:0.53 },
   ];
 
   /* ---------- 欧协联 UEFA Conference League (参赛球队池) ---------- */
@@ -1764,6 +1770,15 @@
     [1,"uqr5","uqr6","07/09","00:00"],[1,"uqr17","uqr18","07/09","01:00"],[1,"uqr19","uqr20","07/09","01:00"],
   ];
 
+  /* ---------- UEFA Europa League qualifying (2026-27, 1st qualifying round) ----------
+     Separate from the league-phase "uel" pool. First legs on 9 Jul (CEST=UTC+2).
+     Beijing = CEST+6h. Source: Wikipedia/UEFA 2026-27 Europa League qualifying. */
+  const UEL_SCHED = [
+    [1,"uel26","uel27","07/10","02:00"], // CSKA 索非亚 vs 德里城 (20:00 CEST)
+    [1,"uel28","uel29","07/10","02:00"], // 海杜克 vs 日利纳 (20:00 CEST)
+    [1,"uel25","uel12","07/10","03:00"], // 伏伊伏丁那 vs 费伦茨瓦罗斯 (21:00 CEST)
+  ];
+
   /* ---------- Real league standings (verified against public tables) ----------
      Row format: [teamId, 场 P, 胜 W, 平 D, 负 L, 进 GF, 失 GA, 积分 Pts]; rows in rank order.
      Only competitions with verified data appear; others show "无" in the standings module. */
@@ -1823,7 +1838,7 @@
     mx:  leagueComp("mx",  "墨超 Liga MX",              MX_TEAMS,  "墨西哥足球超级联赛 · 18 队", "mx1", "mx2"),
     ucl: leagueComp("ucl", "欧冠 Champions League",     UCL_TEAMS, "欧洲冠军联赛 · 参赛球队池 36", "ucl1", "ucl3"),
     uqr: Object.assign(leagueComp("uqr", "欧冠预选赛 UCL Qualifying", UQR_TEAMS, "欧冠资格赛第一轮 · 首回合真实赛程（北京时间）· 28 队 14 场", "uqr1", "uqr2"), { realSchedule:UQR_SCHED }),
-    uel: leagueComp("uel", "欧联 Europa League",        UEL_TEAMS, "欧洲联赛 · 参赛球队池 24", "uel3", "uel7"),
+    uel: Object.assign(leagueComp("uel", "欧联 Europa League",        UEL_TEAMS, "欧洲联赛 · 参赛球队池 29 · 资格赛首轮真实赛程（北京时间）", "uel25", "uel12"), { realSchedule:UEL_SCHED }),
     uecl:leagueComp("uecl","欧协联 Conference League",  UECL_TEAMS,"欧洲协会联赛 · 参赛球队池 20", "uecl1", "uecl2"),
     acl: leagueComp("acl", "亚冠精英 AFC Champions Elite",ACL_TEAMS,"亚足联冠军联赛精英 · 参赛球队池 24", "acl1", "acl5"),
     euro:leagueComp("euro","欧洲杯 UEFA Euro",          EURO_TEAMS,"欧洲足球锦标赛 · 国家队池 24", "euro1", "euro3"),
