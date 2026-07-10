@@ -1800,6 +1800,30 @@
     [1,"uel25","uel12","07/10","03:00"], // 伏伊伏丁那 vs 费伦茨瓦罗斯 (21:00 CEST)
   ];
 
+  /* ---------- 芬超 Veikkausliiga (2026) 参赛球队与真实赛程 ----------
+     12 队；评分依据 2026 赛季实时战绩推导。Source: suomifutis / BBC. */
+  const FI_TEAMS = [
+    { id:"fi1", name:"赫尔辛基 HJK",         atk:0.66, def:0.56 },
+    { id:"fi2", name:"库奥皮奥 KuPS",        atk:0.66, def:0.66 },
+    { id:"fi3", name:"图尔库国际 FC Inter",  atk:0.62, def:0.70 },
+    { id:"fi4", name:"坦佩雷伊尔维斯 Ilves", atk:0.64, def:0.46 },
+    { id:"fi5", name:"塞伊奈约基 SJK",       atk:0.54, def:0.48 },
+    { id:"fi6", name:"瓦萨 VPS",             atk:0.58, def:0.66 },
+    { id:"fi7", name:"拉赫蒂 FC Lahti",      atk:0.54, def:0.54 },
+    { id:"fi8", name:"奥卢 AC Oulu",         atk:0.60, def:0.60 },
+    { id:"fi9", name:"玛丽港 IFK Mariehamn", atk:0.42, def:0.46 },
+    { id:"fi10",name:"图尔库 TPS",           atk:0.52, def:0.58 },
+    { id:"fi11",name:"格尼斯坦 Gnistan",     atk:0.60, def:0.54 },
+    { id:"fi12",name:"亚罗 FF Jaro",         atk:0.48, def:0.42 },
+  ];
+  // 芬超 2026 · 第16轮 (EEST=UTC+3 → 北京 +5h). Source: suomifutis / BBC Sport.
+  const FI_SCHED = [
+    [16,"fi6","fi5","07/11","00:00"],  // VPS vs SJK (10日 19:00 EEST)
+    [16,"fi7","fi1","07/11","20:00"],  // 拉赫蒂 vs HJK (11日 15:00 EEST)
+    [16,"fi11","fi9","07/11","22:00"], // 格尼斯坦 vs 玛丽港 (11日 17:00 EEST)
+    [16,"fi10","fi8","07/11","22:00"], // TPS vs 奥卢 (11日 17:00 EEST)
+  ];
+
   /* ---------- Real league standings (verified against public tables) ----------
      Row format: [teamId, 场 P, 胜 W, 平 D, 负 L, 进 GF, 失 GA, 积分 Pts]; rows in rank order.
      Only competitions with verified data appear; others show "无" in the standings module. */
@@ -1819,6 +1843,13 @@
       ["se5",10,3,3,4,12,16,12],["se16",10,3,3,4,17,22,12],["se13",10,2,4,4,12,16,10],
       ["se9",10,3,1,6,11,15,10],["se2",10,2,4,4,13,22,10],["se12",10,1,3,6,9,20,6],
       ["se8",10,1,3,6,10,25,6],
+    ]},
+    // Veikkausliiga 2026 · 截至 07/09（第16轮前）. Source: suomifutis.
+    fi: { asOf:"截至 07/09", rows:[
+      ["fi2",15,8,6,1,27,15,30],["fi3",15,8,6,1,23,12,30],["fi8",13,8,1,4,19,14,25],
+      ["fi1",14,6,4,4,25,17,22],["fi6",13,5,6,2,17,11,21],["fi11",13,5,4,4,19,17,19],
+      ["fi10",13,4,5,4,14,13,17],["fi4",14,4,4,6,24,27,16],["fi7",12,3,3,6,14,14,12],
+      ["fi5",13,2,5,6,15,21,11],["fi12",14,1,6,7,13,30,9],["fi9",13,0,4,9,6,25,4],
     ]},
   };
 
@@ -1850,6 +1881,7 @@
     tr:  leagueComp("tr",  "土超 Süper Lig",            TR_TEAMS,  "土耳其足球超级联赛 · 18 队", "tr1", "tr2"),
     ru:  leagueComp("ru",  "俄超 Russian Premier Lg",   RU_TEAMS,  "俄罗斯足球超级联赛 · 16 队", "ru1", "ru4"),
     se:  Object.assign(leagueComp("se", "瑞超 Allsvenskan", SE_TEAMS, "瑞典足球超级联赛 · 16 队 · 第11–14轮真实赛程（北京时间）", "se2", "se5"), { realSchedule:SE_SCHED }),
+    fi:  Object.assign(leagueComp("fi", "芬超 Veikkausliiga", FI_TEAMS, "芬兰足球超级联赛 · 12 队 · 第16轮真实赛程（北京时间）", "fi6", "fi5"), { realSchedule:FI_SCHED }),
     jp:  leagueComp("jp",  "日职联 J1 League",          JP_TEAMS,  "日本足球职业联赛 J1 · 20 队", "jp1", "jp3"),
     au:  leagueComp("au",  "澳超 A-League Men",         AU_TEAMS,  "澳大利亚足球超级联赛 · 12 队", "au1", "au3"),
     sd:  leagueComp("sd",  "沙特超 Saudi Pro League",   SD_TEAMS,  "沙特阿拉伯足球超级联赛 · 18 队", "sd1", "sd2"),
@@ -1871,7 +1903,7 @@
   const COMP_GROUPS = [
     { label:"国际大赛 International", ids:["wc", "euro", "copa", "ac"] },
     { label:"洲际俱乐部 Continental Clubs", ids:["ucl", "uqr", "uel", "uecl", "acl"] },
-    { label:"欧洲联赛 European Leagues", ids:["epl", "es", "it", "de", "fr", "ec", "nl", "pt", "sc", "be", "tr", "ru", "se"] },
+    { label:"欧洲联赛 European Leagues", ids:["epl", "es", "it", "de", "fr", "ec", "nl", "pt", "sc", "be", "tr", "ru", "se", "fi"] },
     { label:"亚洲 / 大洋洲 Asia & Oceania", ids:["jp", "kl", "csl", "au", "sd"] },
     { label:"美洲 Americas", ids:["us", "br", "ar", "mx"] },
   ];
