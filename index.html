@@ -223,6 +223,29 @@
   .value-table tr.is-value { background: var(--value-bg); }
   .value-badge { display: inline-block; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 4px;
     background: var(--value); color: #06210f; margin-left: 6px; }
+  /* Betting plan */
+  .plan-section { margin-top: 22px; padding-top: 18px; border-top: 1px dashed var(--border); }
+  .plan-head { font-size: 14px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+  .plan-intro { font-size: 12px; color: var(--text-dim); line-height: 1.6; margin-bottom: 14px; }
+  .plan-config { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+  .plan-odds-title { font-size: 11px; font-weight: 700; color: var(--accent); letter-spacing: .5px; margin: 6px 0 8px; }
+  .tg-grid { grid-template-columns: repeat(4, 1fr); }
+  .odds-input-grid .oi label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .plan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 6px; }
+  .plan-card { background: var(--surface-alt); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+  .plan-card.aggressive { border-left: 3px solid var(--value); }
+  .plan-card.safe { border-left: 3px solid var(--accent); }
+  .plan-card-title { font-size: 13px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+  .plan-card-sub { font-size: 11px; color: var(--text-dim); margin-bottom: 10px; line-height: 1.5; }
+  .plan-leg { display: flex; align-items: center; gap: 8px; font-size: 12px; padding: 6px 0; border-bottom: 1px solid var(--border); }
+  .plan-leg:last-of-type { border-bottom: none; }
+  .plan-leg .pl-name { flex: 1; font-weight: 700; color: var(--text); }
+  .plan-leg .pl-tick { font-weight: 800; color: #fff; }
+  .plan-leg .pl-odd { color: var(--text-dim); min-width: 44px; text-align: right; }
+  .plan-metrics { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 11px; }
+  .plan-metrics span b { color: #fff; font-weight: 800; }
+  .plan-empty { font-size: 12px; color: var(--text-dim); padding: 12px 0; }
+  @media (max-width: 640px){ .plan-config { grid-template-columns: 1fr 1fr; } .tg-grid { grid-template-columns: repeat(2,1fr); } .plan-grid { grid-template-columns: 1fr; } }
 
   /* League standings table */
   .standings-table { width: 100%; border-collapse: collapse; }
@@ -347,6 +370,28 @@
   .depth-bar { height:8px; background:var(--surface-2); border-radius:4px; overflow:hidden; margin-bottom:6px; }
   .depth-bar > span { display:block; height:100%; border-radius:4px; }
   .depth-label { font-size:12px; font-weight:700; color:#fff; }
+  /* 属性拆解 · 伤病 · 打法特点 */
+  .attr-row { display:flex; align-items:center; gap:8px; margin-bottom:7px; }
+  .attr-label { font-size:11px; color:var(--text-dim); min-width:60px; }
+  .attr-track { flex:1; height:6px; background:var(--surface-2); border-radius:3px; overflow:hidden; }
+  .attr-track > span { display:block; height:100%; border-radius:3px; }
+  .attr-val { font-size:12px; font-weight:800; color:#fff; min-width:26px; text-align:right; }
+  .fm-line { display:flex; gap:8px; align-items:flex-start; font-size:11px; margin-top:8px; }
+  .fm-k { color:var(--text-dim); min-width:60px; flex-shrink:0; }
+  .fm-v { color:var(--text); font-weight:600; }
+  .fm-tags { display:flex; flex-wrap:wrap; gap:5px; }
+  .fm-tag { font-size:10px; font-weight:700; padding:2px 7px; border-radius:6px;
+    background:rgba(90,120,255,0.16); color:#9db4ff; }
+  .ms-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:4px; }
+  .ms-cell { background:var(--surface-2); border-radius:8px; padding:8px 4px; text-align:center;
+    display:flex; flex-direction:column; gap:2px; }
+  .ms-k { font-size:10px; color:var(--text-dim); }
+  .ms-v { font-size:17px; font-weight:800; line-height:1.1; }
+  .match-comment { grid-column:1 / -1; margin-top:4px; padding:14px 16px; border-radius:12px;
+    background:var(--surface-alt); border:1px solid var(--border); border-left:3px solid var(--accent); }
+  .mc-title { font-size:10px; font-weight:800; letter-spacing:1px; text-transform:uppercase;
+    color:var(--accent); margin-bottom:6px; }
+  .mc-body { font-size:12.5px; line-height:1.7; color:var(--text); }
   .form-note { font-size:11px; color:var(--text-dim); margin-top:14px; line-height:1.6; }
   @media (max-width:640px){ .form-grid { grid-template-columns:1fr; } }
 
@@ -670,14 +715,14 @@
     <div class="card">
       <div class="card-title">球队状态 · 关键球员 · 阵容深度 / Form, Key Players &amp; Depth</div>
       <div class="form-grid" id="formGrid"></div>
-      <div class="form-note">「赛前近况」为球队近两月整体状态的综合评估基准；「本赛事战绩」依据当前赛事的实时赛果叠加进综合状态指数（世界杯等杯赛提供实时数据，联赛以近况基准为准），<strong style="color:var(--accent)">每 24 小时自动更新</strong>（更新于 <span id="formUpdated">--</span>）。关键球员评分与板凳深度为球队综合实力参考。</div>
+      <div class="form-note">「赛前近况」为球队近两月整体状态的综合评估基准；「本赛事战绩」依据当前赛事的实时赛果叠加进综合状态指数（世界杯等杯赛提供实时数据，联赛以近况基准为准），<strong style="color:var(--accent)">每 24 小时自动更新</strong>（更新于 <span id="formUpdated">--</span>）。关键球员评分、板凳深度、进攻属性、防守强度、阵容完整度、伤病与打法特点均由球队攻防评分与状态推导，「本场研判」为综合估算，仅供参考。</div>
     </div>
 
     <!-- Last 3 months results & status -->
     <div class="card">
       <div class="card-title">近3个月战绩与状态评估 / Last 3 Months Form</div>
       <div class="form-grid" id="recentGrid"></div>
-      <div class="form-note">统计所选两队<strong style="color:var(--accent)">最近约 3 个月</strong>的对战结果，并据此给出状态评分与走势，<strong style="color:var(--accent)">每 24 小时自动更新</strong>（更新于 <span id="recentUpdated">--</span>）。标签：友=友谊赛，预=预选赛，邀=洲际邀请赛（国家队）；联=联赛，杯=国内杯赛，洲=洲际赛事（俱乐部）。此部分为综合整理的估算数据，仅供参考。</div>
+      <div class="form-note">统计所选两队<strong style="color:var(--accent)">最近约 3 个月</strong>的对战结果，并据此给出状态评分与走势，<strong style="color:var(--accent)">每 24 小时自动更新</strong>（更新于 <span id="recentUpdated">--</span>）。标签：友=友谊赛，预=预选赛，邀=洲际邀请赛（国家队）；联=联赛，杯=国内杯赛，洲=洲际赛事（俱乐部）。「场均数据」中进球/失球取自真实近况战绩，角球/犯规/黄牌/红牌为按球队打法风格推导的估算。此部分为综合整理的估算数据，仅供参考。</div>
     </div>
 
     <!-- League standings (non-World-Cup only) -->
@@ -700,6 +745,26 @@
         <div class="oi"><label>客胜赔率 Away</label><input type="number" id="inAway" step="0.01" placeholder="如 3.50"></div>
       </div>
       <table class="value-table" id="valueTable"></table>
+
+      <div class="plan-section">
+        <div class="plan-head">投注方案 · 预算怎么买期望最高 / Betting Plan</div>
+        <div class="plan-intro">
+          下方赔率已按模型概率<strong style="color:var(--text)">预填一份接近体彩软件的默认赔率</strong>并即时计算，
+          你可<strong style="color:var(--text)">照当前时点体彩软件的实时赔率自行修改</strong>任意数字（改动后以你填的为准）。系统据模型概率与赔率，
+          给出<strong style="color:var(--value)">激进方案（胜负场+比分+总进球结合、期望值最高）</strong>与<strong style="color:var(--accent)">保本方案（三项结合、覆盖热门结果、降低血本无归风险）</strong>，
+          并算出各买几注（张）。默认单注 2 元、预算 50 元。
+        </div>
+        <div class="plan-config">
+          <div class="oi"><label>预算(元) Budget</label><input type="number" id="betBudget" step="2" value="50"></div>
+          <div class="oi"><label>单注(元) Unit</label><input type="number" id="betUnit" step="1" value="2"></div>
+          <div class="oi"><label>可买注数 Tickets</label><input type="text" id="betTickets" readonly></div>
+        </div>
+        <div class="plan-odds-title">比分赔率 Correct Score（模型热门比分，填足彩赔率）</div>
+        <div class="odds-input-grid" id="csOddsGrid"></div>
+        <div class="plan-odds-title">总进球数赔率 Total Goals（0–7+，填足彩赔率）</div>
+        <div class="odds-input-grid tg-grid" id="tgOddsGrid"></div>
+        <div id="betPlan"></div>
+      </div>
     </div>
 
     <!-- Summary stats -->
@@ -1330,7 +1395,7 @@
     { id:"se8", name:"厄格里特 Örgryte IS",       atk:0.52, def:0.54 },
     { id:"se9", name:"卡尔马 Kalmar FF",          atk:0.56, def:0.58 },
     { id:"se10",name:"米亚尔比 Mjällby AIF",      atk:0.60, def:0.58 },
-    { id:"se11",name:"西里乌斯 IK Sirius",        atk:0.56, def:0.56 },
+    { id:"se11",name:"天狼星 IK Sirius",         atk:0.56, def:0.56 },
     { id:"se12",name:"哈尔姆斯塔德 Halmstad",     atk:0.54, def:0.56 },
     { id:"se13",name:"代格尔福斯 Degerfors",      atk:0.52, def:0.54 },
     { id:"se14",name:"盖斯 GAIS",                 atk:0.52, def:0.54 },
@@ -1813,15 +1878,47 @@
     { id:"fi8", name:"奥卢 AC Oulu",         atk:0.60, def:0.60 },
     { id:"fi9", name:"玛丽港 IFK Mariehamn", atk:0.42, def:0.46 },
     { id:"fi10",name:"图尔库 TPS",           atk:0.52, def:0.58 },
-    { id:"fi11",name:"格尼斯坦 Gnistan",     atk:0.60, def:0.54 },
+    { id:"fi11",name:"赫尔辛基火花 Gnistan", atk:0.60, def:0.54 },
     { id:"fi12",name:"亚罗 FF Jaro",         atk:0.48, def:0.42 },
   ];
   // 芬超 2026 · 第16轮 (EEST=UTC+3 → 北京 +5h). Source: suomifutis / BBC Sport.
   const FI_SCHED = [
     [16,"fi6","fi5","07/11","00:00"],  // VPS vs SJK (10日 19:00 EEST)
     [16,"fi7","fi1","07/11","20:00"],  // 拉赫蒂 vs HJK (11日 15:00 EEST)
-    [16,"fi11","fi9","07/11","22:00"], // 格尼斯坦 vs 玛丽港 (11日 17:00 EEST)
+    [16,"fi11","fi9","07/11","22:00"], // 赫尔辛基火花 vs 玛丽港 (11日 17:00 EEST)
     [16,"fi10","fi8","07/11","22:00"], // TPS vs 奥卢 (11日 17:00 EEST)
+  ];
+
+  /* ---------- 挪超 Eliteserien (2026) 参赛球队与真实赛程 ----------
+     16 队；球队译名对齐足彩/竞彩叫法。评分依 2026 赛季实力估算。Source: Wikipedia/FOX Sports. */
+  const NO_TEAMS = [
+    { id:"no1", name:"博德闪耀 Bodø/Glimt",     atk:0.74, def:0.68 },
+    { id:"no2", name:"维京 Viking",             atk:0.74, def:0.70 },
+    { id:"no3", name:"特罗姆瑟 Tromsø",         atk:0.60, def:0.64 },
+    { id:"no4", name:"莫尔德 Molde",            atk:0.66, def:0.60 },
+    { id:"no5", name:"利勒斯特罗姆 Lillestrøm", atk:0.62, def:0.62 },
+    { id:"no6", name:"布兰 Brann",              atk:0.64, def:0.58 },
+    { id:"no7", name:"瓦勒伦加 Vålerenga",      atk:0.58, def:0.54 },
+    { id:"no8", name:"克里斯蒂安松 Kristiansund",atk:0.58, def:0.56 },
+    { id:"no9", name:"腓特烈 Fredrikstad",      atk:0.56, def:0.54 },
+    { id:"no10",name:"哈马凯默 HamKam",         atk:0.56, def:0.54 },
+    { id:"no11",name:"萨尔普斯堡 Sarpsborg 08", atk:0.56, def:0.55 },
+    { id:"no12",name:"奥斯陆KFUM KFUM Oslo",    atk:0.55, def:0.53 },
+    { id:"no13",name:"罗森博格 Rosenborg",      atk:0.60, def:0.54 },
+    { id:"no14",name:"桑德尔福德 Sandefjord",   atk:0.52, def:0.52 },
+    { id:"no15",name:"奥勒松 Aalesund",         atk:0.50, def:0.50 },
+    { id:"no16",name:"斯塔特 Start",            atk:0.50, def:0.48 },
+  ];
+  // 挪超 2026 · 第16轮 (CEST=UTC+2 → 北京 +6h). Source: FOX Sports / 维基.
+  const NO_SCHED = [
+    [16,"no9","no5","07/11","18:00"],  // 腓特烈 vs 利勒斯特罗姆 (11日 12:00 CEST)
+    [16,"no15","no4","07/11","20:00"], // 奥勒松 vs 莫尔德 (11日 14:00)
+    [16,"no3","no7","07/11","22:00"],  // 特罗姆瑟 vs 瓦勒伦加 (11日 16:00)
+    [16,"no12","no1","07/12","18:30"], // 奥斯陆KFUM vs 博德闪耀 (12日 12:30)
+    [16,"no6","no16","07/12","21:00"], // 布兰 vs 斯塔特 (12日 15:00)
+    [16,"no13","no8","07/12","21:00"], // 罗森博格 vs 克里斯蒂安松 (12日 15:00)
+    [16,"no14","no10","07/12","21:00"],// 桑德尔福德 vs 哈马凯默 (12日 15:00)
+    [16,"no11","no2","07/12","23:15"], // 萨尔普斯堡 vs 维京 (12日 17:15)
   ];
 
   /* ---------- Real league standings (verified against public tables) ----------
@@ -1882,6 +1979,7 @@
     ru:  leagueComp("ru",  "俄超 Russian Premier Lg",   RU_TEAMS,  "俄罗斯足球超级联赛 · 16 队", "ru1", "ru4"),
     se:  Object.assign(leagueComp("se", "瑞超 Allsvenskan", SE_TEAMS, "瑞典足球超级联赛 · 16 队 · 第11–14轮真实赛程（北京时间）", "se2", "se5"), { realSchedule:SE_SCHED }),
     fi:  Object.assign(leagueComp("fi", "芬超 Veikkausliiga", FI_TEAMS, "芬兰足球超级联赛 · 12 队 · 第16轮真实赛程（北京时间）", "fi6", "fi5"), { realSchedule:FI_SCHED }),
+    no:  Object.assign(leagueComp("no", "挪超 Eliteserien", NO_TEAMS, "挪威足球超级联赛 · 16 队 · 第16轮真实赛程（北京时间）", "no1", "no2"), { realSchedule:NO_SCHED }),
     jp:  leagueComp("jp",  "日职联 J1 League",          JP_TEAMS,  "日本足球职业联赛 J1 · 20 队", "jp1", "jp3"),
     au:  leagueComp("au",  "澳超 A-League Men",         AU_TEAMS,  "澳大利亚足球超级联赛 · 12 队", "au1", "au3"),
     sd:  leagueComp("sd",  "沙特超 Saudi Pro League",   SD_TEAMS,  "沙特阿拉伯足球超级联赛 · 18 队", "sd1", "sd2"),
@@ -1903,7 +2001,7 @@
   const COMP_GROUPS = [
     { label:"国际大赛 International", ids:["wc", "euro", "copa", "ac"] },
     { label:"洲际俱乐部 Continental Clubs", ids:["ucl", "uqr", "uel", "uecl", "acl"] },
-    { label:"欧洲联赛 European Leagues", ids:["epl", "es", "it", "de", "fr", "ec", "nl", "pt", "sc", "be", "tr", "ru", "se", "fi"] },
+    { label:"欧洲联赛 European Leagues", ids:["epl", "es", "it", "de", "fr", "ec", "nl", "pt", "sc", "be", "tr", "ru", "se", "fi", "no"] },
     { label:"亚洲 / 大洋洲 Asia & Oceania", ids:["jp", "kl", "csl", "au", "sd"] },
     { label:"美洲 Americas", ids:["us", "br", "ar", "mx"] },
   ];
@@ -2746,6 +2844,58 @@
     return { label: "薄弱 Thin", color: "var(--away)" };
   }
 
+  // 把 atk/def（约 0.4–1.0）线性映射到 40–99 的属性分（估算）
+  function attrRating(v) { return Math.round(Math.max(40, Math.min(99, v * 100))); }
+
+  // 综合阵容完整度（估算）：结合板凳深度与当前状态指数
+  function squadCompleteness(team) {
+    const fi = formIndex(team);
+    return Math.round(Math.max(70, Math.min(99, fi.depth * 0.5 + fi.idx * 0.4 + 8)));
+  }
+
+  // 伤病影响（由完整度定性推断，非具体伤员名单，仅供参考）
+  function injuryNote(comp) {
+    if (comp >= 94) return { txt: "阵容齐整，无重大伤停", color: "var(--value)" };
+    if (comp >= 86) return { txt: "个别轮换球员伤缺，无碍主力框架", color: "var(--draw)" };
+    return { txt: "存在主力伤停风险，深度承压", color: "var(--away)" };
+  }
+
+  // 球队打法特点（由攻防倾向与整体强度推断）
+  function playStyle(team) {
+    const a = team.atk, d = team.def, diff = a - d, tempo = a + d;
+    const tags = [];
+    if (diff >= 0.06) tags.push("进攻主导");
+    else if (diff <= -0.06) tags.push("防守反击");
+    else tags.push("攻守均衡");
+    if (tempo >= 1.5) tags.push("高强度压迫");
+    else if (tempo >= 1.2) tags.push("中场控制");
+    else tags.push("稳健务实");
+    if (a >= 0.72) tags.push("锋线犀利");
+    if (d >= 0.72) tags.push("后防稳固");
+    return tags;
+  }
+
+  // 针对本场对阵的简短研判（估算，结合状态/攻防对位/场地）
+  function matchComment(home, away) {
+    const fh = formIndex(home), fa = formIndex(away);
+    const hn = home.name.split(" ")[0], an = away.name.split(" ")[0];
+    const venue = (typeof state !== "undefined" && state.venue) || "neutral";
+    const parts = [];
+    const dIdx = fh.idx - fa.idx;
+    if (Math.abs(dIdx) >= 6) parts.push(`${dIdx > 0 ? hn : an} 近期状态更佳（${Math.max(fh.idx, fa.idx)} vs ${Math.min(fh.idx, fa.idx)}）`);
+    else parts.push(`两队近期状态接近（${fh.idx} vs ${fa.idx}）`);
+    if (home.atk - away.def > 0.12) parts.push(`${hn} 进攻对位对方防线占优`);
+    else if (away.atk - home.def > 0.12) parts.push(`${an} 进攻端更具威胁`);
+    else parts.push("攻防对位相对均衡");
+    if (venue === "home") parts.push(`${hn} 坐镇主场有加成`);
+    else if (venue === "away") parts.push(`${an} 拥有主场之利`);
+    const hs = fh.idx + home.atk * 18 - away.def * 10 + (venue === "home" ? 5 : 0);
+    const as = fa.idx + away.atk * 18 - home.def * 10 + (venue === "away" ? 5 : 0);
+    if (Math.abs(hs - as) < 4) parts.push("预计势均力敌，平局或小球概率不低");
+    else parts.push(`综合研判 ${hs > as ? hn : an} 略占上风，但赛果变数大，建议结合盘口与蒙特卡洛模拟结果参考`);
+    return parts.join("；") + "。";
+  }
+
   function formColHtml(team, side) {
     const fi = formIndex(team);
     const name = team.name.split(" ")[0];
@@ -2781,6 +2931,11 @@
       </div>`).join("") || `<div class="fb-none">数据待补充</div>`;
 
     const dm = depthMeta(fi.depth);
+    const atkR = attrRating(team.atk), defR = attrRating(team.def);
+    const comp = squadCompleteness(team);
+    const inj = injuryNote(comp);
+    const compColor = comp >= 94 ? "var(--value)" : comp >= 86 ? "var(--accent)" : "var(--away)";
+    const tags = playStyle(team).map(t => `<span class="fm-tag">${t}</span>`).join("");
 
     return `<div class="form-col ${side}">
       <div class="form-head">
@@ -2789,6 +2944,12 @@
       </div>
       <div class="form-sub">综合状态指数 · 赛前近况 ${fi.base} · 本届 ${recStr}</div>
       <div class="form-badges">${badges}</div>
+      <div class="form-block-title">属性拆解 Attributes</div>
+      <div class="attr-row"><span class="attr-label">进攻属性</span><span class="attr-track"><span style="width:${atkR}%; background:#f97316"></span></span><span class="attr-val">${atkR}</span></div>
+      <div class="attr-row"><span class="attr-label">防守强度</span><span class="attr-track"><span style="width:${defR}%; background:#38bdf8"></span></span><span class="attr-val">${defR}</span></div>
+      <div class="attr-row"><span class="attr-label">阵容完整度</span><span class="attr-track"><span style="width:${comp}%; background:${compColor}"></span></span><span class="attr-val">${comp}</span></div>
+      <div class="fm-line"><span class="fm-k">伤病 Injuries</span><span class="fm-v" style="color:${inj.color}">${inj.txt}</span></div>
+      <div class="fm-line"><span class="fm-k">打法特点 Style</span><span class="fm-tags">${tags}</span></div>
       <div class="form-block-title">关键球员 Key Players</div>
       ${playersHtml}
       <div class="form-block-title">板凳深度 Squad Depth</div>
@@ -2804,7 +2965,11 @@
 
   function renderForm(home, away) {
     if (!home || !away) return;
-    $("formGrid").innerHTML = formColHtml(home, "home") + formColHtml(away, "away");
+    const comment = `<div class="match-comment">
+      <div class="mc-title">本场研判 Match Insight</div>
+      <div class="mc-body">${matchComment(home, away)}</div>
+    </div>`;
+    $("formGrid").innerHTML = formColHtml(home, "home") + formColHtml(away, "away") + comment;
     const el = $("formUpdated"); if (el) el.textContent = nowStamp();
   }
 
@@ -2839,6 +3004,26 @@
     return { t: "低迷 Poor", c: "var(--away)" };
   }
 
+  // 稳定的每队伪随机种子（同一球队每次渲染结果一致）
+  function idSeed(id) {
+    let h = 2166136261;
+    for (let i = 0; i < id.length; i++) { h ^= id.charCodeAt(i); h = Math.imul(h, 16777619); }
+    return h >>> 0;
+  }
+
+  // 场均数据：进/失球取自真实近3月战绩；角球/犯规/黄牌/红牌为按打法风格推导的估算
+  function matchStats(team, rs) {
+    const seed = idSeed(team.id);
+    const rnd = salt => { const x = Math.sin((seed % 100000) * 0.013 + salt) * 43758.5453; return x - Math.floor(x); };
+    const gf = rs.n ? rs.gf / rs.n : team.atk * 1.6;
+    const ga = rs.n ? rs.ga / rs.n : (1.4 - Math.min(1.0, team.def)) * 1.6;
+    const corners = 4.6 + team.atk * 3.2 + rnd(1) * 1.2;   // 进攻越强角球越多
+    const fouls   = 10 + rnd(2) * 4.5;
+    const yellows = 1.6 + rnd(3) * 1.3 + (fouls - 10) * 0.06;
+    const reds    = 0.04 + rnd(4) * 0.16;
+    return { gf, ga, corners, fouls, yellows, reds };
+  }
+
   function recentColHtml(team, side) {
     const rs = recentStats(team.id);
     const name = team.name.split(" ")[0];
@@ -2859,7 +3044,16 @@
 
     const avgGf = rs.n ? (rs.gf / rs.n).toFixed(1) : "0.0";
     const avgGa = rs.n ? (rs.ga / rs.n).toFixed(1) : "0.0";
-    const dm = depthMeta(squad(team.id).d);
+    const ms = matchStats(team, rs);
+    const msCell = (k, v, color) => `<div class="ms-cell"><span class="ms-k">${k}</span><span class="ms-v" style="color:${color || '#fff'}">${v}</span></div>`;
+    const msGrid = `<div class="ms-grid">
+      ${msCell("进球", ms.gf.toFixed(1), "var(--value)")}
+      ${msCell("失球", ms.ga.toFixed(1), "var(--away)")}
+      ${msCell("角球", ms.corners.toFixed(1))}
+      ${msCell("犯规", ms.fouls.toFixed(1))}
+      ${msCell("黄牌", ms.yellows.toFixed(1), "#f5c518")}
+      ${msCell("红牌", ms.reds.toFixed(2), "var(--away)")}
+    </div>`;
 
     return `<div class="form-col ${side}">
       <div class="form-head">
@@ -2869,9 +3063,8 @@
       <div class="form-sub">状态评估：<span style="color:${st.c};font-weight:700">${st.t}</span> · 近${rs.n}场 ${rs.w}胜${rs.d}平${rs.l}负 · 场均 进${avgGf}/失${avgGa}</div>
       <div class="form-block-title">近3个月对战结果 Recent Results</div>
       <div class="form-badges">${badges}</div>
-      <div class="form-block-title">板凳深度 Squad Depth</div>
-      <div class="depth-bar"><span style="width:${squad(team.id).d}%; background:${dm.color}"></span></div>
-      <div class="depth-label" style="color:${dm.color}">${squad(team.id).d} / 100 · ${dm.label}</div>
+      <div class="form-block-title">场均数据 Per-Match Stats</div>
+      ${msGrid}
     </div>`;
   }
 
@@ -2930,6 +3123,7 @@
   function computeValue() {
     const M = state.lastModel; if (!M) return;
     const { mk } = M;
+    fill1x2Defaults(mk);
     const rows = [
       { key:"主胜 Home (1)", p:mk.homeWin, odd:parseFloat($("inHome").value) },
       { key:"平局 Draw (X)", p:mk.draw,   odd:parseFloat($("inDraw").value) },
@@ -2961,6 +3155,199 @@
       </tr>`;
     });
     $("valueTable").innerHTML = html;
+    buildPlanOddsInputs();
+    computeBetPlans();
+  }
+
+  /* ---------- Betting plan (预算最优投注方案) ---------- */
+  // 手动填入的赔率暂存（跨重渲染保留），键：比分 "h-a"、总进球 "tg#"
+  const planOddsStore = {};
+  const planOddsUserEdited = new Set();                       // 用户手改过的比分/总进球键
+  const odds1x2Edited = { inHome: false, inDraw: false, inAway: false }; // 胜负场是否被手改
+
+  // 由模型概率反推一份"接近体彩"的默认赔率：公平赔率×返还率（近似体彩抽水）
+  function defaultOdd(p, type) {
+    if (!p || p <= 0) return 1.01;
+    const r = type === "1x2" ? 0.92 : type === "tg" ? 0.85 : 0.78; // 胜负/总进球/比分 返还率近似
+    return Math.max(1.01, (1 / p) * r);
+  }
+  function fmtOdd(o) { return o.toFixed(2); }
+
+  // 未被手改的胜负场赔率，用当前模型默认值刷新（切换比赛时更新）
+  function fill1x2Defaults(mk) {
+    [["inHome", mk.homeWin], ["inDraw", mk.draw], ["inAway", mk.awayWin]].forEach(([id, p]) => {
+      if (!odds1x2Edited[id]) { const el = $(id); if (el) el.value = fmtOdd(defaultOdd(p, "1x2")); }
+    });
+  }
+
+  // 各"总进球数"桶概率：0..6 精确，索引 7 = 7+
+  function totalGoalsProbs(m) {
+    const buckets = [0, 0, 0, 0, 0, 0, 0, 0];
+    for (let h = 0; h <= MAXG; h++)
+      for (let a = 0; a <= MAXG; a++) {
+        const t = h + a;
+        buckets[t >= 7 ? 7 : t] += m[h][a];
+      }
+    return buckets;
+  }
+
+  // 依模型热门比分 + 固定总进球桶，重建可手填赔率的输入框（保留已填值）
+  function buildPlanOddsInputs() {
+    const M = state.lastModel;
+    const csGrid = $("csOddsGrid"), tgGrid = $("tgOddsGrid");
+    if (!M || !csGrid || !tgGrid) return;
+    csGrid.innerHTML = M.top.map(s => {
+      const k = `${s.h}-${s.a}`;
+      let v;
+      if (planOddsUserEdited.has(k)) { v = planOddsStore[k] != null ? planOddsStore[k] : ""; }
+      else { v = fmtOdd(defaultOdd(s.p, "cs")); planOddsStore[k] = v; }
+      return `<div class="oi"><label>${s.h}-${s.a}（${(s.p*100).toFixed(0)}%）</label>
+        <input type="number" step="0.01" data-plankey="${k}" value="${v}" placeholder="足彩赔率"></div>`;
+    }).join("");
+    const tgP = totalGoalsProbs(M.m);
+    tgGrid.innerHTML = tgP.map((p, i) => {
+      const k = `tg${i}`;
+      let v;
+      if (planOddsUserEdited.has(k)) { v = planOddsStore[k] != null ? planOddsStore[k] : ""; }
+      else { v = fmtOdd(defaultOdd(p, "tg")); planOddsStore[k] = v; }
+      const lbl = i < 7 ? i : "7+";
+      return `<div class="oi"><label>${lbl} 球（${(p*100).toFixed(0)}%）</label>
+        <input type="number" step="0.01" data-plankey="${k}" value="${v}" placeholder="足彩赔率"></div>`;
+    }).join("");
+    [csGrid, tgGrid].forEach(g => g.querySelectorAll("input").forEach(inp => {
+      inp.addEventListener("input", e => {
+        const key = e.target.getAttribute("data-plankey");
+        const val = e.target.value.trim();
+        planOddsUserEdited.add(key);
+        if (val === "") delete planOddsStore[key]; else planOddsStore[key] = val;
+        computeBetPlans();
+      });
+    }));
+  }
+
+  // 按权重把 T 注整数分配（余数补给权重最大者）
+  function allocTickets(weights, T) {
+    const sum = weights.reduce((a, b) => a + b, 0) || 1;
+    const raw = weights.map(w => T * w / sum);
+    const base = raw.map(x => Math.floor(x));
+    let left = T - base.reduce((a, b) => a + b, 0);
+    const order = raw.map((x, i) => [i, x - base[i]]).sort((a, b) => b[1] - a[1]);
+    for (let i = 0; i < order.length && left > 0; i++) { base[order[i][0]]++; left--; }
+    return base;
+  }
+
+  function computeBetPlans() {
+    const box = $("betPlan"); if (!box) return;
+    const M = state.lastModel;
+    if (!M) { box.innerHTML = `<div class="plan-empty">请先运行「蒙特卡洛模拟」生成模型概率。</div>`; return; }
+    const { mk, m } = M;
+    const budget = Math.max(0, parseFloat($("betBudget").value) || 0);
+    const unit = Math.max(1, parseFloat($("betUnit").value) || 2);
+    const T = Math.floor(budget / unit);
+    const tkEl = $("betTickets"); if (tkEl) tkEl.value = `${T} 注`;
+    if (T < 1) { box.innerHTML = `<div class="plan-empty">预算不足一注（预算 ÷ 单注 < 1）。</div>`; return; }
+
+    const mkCand = (label, p, odd, type) => ({ label, p, odd, type, ev: p * odd - 1 });
+    const cand = [];
+    const oh = parseFloat($("inHome").value), od = parseFloat($("inDraw").value), oa = parseFloat($("inAway").value);
+    if (oh > 1) cand.push(mkCand("胜负场·主胜", mk.homeWin, oh, "1x2"));
+    if (od > 1) cand.push(mkCand("胜负场·平局", mk.draw, od, "1x2"));
+    if (oa > 1) cand.push(mkCand("胜负场·客胜", mk.awayWin, oa, "1x2"));
+    M.top.forEach(s => { const o = parseFloat(planOddsStore[`${s.h}-${s.a}`]); if (o > 1) cand.push(mkCand(`比分 ${s.h}-${s.a}`, s.p, o, "cs")); });
+    const tgP = totalGoalsProbs(m);
+    tgP.forEach((p, i) => { const o = parseFloat(planOddsStore[`tg${i}`]); if (o > 1) cand.push(mkCand(`总进球 ${i < 7 ? i : "7+"}`, p, o, "tg")); });
+
+    if (!cand.length) {
+      box.innerHTML = `<div class="plan-empty">请在上方填入至少一个足彩赔率（胜负场 / 比分 / 总进球数），系统将生成投注方案。</div>`;
+      return;
+    }
+
+    const stake = T * unit;
+    const g1 = cand.filter(c => c.type === "1x2");
+    const gcs = cand.filter(c => c.type === "cs");
+    const gtg = cand.filter(c => c.type === "tg");
+    const bestOf = list => list.length ? list.slice().sort((a, b) => b.ev - a.ev)[0] : null;
+    const likeliestOf = list => list.length ? list.slice().sort((a, b) => b.p - a.p)[0] : null;
+    const mktName = c => c.type === "1x2" ? "胜负场" : c.type === "cs" ? "比分" : "总进球";
+    const legHtml = (c, tk) => `<div class="plan-leg">
+      <span class="pl-name">${c.label} <span style="color:var(--text-dim);font-weight:600">${(c.p*100).toFixed(0)}%</span></span>
+      <span class="pl-tick">${tk} 注</span>
+      <span class="pl-odd">@${c.odd.toFixed(2)} → ${(tk*unit*c.odd).toFixed(0)}元</span></div>`;
+    const ensureMin1 = ticks => { // 尽量让每条腿至少 1 注（注数够时）
+      for (let i = 0; i < ticks.length; i++) if (ticks[i] < 1) {
+        let mi = 0; for (let j = 1; j < ticks.length; j++) if (ticks[j] > ticks[mi]) mi = j;
+        if (ticks[mi] > 1) { ticks[mi]--; ticks[i] = 1; }
+      }
+      return ticks;
+    };
+    const metricsOf = (legs, ticks) => {
+      let st = 0, ret = 0;
+      legs.forEach((c, i) => { st += ticks[i] * unit; ret += c.p * ticks[i] * unit * c.odd; });
+      return { st, ret, profit: ret - st };
+    };
+
+    // ===== 激进方案：胜负场 + 比分 + 总进球 各取最高EV，按 EV 加权组合 =====
+    let aggHtml;
+    {
+      const legs = [], w = [];
+      [bestOf(g1), bestOf(gcs), bestOf(gtg)].forEach(c => { if (c) { legs.push(c); w.push(Math.exp(c.ev * 3)); } });
+      const ticks = ensureMin1(allocTickets(w, T));
+      const shown = legs.map((c, i) => [c, ticks[i]]).filter(x => x[1] > 0);
+      const mets = metricsOf(shown.map(x => x[0]), shown.map(x => x[1]));
+      const markets = [...new Set(shown.map(x => mktName(x[0])))];
+      aggHtml = `<div class="plan-card aggressive">
+        <div class="plan-card-title">激进方案 · 三项结合 · 期望最高</div>
+        <div class="plan-card-sub">在 ${markets.join(" + ")} 中各取期望值最高项，按 EV 加权组合博高回报（方差大，可能颗粒无收）。</div>
+        ${shown.map(x => legHtml(x[0], x[1])).join("")}
+        <div class="plan-metrics">
+          <span>投入：<b>${mets.st} 元</b></span>
+          <span>期望回报：<b>${mets.ret.toFixed(1)} 元</b></span>
+          <span>期望收益：<b style="color:${mets.profit>=0?'var(--value)':'var(--away)'}">${mets.profit>=0?'+':''}${mets.profit.toFixed(1)} 元</b></span>
+        </div>
+      </div>`;
+    }
+
+    // ===== 保本方案：胜负场 Dutching 打底 + 比分/总进球各搭一注 =====
+    let safeHtml;
+    if (g1.length >= 1) {
+      const legs = [], w = [];
+      let covered = [];
+      if (g1.length >= 2) {
+        const sorted = g1.slice().sort((a, b) => b.p - a.p);
+        let cum = 0;
+        for (const c of sorted) { covered.push(c); cum += c.p; if (cum >= 0.8) break; }
+        const ws = covered.map(c => 1 / c.odd), s = ws.reduce((a, b) => a + b, 0);
+        covered.forEach((c, i) => { legs.push(c); w.push(0.65 * ws[i] / s); });
+      } else { covered = [g1[0]]; legs.push(g1[0]); w.push(0.6); }
+      const cs = likeliestOf(gcs); if (cs) { legs.push(cs); w.push(0.20); }
+      const tg = likeliestOf(gtg); if (tg) { legs.push(tg); w.push(0.15); }
+      const ticks = ensureMin1(allocTickets(w, T));
+      const covPays = covered.map((c, i) => ticks[i] > 0 ? ticks[i] * unit * c.odd : Infinity);
+      const minPay = Math.min(...covPays);
+      const coverP = covered.reduce((a, c, i) => a + (ticks[i] > 0 ? c.p : 0), 0);
+      const mets = metricsOf(legs, ticks);
+      const safe = isFinite(minPay) && minPay >= stake;
+      const shown = legs.map((c, i) => [c, ticks[i]]).filter(x => x[1] > 0);
+      const markets = [...new Set(shown.map(x => mktName(x[0])))];
+      safeHtml = `<div class="plan-card safe">
+        <div class="plan-card-title">保本方案 · 三项结合 · 稳健</div>
+        <div class="plan-card-sub">以 ${markets.join(" + ")} 组合：胜负场 Dutching 打底覆盖累计概率 ${(coverP*100).toFixed(0)}%（命中回报接近，${safe?'<span style="color:var(--value)">可保本</span>':'<span style="color:var(--draw)">部分回本</span>'}），再各搭一注比分/总进球博彩头。</div>
+        ${shown.map(x => legHtml(x[0], x[1])).join("")}
+        <div class="plan-metrics">
+          <span>投入：<b>${mets.st} 元</b></span>
+          <span>胜负场覆盖：<b>${(coverP*100).toFixed(1)}%</b></span>
+          <span>覆盖命中最低回报：<b>${isFinite(minPay)?minPay.toFixed(0):'-'} 元</b></span>
+          <span>期望收益：<b style="color:${mets.profit>=0?'var(--value)':'var(--away)'}">${mets.profit>=0?'+':''}${mets.profit.toFixed(1)} 元</b></span>
+        </div>
+      </div>`;
+    } else {
+      safeHtml = `<div class="plan-card safe">
+        <div class="plan-card-title">保本方案 · 三项结合 · 稳健</div>
+        <div class="plan-card-sub">保本方案以「胜负场」Dutching 打底，请至少填入 1–2 个胜负场赔率（建议 2 个以覆盖热门结果），并可搭配比分/总进球赔率。</div>
+      </div>`;
+    }
+
+    box.innerHTML = `<div class="plan-grid">${aggHtml}${safeHtml}</div>`;
   }
 
   /* ---------- Team dropdown options ---------- */
@@ -3336,7 +3723,8 @@
     if (ACTIVE_COMP.type === "cup" && ACTIVE_COMP.api) loadFixtures();
     else buildLeagueSchedule(ACTIVE_COMP);
   });
-  ["inHome","inDraw","inAway"].forEach(id => $(id).addEventListener("input", computeValue));
+  ["inHome","inDraw","inAway"].forEach(id => $(id).addEventListener("input", () => { odds1x2Edited[id] = true; computeValue(); }));
+  ["betBudget","betUnit"].forEach(id => { const el = $(id); if (el) el.addEventListener("input", computeBetPlans); });
 
   /* ---------- 开屏撒花特效 ---------- */
   function launchConfetti() {
