@@ -182,6 +182,51 @@
   .ah-cell.best .ah-prob { color: var(--value); }
   .ah-note { font-size: 11px; color: var(--text-dim); margin-top: 14px; line-height: 1.7; }
 
+  /* Odds-linked live monitor (综合监控) — screenshot-style, aligned with tool theme */
+  .odds-monitor { margin-top: 20px; border-top: 1px dashed var(--border); padding-top: 18px; }
+  .om-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 14px; font-weight: 800; color: var(--text); margin-bottom: 14px;
+    letter-spacing: .5px; }
+  .om-head .om-ts { color: var(--accent); }
+  .om-head .om-live { margin-left: auto; display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 700; color: var(--text-dim); letter-spacing: 0; }
+  .om-head .om-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--value);
+    box-shadow: 0 0 8px var(--value); animation: omPulse 1.6s ease-in-out infinite; }
+  @keyframes omPulse { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+  .om-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; }
+  .om-item { background: var(--surface-alt); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px; }
+  .om-title { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 800;
+    color: var(--text); margin-bottom: 12px; }
+  .om-title .vs { color: var(--text-dim); font-weight: 600; font-size: 12px; }
+  .om-badge { font-size: 10px; font-weight: 800; color: var(--accent); border: 1px solid rgba(0,212,170,0.5);
+    background: var(--accent-glow); border-radius: 5px; padding: 1px 6px; line-height: 1.5; }
+  .om-badge.live { color: var(--away); border-color: rgba(255,85,102,0.55); background: rgba(255,85,102,0.12); }
+  .om-line { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12.5px; color: var(--text-dim); }
+  .om-line b { color: var(--text); font-weight: 800; }
+  .om-line .om-sep { color: var(--border); }
+  .om-line .om-over { color: var(--value); font-weight: 700; }
+  .om-line .om-under { color: var(--away); font-weight: 700; }
+  .om-bar { display: flex; height: 9px; border-radius: 5px; overflow: hidden; background: var(--surface-2); }
+  .om-bar > span { display: block; height: 100%; }
+  .om-bar .seg-h { background: var(--home); }
+  .om-bar .seg-d { background: var(--draw); }
+  .om-bar .seg-a { background: var(--away); }
+  .om-wdl { display: flex; justify-content: space-between; margin-top: 7px; font-size: 11.5px; font-weight: 700; }
+  .om-wdl .w-h { color: var(--home); }
+  .om-wdl .w-d { color: var(--draw); }
+  .om-wdl .w-a { color: var(--away); }
+  .om-tend { margin-top: 11px; font-size: 12.5px; font-weight: 800; display: flex; align-items: center; gap: 7px; }
+  .om-tend::before { content: ""; width: 9px; height: 9px; border-radius: 2px; transform: rotate(45deg); display: inline-block; }
+  .om-tend.t-h { color: var(--home); } .om-tend.t-h::before { background: var(--home); }
+  .om-tend.t-a { color: var(--away); } .om-tend.t-a::before { background: var(--away); }
+  .om-tend.t-d { color: var(--draw); } .om-tend.t-d::before { background: var(--draw); }
+  .om-empty { font-size: 12px; color: var(--text-dim); padding: 18px; text-align: center;
+    background: var(--surface-alt); border: 1px dashed var(--border); border-radius: 12px; }
+  .om-foot { font-size: 11px; color: var(--text-dim); margin-top: 12px; line-height: 1.7; }
+
   /* Top scores */
   .topscores { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
   .topscore-item { background: var(--surface-alt); border: 1px solid var(--border); border-radius: 10px; padding: 14px; text-align: center; }
@@ -645,6 +690,7 @@
       <div class="card-title">让球 · 进球盘口（赔率位置 = 我们的概率）/ Handicap &amp; Goals Board</div>
       <div class="ah-board" id="ahBoard"></div>
       <div class="ah-note">仿盘口排版：每个让球 / 大小球档位下方显示<strong style="color:var(--accent)">本模型计算的命中概率</strong>（取代博彩赔率）。让球含 1/4 球（如 -1.5/2 = -1.75）按上下两档各半计算，走盘按 0.5 计；同一档主客概率、同一档大小概率相加约为 100%。<span style="color:var(--value)">绿色高亮</span> = 该行概率最高的档位。盘口档位围绕模型预期让球与预期总进球自动生成。</div>
+      <div class="odds-monitor" id="oddsMonitor"></div>
     </div>
 
     <!-- Upset index -->
@@ -1901,11 +1947,11 @@
     { id:"no7", name:"瓦勒伦加 Vålerenga",      atk:0.58, def:0.54 },
     { id:"no8", name:"克里斯蒂安松 Kristiansund",atk:0.58, def:0.56 },
     { id:"no9", name:"腓特烈 Fredrikstad",      atk:0.56, def:0.54 },
-    { id:"no10",name:"哈马凯默 HamKam",         atk:0.56, def:0.54 },
+    { id:"no10",name:"汉坎 HamKam",             atk:0.56, def:0.54 },
     { id:"no11",name:"萨尔普斯堡 Sarpsborg 08", atk:0.56, def:0.55 },
     { id:"no12",name:"奥斯陆KFUM KFUM Oslo",    atk:0.55, def:0.53 },
     { id:"no13",name:"罗森博格 Rosenborg",      atk:0.60, def:0.54 },
-    { id:"no14",name:"桑德尔福德 Sandefjord",   atk:0.52, def:0.52 },
+    { id:"no14",name:"桑纳菲 Sandefjord",       atk:0.52, def:0.52 },
     { id:"no15",name:"奥勒松 Aalesund",         atk:0.50, def:0.50 },
     { id:"no16",name:"斯塔特 Start",            atk:0.50, def:0.48 },
   ];
@@ -1917,7 +1963,7 @@
     [16,"no12","no1","07/12","18:30"], // 奥斯陆KFUM vs 博德闪耀 (12日 12:30)
     [16,"no6","no16","07/12","21:00"], // 布兰 vs 斯塔特 (12日 15:00)
     [16,"no13","no8","07/12","21:00"], // 罗森博格 vs 克里斯蒂安松 (12日 15:00)
-    [16,"no14","no10","07/12","21:00"],// 桑德尔福德 vs 哈马凯默 (12日 15:00)
+    [16,"no14","no10","07/12","21:00"],// 桑纳菲 vs 汉坎 (12日 15:00)
     [16,"no11","no2","07/12","23:15"], // 萨尔普斯堡 vs 维京 (12日 17:15)
   ];
 
@@ -2538,6 +2584,91 @@
            <tr><td class="ah-rowlabel">小球 Under</td>${ouUnder}</tr>
          </table>
        </div>`;
+  }
+
+  /* ---------- 盘口关联实时监控（综合监控 · 官方平均+回退，每 30 分钟刷新）---------- */
+  function omNow() {
+    const d = new Date(), p = n => String(n).padStart(2, "0");
+    return `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+  }
+  // 由模型命中概率反推亚盘「水位」（含 ~3% 抽水），越低越被看好
+  function omWater(p) {
+    if (!(p > 0)) return "—";
+    const w = 0.97 / p - 1;
+    return Math.max(0.65, Math.min(1.35, w)).toFixed(3);
+  }
+  // 中立场、无临场状态修正的「官方平均」基准模型
+  function omModel(home, away) {
+    const ha = tournAdj(home), aa = tournAdj(away);
+    const hAtk = clamp01(home.atk + ha.atk), hDef = clamp01(home.def + ha.def);
+    const aAtk = clamp01(away.atk + aa.atk), aDef = clamp01(away.def + aa.def);
+    const lh = BASE_GOALS * attackMult(hAtk) * defenseMult(aDef);
+    const la = BASE_GOALS * attackMult(aAtk) * defenseMult(hDef);
+    const m = computeMatrix(lh, la);
+    return { lh, la, m, mk: computeMarkets(m) };
+  }
+  function omCard(fx, home, away) {
+    const { lh, la, m, mk } = omModel(home, away);
+    const expT = lh + la;
+    const line = Math.max(0.5, Math.round(expT * 2) / 2);
+    const pOver = ouWin(m, line, true), pUnder = ouWin(m, line, false);
+    const h = mk.homeWin, d = mk.draw, a = mk.awayWin, mx = Math.max(h, d, a);
+    let tend, cls;
+    if (mx < 0.50) { tend = "平局概率较高"; cls = "d"; }
+    else if (h === mx) { tend = "主队被看好"; cls = "h"; }
+    else if (a === mx) { tend = "客队被看好"; cls = "a"; }
+    else { tend = "平局概率较高"; cls = "d"; }
+    const hn = teamName(fx.home).split(" ")[0], an = teamName(fx.away).split(" ")[0];
+    const live = statusOf(fx).live ? `<span class="om-badge live">● 进行中</span>` : "";
+    return `<div class="om-item">
+      <div class="om-title">${hn} <span class="vs">vs</span> ${an}<span class="om-badge">官</span>${live}</div>
+      <div class="om-line">
+        <span class="om-over">◈ 大球 ${omWater(pOver)}</span>
+        <span class="om-sep">|</span>
+        <span>盘口 <b>${expT.toFixed(2)}</b></span>
+        <span class="om-sep">|</span>
+        <span class="om-under">◈ 小球 ${omWater(pUnder)}</span>
+      </div>
+      <div class="om-bar">
+        <span class="seg-h" style="width:${(h * 100).toFixed(1)}%"></span>
+        <span class="seg-d" style="width:${(d * 100).toFixed(1)}%"></span>
+        <span class="seg-a" style="width:${(a * 100).toFixed(1)}%"></span>
+      </div>
+      <div class="om-wdl">
+        <span class="w-h">主 ${(h * 100).toFixed(1)}%</span>
+        <span class="w-d">平 ${(d * 100).toFixed(1)}%</span>
+        <span class="w-a">客 ${(a * 100).toFixed(1)}%</span>
+      </div>
+      <div class="om-tend t-${cls}">倾向：${tend}</div>
+    </div>`;
+  }
+  function renderOddsMonitor() {
+    const el = $("oddsMonitor"); if (!el) return;
+    const ds = $("dateSelect");
+    const dateF = ds ? ds.value : "";
+    let valid = (fixtures || []).filter(fx => validFx(fx) && !statusOf(fx).done);
+    // 只展示「选定当天」该赛事的比赛；未选具体日期（全部日期）时，取最近的一个有比赛的日期
+    const day = dateF || (valid.length ? dateKey(valid[0]) : "");
+    if (day) valid = valid.filter(fx => dateKey(fx) === day);
+    const rows = [];
+    for (const fx of valid) {
+      const home = TEAMS.find(t => t.id === fx.home), away = TEAMS.find(t => t.id === fx.away);
+      if (!home || !away) continue;
+      rows.push(omCard(fx, home, away));
+      if (rows.length >= 16) break;
+    }
+    const dayTag = day ? ` · ${dateLabel(day)}` : "";
+    const body = rows.length
+      ? `<div class="om-grid">${rows.join("")}</div>`
+      : `<div class="om-empty">该日期暂无进行中的比赛（可在上方「日期」切换或选择带真实赛程的赛事）</div>`;
+    el.innerHTML =
+      `<div class="om-head">
+         <span class="om-ts">[${omNow()}]</span>
+         <span>综合监控（官方平均 + 回退）${dayTag}</span>
+         <span class="om-live"><span class="om-dot"></span>每 30 分钟自动刷新</span>
+       </div>
+       ${body}
+       <div class="om-foot">仅展示所选日期该赛事的比赛，<strong style="color:var(--accent)">数据每半小时（30 分钟）自动更新一次</strong>。「大球 / 小球」为模型据命中概率反推的亚盘水位（含约 3% 抽水），「盘口」为模型预期总进球，胜平负条为「官方平均基准 + 回退」估算，<strong style="color:var(--text-dim)">非实时博彩赔率</strong>，仅供参考。</div>`;
   }
 
   function renderHeatmap(m) {
@@ -3584,6 +3715,7 @@
 
   function onDateChange() {
     buildFixtureSelect();
+    renderOddsMonitor(); // 盘口监控只展示选定当天的比赛
     if (!$("fixtureSelect").value) { showLiveBanner(null); resetPrediction(); } // selection cleared by filter
   }
 
@@ -3656,6 +3788,7 @@
       buildFixtureSelect();
       const short = comp.name.split(" ")[0];
       setDataStatus("online", `${short} · 真实赛程（北京时间 · 共 ${fixtures.length} 场，无实时比分）· 选择比赛后可模拟`);
+      renderOddsMonitor();
       return;
     }
 
@@ -3667,6 +3800,7 @@
     buildFixtureSelect();
     const short = comp.name.split(" ")[0];
     setDataStatus("", `${short} · 暂无进行中的真实赛程（未收录实时赛程 / 当前非赛季）· 可在下方手动选择两队进行模拟`);
+    renderOddsMonitor();
   }
 
   async function loadFixtures() {
@@ -3684,6 +3818,7 @@
       buildFixtureSelect();
       const liveCount = fixtures.filter(f => statusOf(f).live).length;
       setDataStatus("online", `实时数据已连接 · 共 ${fixtures.length} 场${liveCount?` · ${liveCount} 场进行中`:""} · ${new Date().toLocaleTimeString("zh-CN",{hour12:false})} 更新`);
+      renderOddsMonitor();
       // refresh live banner if a fixture is selected
       const sel = $("fixtureSelect").value;
       if (sel) {
@@ -3703,6 +3838,7 @@
       buildDateSelect();
       buildFixtureSelect();
       setDataStatus("offline", "实时接口暂不可用,已载入内置赛程(无实时比分)。可点「刷新比分」重试。");
+      renderOddsMonitor();
     }
   }
 
@@ -3776,6 +3912,7 @@
   /* ---------- Boot ---------- */
   buildCompSelect();
   setCompetition(ACTIVE_COMP.id); // builds team options, resets 0:0 view, loads WC fixtures
+  renderOddsMonitor();            // 盘口关联实时监控首屏渲染（赛程就绪后各钩子会再刷新）
   launchConfetti();               // 开屏撒花庆祝特效（约 5 秒后自动淡出）
   renderLicense();                // paint CDK box (input if unlicensed, status if active)
   applyLock();                    // gate the Monte Carlo action until activated
@@ -3804,6 +3941,9 @@
 
   // 淘汰赛晋级图：每 1 小时自动刷新（仅世界杯等杯赛，按最新小组排名重算出线形势与对阵推演）
   setInterval(() => { if (state.lastModel && ACTIVE_COMP.type === "cup") renderKnockout(); }, 60 * 60 * 1000);
+
+  // 盘口关联实时监控（综合监控）：每 30 分钟自动刷新一次（重置时间戳、重算各场水位/胜平负）
+  setInterval(renderOddsMonitor, 30 * 60 * 1000);
 })();
 </script>
 </body>
